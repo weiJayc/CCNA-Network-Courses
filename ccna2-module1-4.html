@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CCNA2 Modules 1-4 Practice Quiz</title>
+    <style>
+        :root {
+            --primary: #4e73df;
+            --secondary: #858796;
+            --success: #1cc88a;
+            --danger: #e74a3b;
+            --warning: #f6c23e;
+            --bg: #f8f9fc;
+            --white: #ffffff;
+            --card-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+
+        body {
+            font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 10px;
+            color: #5a5c69;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 850px;
+            margin: auto;
+            box-sizing: border-box;
+        }
+
+        /* Progress Area */
+        .header-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .progress {
+            height: 8px;
+            background: #eaecf4;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.4s ease;
+        }
+
+        /* Card System */
+        .card {
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Question Layout */
+        .q-header {
+            display: flex;
+            flex-direction: column; 
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .q-text-wrapper {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .q-text {
+            font-size: 1.1rem;
+            font-weight: 700;
+            line-height: 1.5;
+            color: #3a3b45;
+            flex: 1;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        .q-id-badge {
+            background: #f0f2f7;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: var(--primary);
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .bookmark-btn {
+            background: var(--white);
+            border: 1.5px solid #d1d3e2;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--secondary);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            width: fit-content;
+            align-self: flex-start;
+        }
+
+        .bookmark-btn.active {
+            background: #fffbe6;
+            border-color: var(--warning);
+            color: #856404;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* Options */
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            padding: 15px;
+            border: 2px solid #eaecf4;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            font-size: 0.95rem;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        .option:hover { border-color: var(--primary); background-color: #f8f9fc; }
+        .option.selected { border-color: var(--primary); background-color: #f0f4ff; }
+        .option.correct { border-color: var(--success) !important; background-color: #d1fae5 !important; color: #065f46; font-weight: 700; }
+        .option.wrong { border-color: var(--danger) !important; background-color: #fee2e2 !important; color: #991b1b; }
+
+        input[type="radio"], input[type="checkbox"] { 
+            margin-right: 12px; 
+            transform: scale(1.1); 
+            flex-shrink: 0;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+            border-left: 5px solid;
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .feedback.correct { background: #f0fdf4; color: #166534; border-left-color: var(--success); }
+        .feedback.wrong { background: #fef2f2; color: #991b1b; border-left-color: var(--danger); }
+
+        .explanation {
+            font-size: 0.9rem;
+            margin-top: 12px;
+            color: #4b5563;
+            line-height: 1.6;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(0,0,0,0.1);
+        }
+
+        .controls { text-align: center; margin-top: 25px; }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 40px;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(78, 115, 223, 0.25);
+            transition: all 0.2s;
+            text-transform: uppercase;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .btn-primary:active { transform: scale(0.98); opacity: 0.9; }
+
+        /* Titles */
+        .big-title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            margin-bottom: 15px;
+            text-align: center;
+            line-height: 1.2;
+        }
+        
+        .score-circle { font-size: 5.5rem; font-weight: 900; color: var(--primary); line-height: 1; margin: 15px 0; text-align: center; }
+        .score-total { font-size: 1.8rem; color: var(--secondary); opacity: 0.7; }
+
+        /* Switch Tabs */
+        .switch-tabs {
+            display: flex;
+            background: #eaecf4;
+            border-radius: 15px;
+            padding: 5px;
+            margin: 25px auto;
+            width: 100%;
+            max-width: 550px;
+            box-sizing: border-box;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px 5px;
+            cursor: pointer;
+            border-radius: 10px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            color: #858796;
+            font-size: 0.85rem;
+        }
+
+        .tab.active { background: white; color: var(--primary); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .badge { background: var(--danger); color: white; border-radius: 20px; padding: 2px 8px; font-size: 0.7rem; }
+        .badge-warn { background: var(--warning); color: #000; }
+
+        .review-list { text-align: left; margin-top: 20px; }
+        .review-item {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border-left: 6px solid #d1d3e2;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+
+        @media (min-width: 600px) {
+            body { padding: 30px 20px; }
+            .card { padding: 30px; }
+            .q-header { flex-direction: row; align-items: center; }
+            .q-text { font-size: 1.25rem; }
+            .big-title { font-size: 2.8rem; }
+            .tab { font-size: 0.95rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="quiz-view">
+    <div style="text-align: center; padding: 100px; font-weight: bold; color: var(--primary);">INITIALIZING CCNA QUIZ ENGINE...</div>
+</div>
+
+<script>
+    const questionsData = [
+        { id: 1, q: "Which tasks can be accomplished by using the command history feature? (Choose two.)", options: ["View a list of commands entered in a previous session.", "Recall up to 15 command lines by default.", "Set the command history buffer size.", "Recall previously entered commands.", "Save command lines in a log file for future reference."], answer: ["Set the command history buffer size.", "Recall previously entered commands."], exp: "The history command allows you to view and reuse previously entered commands stored in the buffer. It is also used to manage the size of the buffer.", multi: true },
+        { id: 2, q: "What is the first action in the boot sequence when a switch is powered on?", options: ["load the default Cisco IOS software", "load boot loader software", "low-level CPU initialization", "load a power-on self-test program"], answer: ["load a power-on self-test program"], exp: "The first action to take place when a switch is powered on is the POST or power-on self-test. POST performs tests on the CPU, memory, and flash in preparation for loading the boot loader.", multi: false },
+        { id: 3, q: "What must an administrator have in order to reset a lost password on a router?", options: ["a TFTP server", "a crossover cable", "access to another router", "physical access to the router"], answer: ["physical access to the router"], exp: "Console access to the device through a terminal or terminal emulator software on a PC is required for password recovery.", multi: false },
+        { id: 4, q: "When configuring a switch for SSH access, what other command that is associated with the login local command is required to be entered on the switch?", options: ["enable secret password", "password password", "username username secret secret", "login block-for seconds attempts number within seconds"], answer: ["username username secret secret"], exp: "The login local command designates that the local username database is used to authenticate interfaces such as console or vty.", multi: false },
+        { id: 5, q: "Which command displays information about the auto-MDIX setting for a specific interface?", options: ["show interfaces", "show controllers", "show processes", "show running-config"], answer: ["show controllers"], exp: "To examine the auto-MDIX setting for a specific interface, the show controllers ethernet-controller command with the phy keyword should be used.", multi: false },
+        { id: 6, q: "If one end of an Ethernet connection is configured for full duplex and the other end is configured for half duplex, where would late collisions be observed?", options: ["on both ends of the connection", "on the full-duplex end of the connection", "only on serial interfaces", "on the half-duplex end of the connection"], answer: ["on the half-duplex end of the connection"], exp: "When a connection has two different duplex configurations, the half-duplex end will experience late collisions.", multi: false },
+        { id: 7, q: "Which command is used to set the BOOT environment variable that defines where to find the IOS image file on a switch?", options: ["config-register", "boot system", "boot loader", "confreg"], answer: ["boot system"], exp: "The boot system command is used to set the BOOT environment variable.", multi: false },
+        { id: 8, q: "What does a switch use to locate and load the IOS image?", options: ["BOOT environment variable", "IOS image file", "POST", "startup-config", "NVRAM"], answer: ["BOOT environment variable"], exp: "The BOOT environment variable contains the information about where to find the IOS image file.", multi: false },
+        { id: 9, q: "Which protocol adds security to remote connections?", options: ["FTP", "HTTP", "NetBEUI", "POP", "SSH"], answer: ["SSH"], exp: "SSH allows a technician to securely connect to a remote network device for monitoring and troubleshooting.", multi: false },
+        { id: 10, q: "What is a characteristic of an IPv4 loopback interface on a Cisco IOS router?", options: ["The no shutdown command is required to place this interface in an UP state.", "It is a logical interface internal to the router.", "Only one loopback interface can be enabled on a router.", "It is assigned to a physical port and can be connected to other devices."], answer: ["It is a logical interface internal to the router."], exp: "The loopback interface is a logical interface internal to the router and is automatically placed in an UP state, as long as the router is functioning.", multi: false },
+        { id: 11, q: "What is the minimum Ethernet frame size that will not be discarded by the receiver as a runt frame?", options: ["64 bytes", "512 bytes", "1024 bytes", "1500 bytes"], answer: ["64 bytes"], exp: "The minimum Ethernet frame size is 64 bytes. Frames smaller than 64 bytes are considered collision fragments or runt frames and are discarded.", multi: false },
+        { id: 12, q: "After which step of the switch bootup sequence is the boot loader executed?", options: ["after CPU initialization", "after IOS localization", "after flash file system initialization", "after POST execution"], answer: ["after POST execution"], exp: "The correct sequence: POST execution, then the switch loads the boot loader software.", multi: false },
+        { id: 13, q: "Which impact does adding a Layer 2 switch have on a network?", options: ["an increase in the number of dropped frames", "an increase in the size of the broadcast domain", "an increase in the number of network collisions", "an increase in the size of the collision domain"], answer: ["an increase in the size of the broadcast domain"], exp: "Adding a Layer 2 switch to a network increases the number of collision domains and increases the size of the broadcast domain.", multi: false },
+        { id: 14, q: "Which characteristic describes cut-through switching?", options: ["Error-free fragments are forwarded, so switching occurs with lower latency.", "Frames are forwarded without any error checking.", "Only outgoing frames are checked for errors.", "Buffering is used to support different Ethernet speeds."], answer: ["Frames are forwarded without any error checking."], exp: "Cut-through switching reduces latency by forwarding frames as soon as the destination MAC address is read. It does not perform error checking.", multi: false },
+        { id: 15, q: "What is the significant difference between a hub and a Layer 2 LAN switch?", options: ["A hub extends a collision domain, and a switch divides collision domains.", "A hub divides collision domains, and a switch divides broadcast domains.", "Each port of a hub is a collision domain, and each port of a switch is a broadcast domain.", "A hub forwards frames, and a switch forwards only packets."], answer: ["A hub extends a collision domain, and a switch divides collision domains."], exp: "Hubs extend collision domains; switches divide them, creating separate collision domains per port.", multi: false },
+        { id: 16, q: "Which statement is correct about Ethernet switch frame forwarding decisions?", options: ["Frame forwarding decisions are based on MAC address and port mappings in the CAM table.", "Cut-through frame forwarding ensures that invalid frames are always dropped.", "Only frames with a broadcast destination address are forwarded out all active switch ports.", "Unicast frames are always forwarded regardless of the destination MAC address."], answer: ["Frame forwarding decisions are based on MAC address and port mappings in the CAM table."], exp: "Switches use the CAM (Content Addressable Memory) table to map MAC addresses to specific ports.", multi: false },
+        { id: 17, q: "How do switch buffers affect network performance?", options: ["They provide error checking on the data received.", "They store frames received, thus preventing premature frame discarding when network congestion occurs.", "They provide extra memory for a particular port if autonegotiation fails.", "They hold data temporarily when a collision occurs until normal data transmission resumes."], answer: ["They store frames received, thus preventing premature frame discarding when network congestion occurs."], exp: "Buffers allow data waiting to be transmitted to be stored so the data will not be dropped.", multi: false },
+        { id: 18, q: "Which switch characteristic helps keep traffic local and alleviates network congestion?", options: ["high port density", "fast port speed", "large frame buffers", "fast internal switching"], answer: ["high port density"], exp: "High port density keeps some of the traffic locally on the switch, removing the need to send it between switches.", multi: false },
+        { id: 19, q: "Which switch component reduces the amount of packet handling time inside the switch?", options: ["ASIC", "dual processors", "large buffer size", "store-and-forward RAM"], answer: ["ASIC"], exp: "ASICs speed up switch operations so that the switch can have an increased number of ports without degrading performance.", multi: false },
+        { id: 21, q: "What information is added to the switch table from incoming frames?", options: ["source MAC address and incoming port number", "destination MAC address and incoming port number", "source IP address and incoming port number", "destination IP address and incoming port number"], answer: ["source MAC address and incoming port number"], exp: "A switch learns the source MAC address and associated port as a frame comes into the switch.", multi: false },
+        { id: 22, q: "Which switching method ensures that the incoming frame is error-free before forwarding?", options: ["cut-through", "FCS", "fragment free", "store-and-forward"], answer: ["store-and-forward"], exp: "The store-and-forward method performs error checking on the frame using the FCS value before sending.", multi: false },
+        { id: 24, q: "Under which two occasions should an administrator disable DTP while managing a local area network? (Choose two.)", options: ["when connecting a Cisco switch to a non-Cisco switch", "when a neighbor switch uses a DTP mode of dynamic auto", "when a neighbor switch uses a DTP mode of dynamic desirable", "on links that should not be trunking", "on links that should dynamically attempt trunking"], answer: ["when connecting a Cisco switch to a non-Cisco switch", "on links that should not be trunking"], exp: "Cisco best practice recommends disabling DTP on links where trunking is not intended and when connecting to non-Cisco switches.", multi: true },
+        { id: 25, q: "Which two characteristics describe the native VLAN? (Choose two.)", options: ["Designed to carry traffic that is generated by users, this type of VLAN is also known as the default VLAN.", "The native VLAN traffic will be untagged across the trunk link.", "This VLAN is necessary for remote management of a switch.", "High priority traffic, such as voice traffic, uses the native VLAN.", "The native VLAN provides a common identifier to both ends of a trunk."], answer: ["The native VLAN traffic will be untagged across the trunk link.", "The native VLAN provides a common identifier to both ends of a trunk."], exp: "The native VLAN traffic travels untagged across trunks and provides a common identifier to both ends.", multi: true },
+        { id: 26, q: "On a switch that is configured with multiple VLANs, which command will remove only VLAN 100 from the switch?", options: ["Switch# delete flash:vlan.dat", "Switch(config-if)# no switchport access vlan 100", "Switch(config-if)# no switchport trunk allowed vlan 100", "Switch(config)# no vlan 100"], answer: ["Switch(config)# no vlan 100"], exp: "To delete a single VLAN, such as VLAN 100, the 'no vlan 100' global configuration command is used.", multi: false },
+        { id: 28, q: "A network contains multiple VLANs spanning multiple switches. What happens when a device in VLAN 20 sends a broadcast Ethernet frame?", options: ["All devices in all VLANs see the frame.", "Devices in VLAN 20 and the management VLAN see the frame.", "Only devices in VLAN 20 see the frame.", "Only devices that are connected to the local switch see the frame."], answer: ["Only devices in VLAN 20 see the frame."], exp: "Ethernet frames sent by a device on a specific VLAN can only be seen by other devices in the same VLAN.", multi: false },
+        { id: 34, q: "Port Fa0/11 on a switch is assigned to VLAN 30. If the command 'no switchport access vlan 30' is entered on the interface, what will happen?", options: ["Port Fa0/11 will be shutdown.", "An error message would be displayed.", "Port Fa0/11 will be returned to VLAN 1.", "VLAN 30 will be deleted."], answer: ["Port Fa0/11 will be returned to VLAN 1."], exp: "When the access VLAN command is removed, the port is returned to the default VLAN 1.", multi: false },
+        { id: 35, q: "Which command displays the encapsulation type, the voice VLAN ID, and the access mode VLAN for the Fa0/1 interface?", options: ["show vlan brief", "show interfaces Fa0/1 switchport", "show mac address-table interface Fa0/1", "show interfaces trunk"], answer: ["show interfaces Fa0/1 switchport"], exp: "The 'show interfaces switchport' command displays switchport status, administrative/operational modes, and VLAN IDs.", multi: false },
+        { id: 37, q: "Which four steps are needed to configure a voice VLAN on a switch port? (Choose four).", options: ["Configure the interface as an IEEE 802.1Q trunk.", "Assign the voice VLAN to the switch port.", "Activate spanning-tree PortFast on the interface.", "Ensure that voice traffic is trusted and tagged with a CoS priority value.", "Add a voice VLAN.", "Configure the switch port interface with subinterfaces.", "Assign a data VLAN to the switch port.", "Configure the switch port in access mode."], answer: ["Assign the voice VLAN to the switch port.", "Ensure that voice traffic is trusted and tagged with a CoS priority value.", "Add a voice VLAN.", "Configure the switch port in access mode."], exp: "Standard voice VLAN configuration involves defining the VLAN, setting access mode, trusting CoS, and assigning the voice VLAN ID.", multi: true },
+        { id: 41, q: "A high school uses VLAN15 and VLAN30. What is required to enable communication between these two VLANs while using the router-on-a-stick approach?", options: ["A multilayer switch is needed.", "A router with at least two LAN interfaces is needed.", "Two groups of switches are needed.", "A switch with a port that is configured as a trunk is needed when connecting to the router."], answer: ["A switch with a port that is configured as a trunk is needed when connecting to the router."], exp: "With router-on-a-stick, inter-VLAN routing is performed by a router connected via a single trunk link.", multi: false },
+        { id: 42, q: "What are two disadvantages of using router-on-a-stick inter-VLAN routing rather than multilayer switch? (Choose two.)", options: ["Multiple SVIs are needed.", "A dedicated router is required.", "Router-on-a-stick requires subinterfaces on same subnets.", "Router-on-a-stick requires multiple physical interfaces.", "Multiple subinterfaces may impact the traffic flow speed."], answer: ["A dedicated router is required.", "Multiple subinterfaces may impact the traffic flow speed."], exp: "Router-on-a-stick requires a separate physical router and traffic throughput can be limited by the single physical link.", multi: true },
+        { id: 48, q: "What is a characteristic of a routed port on a Layer 3 switch?", options: ["It supports trunking.", "It is not assigned to a VLAN.", "It is commonly used as a WAN link.", "It cannot have an IP address assigned to it."], answer: ["It is not assigned to a VLAN."], exp: "A routed port on a Layer 3 switch acts like a router interface and is not assigned to a VLAN or trunk.", multi: false },
+        { id: 50, q: "What is the effect of issuing the 'BranchSw(config-if)# mdix auto' command?", options: ["It automatically adjusts the port to use either straight-through or crossover cables.", "It applies an IPv4 address to the virtual interface.", "It applies an IPv6 address to the virtual interface.", "It updates the MAC address table."], answer: ["It automatically adjusts the port to use either straight-through or crossover cables."], exp: "Auto-MDIX detects the required cable type and configures the port accordingly.", multi: false },
+        { id: 51, q: "What is the effect of issuing the 'ip address 172.18.33.88 255.255.255.0' command?", options: ["It applies an IPv4 address to the virtual interface.", "It applies an IPv6 address to the virtual interface.", "It activates a virtual or physical switch interface.", "It updates the MAC address table."], answer: ["It applies an IPv4 address to the virtual interface."], exp: "This command assigns an IPv4 address to a management virtual interface (SVI).", multi: false },
+        { id: 52, q: "What is the effect of issuing the 'configure terminal' command?", options: ["It enters the global configuration mode.", "It enters configuration mode for a SVI.", "It applies an IPv4 address.", "It updates the MAC address table."], answer: ["It enters the global configuration mode."], exp: "This command moves the switch into global configuration mode.", multi: false },
+        { id: 54, q: "What is the effect of issuing the 'shutdown' command on an interface?", options: ["It disables a virtual or physical switch interface.", "It saves the configuration.", "It activates a virtual or physical switch interface.", "It updates the MAC address table."], answer: ["It disables a virtual or physical switch interface."], exp: "The shutdown command administratively disables an interface.", multi: false },
+        { id: 56, q: "What is the effect of issuing the 'ipv6 address 2001:db8:a2b4:88::1/64' command?", options: ["It applies an IPv6 address to the virtual interface.", "It activates a switch interface.", "It applies an IPv4 address.", "It updates the MAC address table."], answer: ["It applies an IPv6 address to the virtual interface."], exp: "This command assigns a specific IPv6 address to the interface.", multi: false },
+        { id: 58, q: "What is the effect of issuing the 'enable' command?", options: ["It enters privileged mode.", "It enters global configuration mode.", "It enters SVI configuration.", "It permits an IPv6 address."], answer: ["It enters privileged mode."], exp: "The enable command moves the session from user EXEC mode to privileged EXEC mode.", multi: false },
+        { id: 59, q: "What is the effect of issuing the 'duplex full' command?", options: ["It allows data to flow in both directions at the same time.", "It allows data to flow in only one direction at a time.", "It automatically adjusts cable type.", "It encrypts user-mode passwords."], answer: ["It allows data to flow in both directions at the same time."], exp: "Full-duplex allows simultaneous bidirectional communication.", multi: false },
+        { id: 60, q: "What type of VLAN should not carry voice and network management traffic?", options: ["data VLAN", "voice VLAN", "management VLAN", "security VLAN"], answer: ["data VLAN"], exp: "Data VLANs are used to separate user traffic from management and voice traffic.", multi: false },
+        { id: 62, q: "What type of VLAN is designed to reserve bandwidth to ensure IP Phone quality?", options: ["voice VLAN", "trunk VLAN", "security VLAN", "management VLAN"], answer: ["voice VLAN"], exp: "Voice VLANs are used to prioritize voice traffic (QoS).", multi: false },
+        { id: 63, q: "What type of VLAN is initially the management VLAN?", options: ["default VLAN", "native VLAN", "data VLAN", "management VLAN"], answer: ["default VLAN"], exp: "VLAN 1 is the default management VLAN out of the box.", multi: false },
+        { id: 64, q: "What type of VLAN is designed to have a delay of less than 150 ms?", options: ["voice VLAN", "desirable VLAN", "trunk VLAN", "security VLAN"], answer: ["voice VLAN"], exp: "Voice traffic is delay-sensitive and typically requires less than 150ms latency.", multi: false },
+        { id: 65, q: "What type of VLAN is used to separate the network into groups of users or devices?", options: ["data VLAN", "management VLAN", "voice VLAN", "native VLAN"], answer: ["data VLAN"], exp: "Data VLANs are used for microsegmenting user groups.", multi: false },
+        { id: 66, q: "What type of VLAN is configured specifically for SSH, Telnet, HTTPS, HTTP, and SNMP?", options: ["management VLAN", "security VLAN", "trunk VLAN", "voice VLAN"], answer: ["management VLAN"], exp: "Management VLANs handle administrative protocols.", multi: false },
+        { id: 68, q: "What type of VLAN supports untagged traffic?", options: ["native VLAN", "voice VLAN", "security VLAN", "management VLAN"], answer: ["native VLAN"], exp: "The native VLAN receives untagged frames from the trunk link.", multi: false },
+        { id: 72, q: "Which solution would help a college alleviate network congestion due to collisions?", options: ["a firewall", "a high port density switch", "a router with two Ethernet ports", "a router with three Ethernet ports"], answer: ["a high port density switch"], exp: "Switches provide microsegmentation, effectively eliminating collisions.", multi: false },
+        { id: 73, q: "Which two statements are correct with respect to SVI inter-VLAN routing? (Choose two.)", options: ["Switching packets is faster with SVI.", "There is no need for a connection to a router.", "Virtual interfaces support subinterfaces.", "SVIs can be bundled into EtherChannels.", "SVIs eliminate the need for a default gateway."], answer: ["Switching packets is faster with SVI.", "There is no need for a connection to a router."], exp: "SVI inter-VLAN routing is faster as it happens at hardware speed and doesn't require an external router.", multi: true },
+        { id: 79, q: "What type of VLAN is configured specifically for network traffic such as SSH, Telnet, HTTPS, HHTP, and SNMP?", options: ["voice VLAN", "management VLAN", "native VLAN", "security VLAN"], answer: ["management VLAN"], exp: "Traffic like SSH and SNMP is handled by the management VLAN.", multi: false }
+    ];
+
+    let state = {
+        pool: [],
+        currentIndex: 0,
+        score: 0,
+        bookmarks: new Set(),
+        wrongList: [],
+        itemsPerPhase: 20,
+        isAnswered: false,
+        tempSelected: []
+    };
+
+    function shuffle(arr) {
+        let array = [...arr];
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function initQuiz() {
+        state.pool = shuffle(questionsData).map(q => ({
+            ...q,
+            options: shuffle(q.options)
+        }));
+        state.currentIndex = 0;
+        state.score = 0;
+        state.bookmarks.clear();
+        state.wrongList = [];
+        state.isAnswered = false;
+        state.tempSelected = [];
+        render();
+    }
+
+    function render() {
+        const view = document.getElementById('quiz-view');
+        if (state.currentIndex >= state.pool.length) {
+            renderFinal();
+            return;
+        }
+
+        const q = state.pool[state.currentIndex];
+        const progress = (state.currentIndex / state.pool.length) * 100;
+
+        view.innerHTML = `
+            <div class="header-status">
+                <span>STAGE ${Math.floor(state.currentIndex / state.itemsPerPhase) + 1}</span>
+                <span>${state.currentIndex + 1} / ${state.pool.length}</span>
+            </div>
+            <div class="progress"><div class="progress-bar" style="width: ${progress}%"></div></div>
+            
+            <div class="card">
+                <div class="q-header">
+                    <div class="q-text-wrapper">
+                        <span class="q-id-badge">ID: ${q.id}</span>
+                        <div class="q-text">${q.q} ${q.multi ? '(Multiple Choice)' : ''}</div>
+                    </div>
+                    <button class="bookmark-btn ${state.bookmarks.has(q.id) ? 'active' : ''}" onclick="toggleBookmark(${q.id})">
+                        ${state.bookmarks.has(q.id) ? '★ MARKED' : '☆ MARK'}
+                    </button>
+                </div>
+                <div class="options">
+                    ${q.options.map((opt, i) => `
+                        <div class="option" onclick="handleSelect('${opt.replace(/'/g, "\\'")}', this)">
+                            <input type="${q.multi ? 'checkbox' : 'radio'}" name="ans" value="${opt}" id="o${i}" ${state.tempSelected.includes(opt) ? 'checked' : ''}>
+                            <label for="o${i}">${opt}</label>
+                        </div>
+                    `).join('')}
+                </div>
+                <div id="feedback" class="feedback"></div>
+            </div>
+            
+            <div class="controls" id="btn-bar">
+                ${q.multi ? '<button class="btn-primary" onclick="submitMulti()">SUBMIT ANSWER</button>' : ''}
+            </div>
+        `;
+    }
+
+    window.toggleBookmark = function(id) {
+        if (state.bookmarks.has(id)) state.bookmarks.delete(id);
+        else state.bookmarks.add(id);
+        const btn = document.querySelector('.bookmark-btn');
+        if (btn) {
+            btn.classList.toggle('active');
+            btn.innerHTML = state.bookmarks.has(id) ? '★ MARKED' : '☆ MARK';
+        }
+    };
+
+    window.handleSelect = function(val, el) {
+        if (state.isAnswered) return;
+        const q = state.pool[state.currentIndex];
+
+        if (!q.multi) {
+            state.tempSelected = [val];
+            evaluate();
+        } else {
+            const idx = state.tempSelected.indexOf(val);
+            if (idx > -1) state.tempSelected.splice(idx, 1);
+            else state.tempSelected.push(val);
+            
+            document.querySelectorAll('.option').forEach(o => {
+                const checked = state.tempSelected.includes(o.querySelector('input').value);
+                o.querySelector('input').checked = checked;
+                if(checked) o.classList.add('selected'); else o.classList.remove('selected');
+            });
+        }
+    };
+
+    window.submitMulti = function() {
+        if (state.tempSelected.length === 0) return;
+        evaluate();
+    };
+
+    function evaluate() {
+        state.isAnswered = true;
+        const q = state.pool[state.currentIndex];
+        const feedback = document.getElementById('feedback');
+        const correct = state.tempSelected.length === q.answer.length && state.tempSelected.every(v => q.answer.includes(v));
+
+        if (correct) {
+            state.score++;
+            feedback.className = 'feedback correct';
+            feedback.innerHTML = `<strong>CORRECT!</strong>`;
+        } else {
+            state.wrongList.push(q);
+            feedback.className = 'feedback wrong';
+            feedback.innerHTML = `<strong>INCORRECT</strong><br>Correct Answer: ${q.answer.join(', ')}`;
+        }
+
+        feedback.innerHTML += `<div class="explanation">${q.exp}</div>`;
+        feedback.style.display = 'block';
+
+        document.querySelectorAll('.option').forEach(el => {
+            const val = el.querySelector('input').value;
+            if (q.answer.includes(val)) el.classList.add('correct');
+            else if (state.tempSelected.includes(val)) el.classList.add('wrong');
+        });
+
+        const bar = document.getElementById('btn-bar');
+        if (bar) bar.innerHTML = `<button class="btn-primary" onclick="nextQuestion()">NEXT QUESTION</button>`;
+    }
+
+    window.nextQuestion = function() {
+        state.currentIndex++;
+        state.isAnswered = false;
+        state.tempSelected = [];
+
+        if (state.currentIndex > 0 && state.currentIndex % state.itemsPerPhase === 0 && state.currentIndex < state.pool.length) {
+            renderBreak();
+        } else {
+            render();
+        }
+    };
+
+    function renderBreak() {
+        const view = document.getElementById('quiz-view');
+        view.innerHTML = `
+            <div class="card result-panel">
+                <div class="big-title" style="font-size: 1.8rem;">STAGE COMPLETED</div>
+                <p style="font-size: 1.1rem; color: #5a5c69; margin-bottom: 25px; text-align: center;">You've finished ${state.currentIndex} questions.</p>
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <button class="btn-primary" onclick="render()">CONTINUE QUIZ</button>
+                </div>
+                <div class="switch-tabs">
+                    <div class="tab active" onclick="switchReview('wrong', this)">❌ WRONG <span class="badge">${state.wrongList.length}</span></div>
+                    <div class="tab" onclick="switchReview('book', this)">★ MARKED <span class="badge badge-warn">${state.bookmarks.size}</span></div>
+                </div>
+                <div id="review-content" class="review-list"></div>
+            </div>
+        `;
+        switchReview('wrong');
+    }
+
+    window.switchReview = function(type, el) {
+        if (el) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+        }
+        const list = document.getElementById('review-content');
+        const items = type === 'wrong' ? state.wrongList : state.pool.filter(p => state.bookmarks.has(p.id));
+        list.innerHTML = items.map(it => `
+            <div class="review-item" style="border-left-color: ${type==='wrong' ? 'var(--danger)' : 'var(--warning)'}">
+                <span class="q-id-badge">ID: ${it.id}</span>
+                <strong>${it.q}</strong><br>
+                <span style="color:var(--success); font-weight:700;">Answer: ${it.answer.join(', ')}</span>
+                <div style="font-size:0.85rem; margin-top:5px; color:#777;">${it.exp}</div>
+            </div>
+        `).join('') || '<p style="text-align:center; padding:20px;">Category is empty.</p>';
+    };
+
+    function renderFinal() {
+        const view = document.getElementById('quiz-view');
+        const acc = Math.round((state.score / state.pool.length) * 100);
+        view.innerHTML = `
+            <div class="card result-panel">
+                <div class="big-title">FINAL RESULTS</div>
+                <div class="score-circle">${state.score} <span class="score-total">/ ${state.pool.length}</span></div>
+                <p style="font-size:1.5rem; font-weight:800; margin-bottom: 30px; color: #1cc88a; text-align: center;">ACCURACY: ${acc}%</p>
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <button class="btn-primary" onclick="initQuiz()">RESTART QUIZ</button>
+                </div>
+                <div class="switch-tabs">
+                    <div class="tab active" onclick="switchFinal('wrong', this)">❌ WRONG <span class="badge">${state.wrongList.length}</span></div>
+                    <div class="tab" onclick="switchFinal('book', this)">★ MARKED <span class="badge badge-warn">${state.bookmarks.size}</span></div>
+                </div>
+                <div id="final-review-list" class="review-list"></div>
+            </div>
+        `;
+        switchFinal('wrong');
+    }
+
+    window.switchFinal = function(type, el) {
+        if (el) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+        }
+        const list = document.getElementById('final-review-list');
+        const items = type === 'wrong' ? state.wrongList : state.pool.filter(p => state.bookmarks.has(p.id));
+        list.innerHTML = items.map(it => `
+            <div class="review-item" style="border-left-color: ${type==='wrong' ? 'var(--danger)' : 'var(--warning)'}">
+                <span class="q-id-badge">ID: ${it.id}</span>
+                <strong>${it.q}</strong><br>
+                <span style="color:var(--success); font-weight:700;">Correct Answer: ${it.answer.join(', ')}</span>
+                <p style="font-size:0.9rem; background:#f8f9fc; padding:15px; border-radius:8px; margin-top:10px;">${it.exp}</p>
+            </div>
+        `).join('') || '<p style="text-align:center; padding:20px;">List is empty.</p>';
+    };
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initQuiz);
+    } else {
+        initQuiz();
+    }
+</script>
+
+</body>
+</html>

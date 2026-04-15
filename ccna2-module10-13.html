@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CCNA2 Modules 10-13 Practice Quiz</title>
+    <style>
+        :root {
+            --primary: #4e73df;
+            --secondary: #858796;
+            --success: #1cc88a;
+            --danger: #e74a3b;
+            --warning: #f6c23e;
+            --bg: #f8f9fc;
+            --white: #ffffff;
+            --card-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+
+        body {
+            font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 10px;
+            color: #5a5c69;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 850px;
+            margin: auto;
+            box-sizing: border-box;
+        }
+
+        /* Progress Area */
+        .header-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .progress {
+            height: 8px;
+            background: #eaecf4;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.4s ease;
+        }
+
+        /* Card System */
+        .card {
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Question Layout */
+        .q-header {
+            display: flex;
+            flex-direction: column; 
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .q-text-wrapper {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .q-text {
+            font-size: 1.1rem;
+            font-weight: 700;
+            line-height: 1.5;
+            color: #3a3b45;
+            flex: 1;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        .q-id-badge {
+            background: #f0f2f7;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: var(--primary);
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .bookmark-btn {
+            background: var(--white);
+            border: 1.5px solid #d1d3e2;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--secondary);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            width: fit-content;
+            align-self: flex-start;
+        }
+
+        .bookmark-btn.active {
+            background: #fffbe6;
+            border-color: var(--warning);
+            color: #856404;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* Options */
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            padding: 15px;
+            border: 2px solid #eaecf4;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            font-size: 0.95rem;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        .option:hover { border-color: var(--primary); background-color: #f8f9fc; }
+        .option.selected { border-color: var(--primary); background-color: #f0f4ff; }
+        .option.correct { border-color: var(--success) !important; background-color: #d1fae5 !important; color: #065f46; font-weight: 700; }
+        .option.wrong { border-color: var(--danger) !important; background-color: #fee2e2 !important; color: #991b1b; }
+
+        input[type="radio"], input[type="checkbox"] { 
+            margin-right: 12px; 
+            transform: scale(1.1); 
+            flex-shrink: 0;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+            border-left: 5px solid;
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .feedback.correct { background: #f0fdf4; color: #166534; border-left-color: var(--success); }
+        .feedback.wrong { background: #fef2f2; color: #991b1b; border-left-color: var(--danger); }
+
+        .explanation {
+            font-size: 0.9rem;
+            margin-top: 12px;
+            color: #4b5563;
+            line-height: 1.6;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(0,0,0,0.1);
+        }
+
+        .controls { text-align: center; margin-top: 25px; }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 40px;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(78, 115, 223, 0.25);
+            transition: all 0.2s;
+            text-transform: uppercase;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .btn-primary:active { transform: scale(0.98); opacity: 0.9; }
+
+        /* Titles */
+        .big-title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            margin-bottom: 15px;
+            text-align: center;
+            line-height: 1.2;
+        }
+        
+        .score-circle { font-size: 5.5rem; font-weight: 900; color: var(--primary); line-height: 1; margin: 15px 0; text-align: center; }
+        .score-total { font-size: 1.8rem; color: var(--secondary); opacity: 0.7; }
+
+        /* Switch Tabs */
+        .switch-tabs {
+            display: flex;
+            background: #eaecf4;
+            border-radius: 15px;
+            padding: 5px;
+            margin: 25px auto;
+            width: 100%;
+            max-width: 550px;
+            box-sizing: border-box;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px 5px;
+            cursor: pointer;
+            border-radius: 10px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            color: #858796;
+            font-size: 0.85rem;
+        }
+
+        .tab.active { background: white; color: var(--primary); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .badge { background: var(--danger); color: white; border-radius: 20px; padding: 2px 8px; font-size: 0.7rem; }
+        .badge-warn { background: var(--warning); color: #000; }
+
+        .review-list { text-align: left; margin-top: 20px; }
+        .review-item {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border-left: 6px solid #d1d3e2;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+
+        @media (min-width: 600px) {
+            body { padding: 30px 20px; }
+            .card { padding: 30px; }
+            .q-header { flex-direction: row; align-items: center; }
+            .q-text { font-size: 1.25rem; }
+            .big-title { font-size: 2.8rem; }
+            .tab { font-size: 0.95rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="quiz-view">
+    <div style="text-align: center; padding: 100px; font-weight: bold; color: var(--primary);">INITIALIZING CCNA QUIZ ENGINE...</div>
+</div>
+
+<script>
+    const questionsData = [
+        { id: 1, q: "Which Layer 2 attack will result in legitimate users not getting valid IP addresses?", options: ["ARP spoofing", "DHCP starvation", "IP address spoofing", "MAC address flooding"], answer: ["DHCP starvation"], exp: "Topic 10.5.5 The DHCP starvation attack causes the exhaustion of the IP address pool of a DHCP server before legitimate users can obtain valid IP addresses.", multi: false },
+        { id: 2, q: "What mitigation plan is best for thwarting a DoS attack that is creating a MAC address table overflow?", options: ["Disable DTP.", "Disable STP.", "Enable port security.", "Place unused ports in an unused VLAN."], answer: ["Enable port security."], exp: "Topic 11.1.2 A MAC address (CAM) table overflow attack, buffer overflow, and MAC address spoofing can all be mitigated by configuring port security.", multi: false },
+        { id: 3, q: "Which three Cisco products focus on endpoint security solutions? (Choose three.)", options: ["IPS Sensor Appliance", "Web Security Appliance", "Email Security Appliance", "SSL/IPsec VPN Appliance", "Adaptive Security Appliance", "NAC Appliance"], answer: ["Web Security Appliance", "Email Security Appliance", "NAC Appliance"], exp: "Topic 10.1.3 The primary components of endpoint security solutions are Cisco Email and Web Security appliances, and Cisco NAC appliance.", multi: true },
+        { id: 4, q: "True or False? In the 802.1X standard, the client attempting to access the network is referred to as the supplicant.", options: ["true", "false"], answer: ["true"], exp: "Topic 10.2.6", multi: false },
+        { id: 5, q: "Which authentication method stores usernames and passwords in the router and is ideal for small networks?", options: ["server-based AAA over TACACS+", "local AAA over RADIUS", "server-based AAA", "local AAA over TACACS+", "local AAA", "server-based AAA over RADIUS"], answer: ["local AAA"], exp: "Topic 10.2.3 In a small network with a few network devices, AAA authentication can be implemented with the local database and with usernames and passwords stored on the network devices.", multi: false },
+        { id: 6, q: "What represents a best practice concerning discovery protocols such as CDP and LLDP on network devices?", options: ["Enable CDP on edge devices, and enable LLDP on interior devices.", "Use the open standard LLDP rather than CDP.", "Use the default router settings for CDP and LLDP.", "Disable both protocols on all interfaces where they are not required."], answer: ["Disable both protocols on all interfaces where they are not required."], exp: "Topic 10.5.10 Both discovery protocols can provide hackers with sensitive network information.", multi: false },
+        { id: 7, q: "Which protocol should be used to mitigate the vulnerability of using Telnet to remotely manage network devices?", options: ["SNMP", "TFTP", "SSH", "SCP"], answer: ["SSH"], exp: "Topic 10.3.3 SSH encrypts data communications between two network devices.", multi: false },
+        { id: 8, q: "Which statement describes the behavior of a switch when the MAC address table is full?", options: ["It treats frames as unknown unicast and floods all incoming frames to all ports on the switch.", "It treats frames as unknown unicast and floods all incoming frames to all ports across multiple switches.", "It treats frames as unknown unicast and floods all incoming frames to all ports within the local VLAN.", "It treats frames as unknown unicast and floods all incoming frames to all ports within the collision domain."], answer: ["It treats frames as unknown unicast and floods all incoming frames to all ports within the local VLAN."], exp: "Topic 10.4.2 When the MAC address table is full, the switch treats the frame as an unknown unicast and begins to flood all incoming traffic to all ports only within the local VLAN.", multi: false },
+        { id: 9, q: "What device is considered a supplicant during the 802.1X authentication process?", options: ["the router that is serving as the default gateway", "the authentication server that is performing client authentication", "the client that is requesting authentication", "the switch that is controlling network access"], answer: ["the client that is requesting authentication"], exp: "Topic 10.2.6 The devices involved in the 802.1X authentication process are as follows: The supplicant, which is the client that is requesting network access.", multi: false },
+        { id: 12, q: "Which type of VLAN-hopping attack may be prevented by designating an unused VLAN as the native VLAN?", options: ["DHCP spoofing", "DHCP starvation", "VLAN double-tagging", "DTP spoofing"], answer: ["VLAN double-tagging"], exp: "Topic 10.5.3 Changing the native VLAN from the default to an unused VLAN reduces the possibility of this type of attack.", multi: false },
+        { id: 13, q: "A network administrator is configuring DAI on a switch with the command ip arp inspection validate src-mac. What is the purpose of this configuration command?", options: ["It checks the source MAC address in the Ethernet header against the user-configured ARP ACLs.", "It checks the source MAC address in the Ethernet header against the MAC address table.", "It checks the source MAC address in the Ethernet header against the sender MAC address in the ARP body.", "It checks the source MAC address in the Ethernet header against the target MAC address in the ARP body."], answer: ["It checks the source MAC address in the Ethernet header against the sender MAC address in the ARP body."], exp: "Topic 11.4.3 Source MAC – Checks the source MAC address in the Ethernet header against the sender MAC address in the ARP body.", multi: false },
+        { id: 14, q: "Which two commands can be used to enable BPDU guard on a switch? (Choose two.)", options: ["S1(config)# spanning-tree bpduguard default", "S1(config-if)# spanning-tree portfast bpduguard", "S1(config)# spanning-tree portfast bpduguard default", "S1(config-if)# enable spanning-tree bpduguard", "S1(config-if)# spanning-tree bpduguard enable"], answer: ["S1(config)# spanning-tree portfast bpduguard default", "S1(config-if)# spanning-tree bpduguard enable"], exp: "Topic 11.5.3 BPDU guard can be enabled on all PortFast-enabled ports by using the global command or specifically on an interface.", multi: true },
+        { id: 15, q: "When the switches are brought back online, the dynamically learned MAC addresses are retained. Which port security configuration enabled this?", options: ["auto secure MAC addresses", "dynamic secure MAC addresses", "static secure MAC addresses", "sticky secure MAC addresses"], answer: ["sticky secure MAC addresses"], exp: "Topic 11.1.4 With sticky secure MAC addressing, the MAC addresses can be either dynamically learned or manually configured and then stored in the address table.", multi: false },
+        { id: 16, q: "Which type of management frame may regularly be broadcast by an AP?", options: ["authentication", "probe request", "probe response", "beacon"], answer: ["beacon"], exp: "Topic 12.3.7 Beacons are the only management frame that may regularly be broadcast by an AP.", multi: false },
+        { id: 17, q: "What are the two methods that are used by a wireless NIC to discover an AP? (Choose two.)", options: ["delivering a broadcast frame", "receiving a broadcast beacon frame", "initiating a three-way handshake", "sending an ARP request", "transmitting a probe request"], answer: ["receiving a broadcast beacon frame", "transmitting a probe request"], exp: "Topic 12.3.7 Two methods can be used: passive mode (receiving a broadcast beacon frame) and active mode (transmitting a probe request).", multi: true },
+        { id: 18, q: "A technician is configuring the channel on a wireless router to either 1, 6, or 11. What is the purpose of adjusting the channel?", options: ["to enable different 802.11 standards", "to avoid interference from nearby wireless devices", "to disable broadcasting of the SSID", "to provide stronger security modes"], answer: ["to avoid interference from nearby wireless devices"], exp: "Topic 12.5.2 Channels 1, 6, and 11 are selected because they are 5 channels apart, thus minimizing interference.", multi: false },
+        { id: 19, q: "The access point must be operating in which mode when the laptop fails to display any available wireless networks?", options: ["mixed", "passive", "active", "open"], answer: ["active"], exp: "Topic 12.3.7 Active is a mode used to configure an access point so that clients must know the SSID to connect.", multi: false },
+        { id: 20, q: "To provide data rates up to 1.3 Gb/s and still be backward compatible with older devices, which wireless standard should be implemented?", options: ["802.11n", "802.11ac", "802.11g", "802.11b"], answer: ["802.11ac"], exp: "Topic 12.1.4 802.11ac provides data rates up to 1.3 Gb/s and is still backward compatible.", multi: false },
+        { id: 21, q: "What is the first security measure the technician should apply immediately upon powering up the wireless router?", options: ["Enable MAC address filtering on the wireless router.", "Configure encryption on the wireless router and the connected wireless devices.", "Change the default user-name and password of the wireless router.", "Disable the wireless network SSID broadcast."], answer: ["Change the default user-name and password of the wireless router."], exp: "Topic 13.1.3 The first action a technician should do to secure a new wireless network is to change the default user-name and password.", multi: false },
+        { id: 22, q: "On a Cisco 3504 WLC dashboard, which option provides access to the full menu of features?", options: ["Access Points", "Network Summary", "Advanced", "Rogues"], answer: ["Advanced"], exp: "Topic 13.2.5 By clicking the Advanced button, the user will access the advanced Summary page and access all features.", multi: false },
+        { id: 23, q: "Which step is required before creating a new WLAN on a Cisco 3500 series WLC?", options: ["Create a new SSID.", "Build or have an SNMP server available.", "Build or have a RADIUS server available.", "Create a new VLAN interface."], answer: ["Create a new VLAN interface."], exp: "Topic 13.3.7 Each new WLAN configured on a Cisco 3500 series WLC needs its own VLAN interface.", multi: false },
+        { id: 24, q: "Why might configuring a 5 GHz frequency band SSID improve the wireless network performance for streaming media services?", options: ["Requiring the users to switch to the 5 GHz band for streaming media is inconvenient and will result in fewer users accessing these services.", "The 5 GHz band has more channels and is less crowded than the 2.4 GHz band, which makes it more suited to streaming multimedia.", "The 5 GHz band has a greater range and is therefore likely to be interference-free.", "The only users that can switch to the 5 GHz band will be those with the latest wireless NICs, which will reduce usage."], answer: ["The 5 GHz band has more channels and is less crowded than the 2.4 GHz band, which makes it more suited to streaming multimedia."], exp: "Topic 13.4.3 It is the greater number of channels that will improve network performance.", multi: false },
+        { id: 25, q: "What is the purpose for the shared secret password in a RADIUS server connection?", options: ["It is used by the RADIUS server to authenticate WLAN users.", "It is used to authenticate and encrypt user data on the WLAN.", "It is used to encrypt the messages between the WLC and the RADIUS server.", "It allows users to authenticate and access the WLAN."], answer: ["It is used to encrypt the messages between the WLC and the RADIUS server."], exp: "Topic 13.3.4 A shared secret is the password used between the WLC and the RADIUS server.", multi: false },
+        { id: 26, q: "Which three parameters would need to be changed if best practices are being implemented for a home wireless AP? (Choose three.)", options: ["wireless client operating system password", "antenna frequency", "wireless network password", "wireless beacon time", "AP password", "SSID"], answer: ["wireless network password", "AP password", "SSID"], exp: "Topic 13.1.5 As soon as an AP is taken out of a box, the default device password, SSID, and security parameters should be set.", multi: true },
+        { id: 27, q: "Which access control component, implementation, or protocol is based upon usernames and passwords?", options: ["802.1X", "accounting", "authentication", "authorization"], answer: ["authentication"], exp: "Topic 10.2.3", multi: false },
+        { id: 28, q: "Which type of wireless network is based on the 802.11 standard and a 2.4-GHz or 5-GHz radio frequency?", options: ["wireless metropolitan-area network", "wireless wide-area network", "wireless local-area network", "wireless personal-area network"], answer: ["wireless local-area network"], exp: "Topic 12.1.4", multi: false },
+        { id: 29, q: "Which two Cisco solutions help prevent DHCP starvation attacks? (Choose two.)", options: ["DHCP Snooping", "IP Source Guard", "Dynamic ARP Inspection", "Port Security", "Web Security Appliance"], answer: ["DHCP Snooping", "Port Security"], exp: "Topic 10.3.3 Port Security prevents many types of attacks including MAC table overflow attacks and DHCP starvation attacks.", multi: true },
+        { id: 30, q: "What are three techniques for mitigating VLAN attacks? (Choose three.)", options: ["Enable trunking manually.", "Disable DTP.", "Enable Source Guard.", "Set the native VLAN to an unused VLAN.", "Use private VLANs.", "Enable BPDU guard."], answer: ["Enable trunking manually.", "Disable DTP.", "Set the native VLAN to an unused VLAN."], exp: "Topic 11.2.2 Mitigating a VLAN attack can be done by disabling DTP, manually setting ports to trunking mode, and by setting the native VLAN to an unused VLAN.", multi: true },
+        { id: 32, q: "Which server would verify wireless users' username and password credentials against a database?", options: ["AAA", "NAT", "RADIUS", "SNMP"], answer: ["RADIUS"], exp: "Topic 13.3.2 RADIUS is a protocol and server software that provides user-based authentication.", multi: false },
+        { id: 33, q: "What can the technician do to address the slow wireless speed on a WLAN consisting of 802.11b and 802.11g devices after deploying a new router?", options: ["Split the wireless traffic between the 802.11n 2.4 GHz band and the 5 GHz band.", "Update the firmware on the new router.", "Configure devices to use a different channel.", "Change the SSID."], answer: ["Split the wireless traffic between the 802.11n 2.4 GHz band and the 5 GHz band."], exp: "Topic 13.4.3 This will allow for the 802.11n to use the two bands as two separate wireless networks to help manage traffic.", multi: false },
+        { id: 34, q: "What wireless security risk is a company trying to avoid by requiring employees to use cafeteria microwaves instead of office ones?", options: ["improperly configured devices", "rogue access points", "accidental interference", "interception of data"], answer: ["accidental interference"], exp: "Topic 12.6.3 Accidental interference from devices such as microwave ovens and cordless phones can impact performance.", multi: false },
+        { id: 35, q: "What is the function provided by CAPWAP protocol in a corporate wireless network?", options: ["CAPWAP creates a tunnel on TCP ports in order to allow a WLC to configure an autonomous access point.", "CAPWAP provides the encapsulation and forwarding of wireless user traffic between an access point and a wireless LAN controller.", "CAPWAP provides connectivity between an access point using IPv6 addressing and a wireless client using IPv4 addressing.", "CAPWAP provides the encryption of wireless user traffic between an access point and a wireless client."], answer: ["CAPWAP provides the encapsulation and forwarding of wireless user traffic between an access point and a wireless LAN controller."], exp: "Topic 12.4.2 CAPWAP is responsible for the encapsulation and forwarding of WLAN client traffic between an AP and a WLC.", multi: false },
+        { id: 38, q: "What are two protocols that are used by AAA to authenticate users against a central database of usernames and password? (Choose two.)", options: ["SSH", "HTTPS", "TACACS+", "RADIUS", "CHAP", "NTP"], answer: ["TACACS+", "RADIUS"], exp: "Topic 10.2.3 By using TACACS+ or RADIUS, AAA can authenticate users from a database stored centrally.", multi: true },
+        { id: 39, q: "What is the result of a DHCP starvation attack?", options: ["The attacker provides incorrect DNS and default gateway information to clients.", "The IP addresses assigned to legitimate clients are hijacked.", "Clients receive IP address assignments from a rogue DHCP server.", "Legitimate clients are unable to lease IP addresses."], answer: ["Legitimate clients are unable to lease IP addresses."], exp: "Topic 10.5.5 The attacker sends many DHCPDISCOVER messages to lease the entire pool, thus denying them to legitimate hosts.", multi: false },
+        { id: 40, q: "Which feature or configuration on a switch makes it vulnerable to VLAN double-tagging attacks?", options: ["the limited size of content-addressable memory space", "the automatic trunking port feature enabled for all ports by default", "the native VLAN of the trunking port being the same as a user VLAN", "mixed duplex mode enabled for all ports by default"], answer: ["the native VLAN of the trunking port being the same as a user VLAN."], exp: "Topic 10.5.3 This type of attack works only when the attacker is connected to a port residing in the same VLAN as the native VLAN of the trunk port.", multi: false },
+        { id: 41, q: "Which component of AAA allows an administrator to track individuals who access network resources and any changes that are made?", options: ["authentication", "accounting", "accessibility", "authorization"], answer: ["accounting"], exp: "Topic 10.2.5 AAA servers keep a detailed log of exactly what actions the authenticated user takes on the device.", multi: false },
+        { id: 43, q: "What is the default violation mode in use until the switch port is configured to use a different violation mode?", options: ["shutdown", "disabled", "restrict", "protect"], answer: ["shutdown"], exp: "Topic 11.1.6 If no violation mode is specified, then the security violation mode defaults to shutdown.", multi: false },
+        { id: 44, q: "A laptop cannot connect to a wireless access point. Which two troubleshooting steps should be taken first? (Choose two.)", options: ["Ensure that the correct network media is selected.", "Ensure that the laptop antenna is attached.", "Ensure that the wireless NIC is enabled.", "Ensure that the wireless SSID is chosen.", "Ensure that the NIC is configured for the proper frequency."], answer: ["Ensure that the wireless NIC is enabled.", "Ensure that the wireless SSID is chosen."], exp: "Topic 13.4.2", multi: true },
+        { id: 45, q: "What is an advantage of SSID cloaking?", options: ["Clients will have to manually identify the SSID to connect to the network.", "It is the best way to secure a wireless network.", "SSIDs are very difficult to discover because APs do not broadcast them.", "It provides free Internet access in public locations."], answer: ["Clients will have to manually identify the SSID to connect to the network."], exp: "Topic 12.7.2 Although clients have to manually identify the SSID, the SSID can be easily discovered.", multi: false },
+        { id: 46, q: "What is a wireless security mode that requires a RADIUS server to authenticate wireless users?", options: ["personal", "shared key", "enterprise", "WEP"], answer: ["enterprise"], exp: "Topic 12.7.5 WPA and WPA2 come in two types: personal and enterprise.", multi: false },
+        { id: 47, q: "Which solution is the best method to enhance the performance of an 802.11n wireless network that users complain is too slow?", options: ["Disable DHCP on the access point and assign static addresses.", "Upgrade the firmware on the wireless access point.", "Split the traffic between the 2.4 GHz and 5 GHz frequency bands.", "Replace the wireless NICs on the computers."], answer: ["Split the traffic between the 2.4 GHz and 5 GHz frequency bands."], exp: "Topic 13.4.3 The correct option would be to split the traffic so that there are two networks using different frequencies.", multi: false },
+        { id: 48, q: "Which protocol can be used to monitor the network?", options: ["DHCP", "SNMP", "RADIUS", "AAA"], answer: ["SNMP"], exp: "Topic 13.3.2 Simple Network Management Protocol (SNMP) is used to monitor the network.", multi: false },
+        { id: 49, q: "Which service is used on a wireless router to allow employee laptops (10.0.10.0/24) to access the internet?", options: ["DHCP", "RADIUS", "DNS", "NAT"], answer: ["NAT"], exp: "Topic 13.1.7 The wireless router will use NAT to convert private IPv4 addresses to internet-routable IPv4 addresses.", multi: false },
+        { id: 50, q: "Which service prioritizes voice and video data over email and web data applications?", options: ["QoS", "DNS", "DHCP", "NAT"], answer: ["QoS"], exp: "Topic 13.1.8 By configuring QoS, certain time-sensitive traffic types are prioritized.", multi: false },
+        { id: 51, q: "Which access control component, implementation, or protocol is based on device roles of supplicant, authenticator, and authentication server?", options: ["accounting", "authentication", "authorization", "802.1X"], answer: ["802.1X"], exp: "Topic 10.2.6", multi: false },
+        { id: 52, q: "Which type of wireless network is suitable for national and global communications?", options: ["wireless metropolitan-area network", "wireless local-area network", "wireless personal-area network", "wireless wide-area network"], answer: ["wireless wide-area network"], exp: "Topic 12.1.2", multi: false },
+        { id: 53, q: "Which feature on a switch makes it vulnerable to VLAN hopping attacks?", options: ["the mixed duplex mode enabled for all ports by default", "the limited size of content-addressable memory space", "mixed port bandwidth support enabled for all ports by default", "the automatic trunking port feature enabled for all ports by default"], answer: ["the automatic trunking port feature enabled for all ports by default"], exp: "Topic 10.5.2 The attacker takes advantage of the automatic trunking port feature enabled by default on most switch ports.", multi: false },
+        { id: 54, q: "Which component of AAA is used to determine which resources a user can access and which operations the user is allowed to perform?", options: ["accounting", "authentication", "auditing", "authorization"], answer: ["authorization"], exp: "Topic 10.2.4 Authorization services determine which resources the user can access.", multi: false },
+        { id: 56, q: "A network administrator enters 'ip dhcp snooping limit rate 6' on fa0/5-10. What is the effect?", options: ["If any port receives more than 6 DHCP messages per second, the port will be shut down.", "Ports can receive up to 6 DHCP messages per second of any type.", "If any port receives more than 6 DHCP messages per second, it continues to operate and an error is sent.", "Ports can receive up to 6 DHCP discovery messages per second."], answer: ["If any port receives more than 6 DHCP messages per second, the port will be shut down."], exp: "Topic 11.3.3 When a port receives more messages than the rate allows, the extra messages will be dropped (or the port is shut down).", multi: false },
+        { id: 57, q: "Which violation mode should be configured if packets with unknown source addresses should be dropped and no notification should be sent?", options: ["off", "restrict", "protect", "shutdown"], answer: ["protect"], exp: "Topic 11.1.6 Protect – Packets with unknown source addresses are dropped... There is no notification that a security violation has occurred.", multi: false },
+        { id: 58, q: "What is a simple way to achieve a split-the-traffic result on a dual-band wireless router?", options: ["Add a Wi-Fi range extender.", "Check and keep the firmware updated.", "Make sure that different SSIDs are used for the 2.4 GHz and 5 GHz bands.", "Require all wireless devices to use the 802.11n standard."], answer: ["Make sure that different SSIDs are used for the 2.4 GHz and 5 GHz bands."], exp: "Topic 13.4.3 The simplest way to segment traffic is to rename one of the wireless networks.", multi: false },
+        { id: 59, q: "Which access control component, implementation, or protocol controls what users can do on the network?", options: ["accounting", "802.1X", "authorization", "authentication"], answer: ["authorization"], exp: "Topic 10.2.4", multi: false },
+        { id: 60, q: "Which type of wireless network is suitable for providing wireless access to a city or district?", options: ["wireless wide-area network", "wireless personal-area network", "wireless local-area network", "wireless metropolitan-area network"], answer: ["wireless metropolitan-area network"], exp: "Topic 12.1.2", multi: false },
+        { id: 61, q: "On a Cisco 3504 WLC Summary page, which tab allows a network administrator to configure a WLAN for a specific security option such as WPA2?", options: ["MANAGEMENT", "WIRELESS", "WLANs", "SECURITY"], answer: ["WLANs"], exp: "Topic 13.2.6 The WLANs tab allows a user to access the configuration of WLANs including security.", multi: false },
+        { id: 62, q: "What type of wireless antenna is best suited for providing coverage in large open spaces, such as hallways?", options: ["Yagi", "omnidirectional", "dish", "directional"], answer: ["omnidirectional"], exp: "Topic 12.2.6 Omnidirectional antennas send the radio signals in a 360 degree pattern.", multi: false },
+        { id: 64, q: "What security benefit is gained from enabling BPDU guard on PortFast enabled interfaces?", options: ["preventing buffer overflow attacks", "preventing rogue switches from being added to the network", "protecting against Layer 2 loops", "enforcing the placement of root bridges"], answer: ["preventing rogue switches from being added to the network"], exp: "Topic 11.5.1 BPDU guard immediately error-disables a port that receives a BPDU, preventing rogue switches.", multi: false },
+        { id: 65, q: "Which access control component, implementation, or protocol logs EXEC and configuration commands configured by a user?", options: ["authentication", "authorization", "802.1X", "accounting"], answer: ["accounting"], exp: "Topic 10.2.5", multi: false },
+        { id: 66, q: "Which type of wireless network uses transmitters to provide coverage over an extensive geographic area?", options: ["wireless metropolitan-area network", "wireless local-area network", "wireless personal-area network", "wireless wide-area network"], answer: ["wireless wide-area network"], exp: "Topic 12.1.2", multi: false },
+        { id: 67, q: "Which access control component, implementation, or protocol controls who is permitted to access a network?", options: ["authorization", "802.1X", "accounting", "authentication"], answer: ["authentication"], exp: "Topic 10.2.2", multi: false },
+        { id: 68, q: "What two IEEE 802.11 wireless standards operate only in the 5 GHz range? (Choose two.)", options: ["802.11g", "802.11ad", "802.11ac", "802.11a", "802.11n", "802.11b"], answer: ["802.11ac", "802.11a"], exp: "Topic 12.1.4 The 802.11a and 802.11ac standards operate only in the 5 GHZ range.", multi: true },
+        { id: 69, q: "Which type of wireless network uses low powered transmitters for a short-range network, usually 20 to 30 ft?", options: ["wireless metropolitan-area network", "wireless personal-area network", "wireless local-area network", "wireless wide-area network"], answer: ["wireless personal-area network"], exp: "Topic 12.1.2", multi: false },
+        { id: 70, q: "Which wireless network topology would be used to provide a network for an entire college building?", options: ["ad hoc", "hotspot", "infrastructure", "mixed mode"], answer: ["infrastructure"], exp: "Topic 12.3.2 Infrastructure mode uses access points.", multi: false },
+        { id: 71, q: "Which type of wireless network uses transmitters to provide wireless service over a large urban region?", options: ["wireless wide-area network", "wireless personal-area network", "wireless metropolitan-area network", "wireless local-area network."], answer: ["wireless metropolitan-area network"], exp: "Topic 12.1.2", multi: false },
+        { id: 72, q: "Which type of wireless network is suitable for use in a home or office?", options: ["wireless wide-area network", "wireless personal-area network", "wireless local-area network", "wireless metropolitan-area network"], answer: ["wireless local-area network"], exp: "Topic 12.1.1", multi: false },
+        { id: 73, q: "Which access control component indicates success or failure of a client-requested service with a PASS or FAIL message?", options: ["accounting", "authentication", "802.1X", "authorization"], answer: ["authentication"], exp: "Topic 10.2.4", multi: false },
+        { id: 74, q: "Which type of wireless network often makes use of devices mounted on buildings?", options: ["wireless local-area network", "wireless metropolitan-area network", "wireless personal-area network", "wireless wide-area network"], answer: ["wireless metropolitan-area network"], exp: "Topic 12.1.2", multi: false },
+        { id: 75, q: "A network administrator is configuring DAI with 'ip arp inspection validate src-mac'. What is the purpose?", options: ["It checks the source MAC address in the Ethernet header against the user-configured ARP ACLs.", "It checks the source MAC address in the Ethernet header against the MAC address table.", "It checks the source MAC address in the Ethernet header against the sender MAC address in the ARP body.", "It checks the source MAC address in the Ethernet header against the target MAC address in the ARP body."], answer: ["It checks the source MAC address in the Ethernet header against the sender MAC address in the ARP body."], exp: "Topic 11.4.3 Source MAC – Checks the source MAC address in the Ethernet header against the sender MAC address in the ARP body.", multi: false },
+        { id: 76, q: "Which access control component, implementation, or protocol collects and reports usage data?", options: ["accounting", "authentication", "authorization", "802.1X"], answer: ["accounting"], exp: "Topic 10.2.5", multi: false },
+        { id: 77, q: "Which type of wireless network uses transmitters to cover a medium-sized network, usually up to 300 feet?", options: ["wireless personal-area network", "wireless metropolitan-area network", "wireless wide-area network", "wireless local-area network"], answer: ["wireless local-area network"], exp: "Topic 12.1.2", multi: false },
+        { id: 78, q: "Which AAA component audits what users actions are performed on the network?", options: ["Accounting", "Authorization", "Authentication", "802.1X"], answer: ["Accounting"], exp: "Topic 10.2.5 Accounting measures the resources a user consumes during access.", multi: false },
+        { id: 79, q: "Which type of wireless network commonly uses Bluetooth or ZigBee devices?", options: ["wireless wide-area network", "wireless personal-area network", "wireless local-area network", "wireless metropolitan-area network"], answer: ["wireless personal-area network"], exp: "Topic 12.1.2", multi: false },
+        { id: 80, q: "Which access control component is implemented either locally or as a server-based solution?", options: ["authorization", "802.1X", "accounting", "authentication"], answer: ["authentication"], exp: "Topic 10.2.3", multi: false },
+        { id: 81, q: "Which two parameters would have to be configured for a split-the-traffic approach? (Choose two.)", options: ["Configure the 5 GHz band for streaming multimedia and time sensitive traffic.", "Configure the security mode to WPA Personal TKIP/AES for one network and WPA2 Personal AES for the other network", "Configure the 2.4 GHz band for basic internet traffic that is not time sensitive.", "Configure the security mode to WPA Personal TKIP/AES for both networks.", "Configure a common SSID for both split networks."], answer: ["Configure the 5 GHz band for streaming multimedia and time sensitive traffic.", "Configure the 2.4 GHz band for basic internet traffic that is not time sensitive."], exp: "Topic 13.4.3", multi: true },
+        { id: 82, q: "Which access control component, implementation, or protocol restricts LAN access through publicly accessible switch ports?", options: ["802.1X", "authorization", "accounting", "authentication"], answer: ["802.1X"], exp: "Topic 10.2.6", multi: false }
+    ];
+
+    let state = {
+        pool: [],
+        currentIndex: 0,
+        score: 0,
+        bookmarks: new Set(),
+        wrongList: [],
+        itemsPerPhase: 20,
+        isAnswered: false,
+        tempSelected: []
+    };
+
+    function shuffle(arr) {
+        let array = [...arr];
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function initQuiz() {
+        state.pool = shuffle(questionsData).map(q => ({
+            ...q,
+            options: shuffle(q.options)
+        }));
+        state.currentIndex = 0;
+        state.score = 0;
+        state.bookmarks.clear();
+        state.wrongList = [];
+        state.isAnswered = false;
+        state.tempSelected = [];
+        render();
+    }
+
+    function render() {
+        const view = document.getElementById('quiz-view');
+        if (state.currentIndex >= state.pool.length) {
+            renderFinal();
+            return;
+        }
+
+        const q = state.pool[state.currentIndex];
+        const progress = (state.currentIndex / state.pool.length) * 100;
+
+        view.innerHTML = `
+            <div class="header-status">
+                <span>STAGE ${Math.floor(state.currentIndex / state.itemsPerPhase) + 1}</span>
+                <span>${state.currentIndex + 1} / ${state.pool.length}</span>
+            </div>
+            <div class="progress"><div class="progress-bar" style="width: ${progress}%"></div></div>
+            
+            <div class="card">
+                <div class="q-header">
+                    <div class="q-text-wrapper">
+                        <span class="q-id-badge">ID: ${q.id}</span>
+                        <div class="q-text">${q.q} ${q.multi ? '(Multiple Choice)' : ''}</div>
+                    </div>
+                    <button class="bookmark-btn ${state.bookmarks.has(q.id) ? 'active' : ''}" onclick="toggleBookmark(${q.id})">
+                        ${state.bookmarks.has(q.id) ? '★ MARKED' : '☆ MARK'}
+                    </button>
+                </div>
+                <div class="options">
+                    ${q.options.map((opt, i) => `
+                        <div class="option" onclick="handleSelect('${opt.replace(/'/g, "\\'")}', this)">
+                            <input type="${q.multi ? 'checkbox' : 'radio'}" name="ans" value="${opt}" id="o${i}" ${state.tempSelected.includes(opt) ? 'checked' : ''}>
+                            <label for="o${i}">${opt}</label>
+                        </div>
+                    `).join('')}
+                </div>
+                <div id="feedback" class="feedback"></div>
+            </div>
+            
+            <div class="controls" id="btn-bar">
+                ${q.multi ? '<button class="btn-primary" onclick="submitMulti()">SUBMIT ANSWER</button>' : ''}
+            </div>
+        `;
+    }
+
+    window.toggleBookmark = function(id) {
+        if (state.bookmarks.has(id)) state.bookmarks.delete(id);
+        else state.bookmarks.add(id);
+        const btn = document.querySelector('.bookmark-btn');
+        if (btn) {
+            btn.classList.toggle('active');
+            btn.innerHTML = state.bookmarks.has(id) ? '★ MARKED' : '☆ MARK';
+        }
+    };
+
+    window.handleSelect = function(val, el) {
+        if (state.isAnswered) return;
+        const q = state.pool[state.currentIndex];
+
+        if (!q.multi) {
+            state.tempSelected = [val];
+            evaluate();
+        } else {
+            const idx = state.tempSelected.indexOf(val);
+            if (idx > -1) state.tempSelected.splice(idx, 1);
+            else state.tempSelected.push(val);
+            
+            document.querySelectorAll('.option').forEach(o => {
+                const checked = state.tempSelected.includes(o.querySelector('input').value);
+                o.querySelector('input').checked = checked;
+                if(checked) o.classList.add('selected'); else o.classList.remove('selected');
+            });
+        }
+    };
+
+    window.submitMulti = function() {
+        if (state.tempSelected.length === 0) return;
+        evaluate();
+    };
+
+    function evaluate() {
+        state.isAnswered = true;
+        const q = state.pool[state.currentIndex];
+        const feedback = document.getElementById('feedback');
+        const correct = state.tempSelected.length === q.answer.length && state.tempSelected.every(v => q.answer.includes(v));
+
+        if (correct) {
+            state.score++;
+            feedback.className = 'feedback correct';
+            feedback.innerHTML = `<strong>CORRECT!</strong>`;
+        } else {
+            state.wrongList.push(q);
+            feedback.className = 'feedback wrong';
+            feedback.innerHTML = `<strong>INCORRECT</strong><br>Correct Answer: ${q.answer.join(', ')}`;
+        }
+
+        feedback.innerHTML += `<div class="explanation">${q.exp}</div>`;
+        feedback.style.display = 'block';
+
+        document.querySelectorAll('.option').forEach(el => {
+            const val = el.querySelector('input').value;
+            if (q.answer.includes(val)) el.classList.add('correct');
+            else if (state.tempSelected.includes(val)) el.classList.add('wrong');
+        });
+
+        const bar = document.getElementById('btn-bar');
+        if (bar) bar.innerHTML = `<button class="btn-primary" onclick="nextQuestion()">NEXT QUESTION</button>`;
+    }
+
+    window.nextQuestion = function() {
+        state.currentIndex++;
+        state.isAnswered = false;
+        state.tempSelected = [];
+
+        if (state.currentIndex > 0 && state.currentIndex % state.itemsPerPhase === 0 && state.currentIndex < state.pool.length) {
+            renderBreak();
+        } else {
+            render();
+        }
+    };
+
+    function renderBreak() {
+        const view = document.getElementById('quiz-view');
+        view.innerHTML = `
+            <div class="card result-panel">
+                <div class="big-title" style="font-size: 1.8rem;">STAGE COMPLETED</div>
+                <p style="font-size: 1.1rem; color: #5a5c69; margin-bottom: 25px; text-align: center;">You've finished ${state.currentIndex} questions.</p>
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <button class="btn-primary" onclick="render()">CONTINUE QUIZ</button>
+                </div>
+                <div class="switch-tabs">
+                    <div class="tab active" onclick="switchReview('wrong', this)">❌ WRONG <span class="badge">${state.wrongList.length}</span></div>
+                    <div class="tab" onclick="switchReview('book', this)">★ MARKED <span class="badge badge-warn">${state.bookmarks.size}</span></div>
+                </div>
+                <div id="review-content" class="review-list"></div>
+            </div>
+        `;
+        switchReview('wrong');
+    }
+
+    window.switchReview = function(type, el) {
+        if (el) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+        }
+        const list = document.getElementById('review-content');
+        const items = type === 'wrong' ? state.wrongList : state.pool.filter(p => state.bookmarks.has(p.id));
+        list.innerHTML = items.map(it => `
+            <div class="review-item" style="border-left-color: ${type==='wrong' ? 'var(--danger)' : 'var(--warning)'}">
+                <span class="q-id-badge">ID: ${it.id}</span>
+                <strong>${it.q}</strong><br>
+                <span style="color:var(--success); font-weight:700;">Answer: ${it.answer.join(', ')}</span>
+                <div style="font-size:0.85rem; margin-top:5px; color:#777;">${it.exp}</div>
+            </div>
+        `).join('') || '<p style="text-align:center; padding:20px;">Category is empty.</p>';
+    };
+
+    function renderFinal() {
+        const view = document.getElementById('quiz-view');
+        const acc = Math.round((state.score / state.pool.length) * 100);
+        view.innerHTML = `
+            <div class="card result-panel">
+                <div class="big-title">FINAL RESULTS</div>
+                <div class="score-circle">${state.score} <span class="score-total">/ ${state.pool.length}</span></div>
+                <p style="font-size:1.5rem; font-weight:800; margin-bottom: 30px; color: #1cc88a; text-align: center;">ACCURACY: ${acc}%</p>
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <button class="btn-primary" onclick="initQuiz()">RESTART QUIZ</button>
+                </div>
+                <div class="switch-tabs">
+                    <div class="tab active" onclick="switchFinal('wrong', this)">❌ WRONG <span class="badge">${state.wrongList.length}</span></div>
+                    <div class="tab" onclick="switchFinal('book', this)">★ MARKED <span class="badge badge-warn">${state.bookmarks.size}</span></div>
+                </div>
+                <div id="final-review-list" class="review-list"></div>
+            </div>
+        `;
+        switchFinal('wrong');
+    }
+
+    window.switchFinal = function(type, el) {
+        if (el) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+        }
+        const list = document.getElementById('final-review-list');
+        const items = type === 'wrong' ? state.wrongList : state.pool.filter(p => state.bookmarks.has(p.id));
+        list.innerHTML = items.map(it => `
+            <div class="review-item" style="border-left-color: ${type==='wrong' ? 'var(--danger)' : 'var(--warning)'}">
+                <span class="q-id-badge">ID: ${it.id}</span>
+                <strong>${it.q}</strong><br>
+                <span style="color:var(--success); font-weight:700;">Correct Answer: ${it.answer.join(', ')}</span>
+                <p style="font-size:0.9rem; background:#f8f9fc; padding:15px; border-radius:8px; margin-top:10px;">${it.exp}</p>
+            </div>
+        `).join('') || '<p style="text-align:center; padding:20px;">List is empty.</p>';
+    };
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initQuiz);
+    } else {
+        initQuiz();
+    }
+</script>
+
+</body>
+</html>
