@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CCNA2 Modules 1-4 Practice Quiz</title>
+    <style>
+        :root {
+            --primary: #4e73df;
+            --secondary: #858796;
+            --success: #1cc88a;
+            --danger: #e74a3b;
+            --warning: #f6c23e;
+            --bg: #f8f9fc;
+            --white: #ffffff;
+            --card-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+
+        body {
+            font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 10px;
+            color: #5a5c69;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 850px;
+            margin: auto;
+            box-sizing: border-box;
+        }
+
+        /* Progress Area */
+        .header-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .progress {
+            height: 8px;
+            background: #eaecf4;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.4s ease;
+        }
+
+        /* Card System */
+        .card {
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Question Layout */
+        .q-header {
+            display: flex;
+            flex-direction: column; 
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .q-text-wrapper {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .q-text {
+            font-size: 1.1rem;
+            font-weight: 700;
+            line-height: 1.5;
+            color: #3a3b45;
+            flex: 1;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        .q-id-badge {
+            background: #f0f2f7;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: var(--primary);
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .bookmark-btn {
+            background: var(--white);
+            border: 1.5px solid #d1d3e2;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--secondary);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            width: fit-content;
+            align-self: flex-start;
+        }
+
+        .bookmark-btn.active {
+            background: #fffbe6;
+            border-color: var(--warning);
+            color: #856404;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* Options */
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            padding: 15px;
+            border: 2px solid #eaecf4;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            font-size: 0.95rem;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        .option:hover { border-color: var(--primary); background-color: #f8f9fc; }
+        .option.selected { border-color: var(--primary); background-color: #f0f4ff; }
+        .option.correct { border-color: var(--success) !important; background-color: #d1fae5 !important; color: #065f46; font-weight: 700; }
+        .option.wrong { border-color: var(--danger) !important; background-color: #fee2e2 !important; color: #991b1b; }
+
+        input[type="radio"], input[type="checkbox"] { 
+            margin-right: 12px; 
+            transform: scale(1.1); 
+            flex-shrink: 0;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+            border-left: 5px solid;
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .feedback.correct { background: #f0fdf4; color: #166534; border-left-color: var(--success); }
+        .feedback.wrong { background: #fef2f2; color: #991b1b; border-left-color: var(--danger); }
+
+        .explanation {
+            font-size: 0.9rem;
+            margin-top: 12px;
+            color: #4b5563;
+            line-height: 1.6;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(0,0,0,0.1);
+        }
+
+        .controls { text-align: center; margin-top: 25px; }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 40px;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(78, 115, 223, 0.25);
+            transition: all 0.2s;
+            text-transform: uppercase;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .btn-primary:active { transform: scale(0.98); opacity: 0.9; }
+
+        /* Titles */
+        .big-title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            margin-bottom: 15px;
+            text-align: center;
+            line-height: 1.2;
+        }
+        
+        .score-circle { font-size: 5.5rem; font-weight: 900; color: var(--primary); line-height: 1; margin: 15px 0; text-align: center; }
+        .score-total { font-size: 1.8rem; color: var(--secondary); opacity: 0.7; }
+
+        /* Switch Tabs */
+        .switch-tabs {
+            display: flex;
+            background: #eaecf4;
+            border-radius: 15px;
+            padding: 5px;
+            margin: 25px auto;
+            width: 100%;
+            max-width: 550px;
+            box-sizing: border-box;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px 5px;
+            cursor: pointer;
+            border-radius: 10px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            color: #858796;
+            font-size: 0.85rem;
+        }
+
+        .tab.active { background: white; color: var(--primary); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .badge { background: var(--danger); color: white; border-radius: 20px; padding: 2px 8px; font-size: 0.7rem; }
+        .badge-warn { background: var(--warning); color: #000; }
+
+        .review-list { text-align: left; margin-top: 20px; }
+        .review-item {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border-left: 6px solid #d1d3e2;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+
+        @media (min-width: 600px) {
+            body { padding: 30px 20px; }
+            .card { padding: 30px; }
+            .q-header { flex-direction: row; align-items: center; }
+            .q-text { font-size: 1.25rem; }
+            .big-title { font-size: 2.8rem; }
+            .tab { font-size: 0.95rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="quiz-view">
+    <div style="text-align: center; padding: 100px; font-weight: bold; color: var(--primary);">INITIALIZING CCNA QUIZ ENGINE...</div>
+</div>
+
+<script>
+const questionsData = [
+        { id: 1, q: "What additional information is contained in the 12-bit extended system ID of a BPDU?", options: ["MAC address", "VLAN ID", "IP address", "port ID"], answer: ["VLAN ID"], exp: "Topic 5.2.1", multi: false },
+        { id: 2, q: "During the implementation of Spanning Tree Protocol, all switches are rebooted by the network administrator. What is the first step of the spanning-tree election process?", options: ["Each switch with a lower root ID than its neighbor will not send BPDUs.", "All the switches send out BPDUs advertising themselves as the root bridge.", "Each switch determines the best path to forward traffic.", "Each switch determines what port to block to prevent a loop from occurring."], answer: ["All the switches send out BPDUs advertising themselves as the root bridge."], exp: "Topic 5.2.2", multi: false },
+        { id: 3, q: "Which STP port role is adopted by a switch port if there is no other port with a lower cost to the root bridge?", options: ["designated port", "root port", "alternate", "disabled port"], answer: ["root port"], exp: "The root port is the port with the lowest cost to reach the root bridge.", multi: false },
+        { id: 4, q: "Which two concepts relate to a switch port that is intended to have only end devices attached and intended never to be used to connect to another switch? (Choose two.)", options: ["bridge ID", "edge port", "extended system ID", "PortFast", "PVST+"], answer: ["edge port", "PortFast"], exp: "Topic 5.3.4", multi: true },
+        { id: 5, q: "Which three components are combined to form a bridge ID?", options: ["extended system ID", "cost", "IP address", "bridge priority", "MAC address", "port ID"], answer: ["extended system ID", "bridge priority", "MAC address"], exp: "The three components that are combined to form a bridge ID are bridge priority, extended system ID, and MAC address.", multi: true },
+        { id: 7, q: "In which two port states does a switch learn MAC addresses and process BPDUs in a PVST network? (Choose two.)", options: ["disabled", "forwarding", "listening", "blocking", "learning"], answer: ["forwarding", "learning"], exp: "Switches learn MAC addresses at the learning and forwarding port states. They receive and process BPDUs at the blocking, listening, learning, and forwarding port states.", multi: true },
+        { id: 8, q: "If no bridge priority is configured in PVST, which criteria is considered when electing the root bridge?", options: ["lowest MAC address", "lowest IP address", "highest IP address", "highest MAC address"], answer: ["lowest MAC address"], exp: "The root bridge is the switch with the lowest BID. If no priority is configured then all switches use the default priority and the election will be based on the lowest MAC address.", multi: false },
+        { id: 10, q: "When the show spanning-tree vlan 33 command is issued on a switch, three ports are shown in the forwarding state. In which two port roles could these interfaces function while in the forwarding state? (Choose two.)", options: ["alternate", "designated", "disabled", "blocked", "root"], answer: ["designated", "root"], exp: "The role of each of the three ports will be either designated port or root port. Ports in the blocking state are alternate ports.", multi: true },
+        { id: 11, q: "What is the function of STP in a scalable network?", options: ["It decreases the size of the failure domain to contain the impact of failures.", "It protects the edge of the enterprise network from malicious activity.", "It combines multiple switch trunk links to act as one logical link for increased bandwidth.", "It disables redundant paths to eliminate Layer 2 loops."], answer: ["It disables redundant paths to eliminate Layer 2 loops."], exp: "STP prevents Layer 2 loops from forming by disabling interfaces on Layer 2 devices when they would create a loop.", multi: false },
+        { id: 12, q: "What is a characteristic of spanning tree?", options: ["It is enabled by default on Cisco switches.", "It is used to discover information about an adjacent Cisco device.", "It has a TTL mechanism that works at Layer 2.", "It prevents propagation of Layer 2 broadcast frames."], answer: ["It is enabled by default on Cisco switches."], exp: "Spanning tree works at Layer 2 and is enabled by default, but it does not have a TTL mechanism.", multi: false },
+        { id: 13, q: "Which spanning tree standard supports only one root bridge so that traffic from all VLANs flows over the same path?", options: ["PVST+", "802.1D", "MST", "Rapid PVST"], answer: ["802.1D"], exp: "802.1D is the original STP standard defined by the IEEE and allows for only one root bridge for all VLANs.", multi: false },
+        { id: 14, q: "What is the purpose of the Spanning Tree Protocol (STP)?", options: ["creates smaller collision domains", "prevents routing loops on a router", "prevents Layer 2 loops", "allows Cisco devices to exchange routing table updates", "creates smaller broadcast domains"], answer: ["prevents Layer 2 loops"], exp: "The Spanning-Tree Protocol (STP) creates one path through a switch network in order to prevent Layer 2 loops.", multi: false },
+        { id: 15, q: "What is the value used to determine which port on a non-root bridge will become a root port in a STP network?", options: ["the path cost", "the highest MAC address of all the ports in the switch", "the lowest MAC address of all the ports in the switch", "the VTP revision number"], answer: ["the path cost"], exp: "The root port is the lowest-cost path from the non-root bridge to the root bridge.", multi: false },
+        { id: 17, q: "What are two drawbacks to turning spanning tree off and having multiple paths through the Layer 2 switch network? (Choose two.)", options: ["The MAC address table becomes unstable.", "The switch acts like a hub.", "Port security becomes unstable.", "Broadcast frames are transmitted indefinitely.", "Port security shuts down all of the ports that have attached devices."], answer: ["The MAC address table becomes unstable.", "Broadcast frames are transmitted indefinitely."], exp: "Without STP, the MAC address table becomes unstable and broadcast storms can occur.", multi: true },
+        { id: 18, q: "A small company network has six interconnected Layer 2 switches. Currently all switches are using the default bridge priority value. Which value can be used to configure the bridge priority of one of the switches to ensure that it becomes the root bridge in this design?", options: ["1", "28672", "32768", "34816", "61440"], answer: ["28672"], exp: "The default is 32768. The range is 0 to 61440 in increments of 4096. 28672 is a valid lower increment.", multi: false },
+        { id: 20, q: "Which statement is true regarding the use of PAgP to create EtherChannels?", options: ["It requires full duplex.", "It increases the number of ports that are participating in spanning tree.", "It requires more physical links than LACP does.", "It mandates that an even number of ports (2, 4, 6, etc.) be used for aggregation.", "It is Cisco proprietary."], answer: ["It is Cisco proprietary."], exp: "PAgP is a Cisco proprietary protocol used to automatically aggregate multiple ports into an EtherChannel bundle.", multi: false },
+        { id: 21, q: "What are two requirements to be able to configure an EtherChannel between two switches? (Choose two.)", options: ["All the interfaces need to work at the same speed.", "All interfaces need to be assigned to different VLANs.", "Different allowed ranges of VLANs must exist on each end.", "All the interfaces need to be working in the same duplex mode.", "The interfaces that are involved need to be contiguous on the switch."], answer: ["All the interfaces need to work at the same speed.", "All the interfaces need to be working in the same duplex mode."], exp: "All interfaces in the EtherChannel bundle must match in terms of speed, duplex, and VLAN information.", multi: true },
+        { id: 23, q: "Which two parameters must match on the ports of two switches to create a PAgP EtherChannel between the switches? (Choose two.)", options: ["port ID", "PAgP mode", "MAC address", "speed", "VLAN information"], answer: ["speed", "VLAN information"], exp: "For an EtherChannel to be created, ports must match in terms of speed, duplex, and VLAN information.", multi: true },
+        { id: 26, q: "A network administrator configured an EtherChannel link with three interfaces between two switches. What is the result if one of the three interfaces is down?", options: ["The remaining two interfaces continue to load balance traffic.", "The remaining two interfaces become separate links between the two switches.", "One interface becomes an active link for data traffic and the other becomes a backup link.", "The EtherChannel fails."], answer: ["The remaining two interfaces continue to load balance traffic."], exp: "The loss of one physical link within the channel does not create a change in the topology; the EtherChannel remains functional.", multi: false },
+        { id: 27, q: "A network administrator is configuring an EtherChannel link between switches SW1 and SW2 by using the command SW1(config-if-range)# channel-group 1 mode auto. Which command must be used on SW2 to enable this EtherChannel?", options: ["SW2(config-if-range)# channel-group 1 mode passive", "SW2(config-if-range)# channel-group 1 mode desirable", "SW2(config-if-range)# channel-group 1 mode on", "SW2(config-if-range)# channel-group 1 mode active"], answer: ["SW2(config-if-range)# channel-group 1 mode desirable"], exp: "If one side is 'auto', the other must be 'desirable' to form a PAgP EtherChannel.", multi: false },
+        { id: 28, q: "Which technology is an open protocol standard that allows switches to automatically bundle physical ports into a single logical link?", options: ["PAgP", "LACP", "Multilink PPP", "DTP"], answer: ["LACP"], exp: "LACP (802.3ad) is an open standard protocol, while PAgP is Cisco proprietary.", multi: false },
+        { id: 29, q: "What is a requirement to configure a trunking EtherChannel between two switches?", options: ["The allowed range of VLANs must be the same on both switches.", "The participating interfaces must be assigned the same VLAN number on both switches.", "The participating interfaces must be physically contiguous on a switch.", "The participating interfaces must be on the same module on a switch."], answer: ["The allowed range of VLANs must be the same on both switches."], exp: "To enable a trunking EtherChannel, the range of VLANs allowed on all interfaces must match.", multi: false },
+        { id: 30, q: "What are two advantages of using LACP? (Choose two.)", options: ["It allows directly connected switches to negotiate an EtherChannel link.", "It eliminates the need for configuring trunk interfaces when deploying VLANs on multiple switches.", "It decreases the amount of configuration that is needed on a switch.", "It provides a simulated environment for testing link aggregation.", "It allows the use of multivendor devices.", "LACP allows Fast Ethernet and Gigabit Ethernet interfaces to be mixed within a single EtherChannel."], answer: ["It allows directly connected switches to negotiate an EtherChannel link.", "It allows the use of multivendor devices."], exp: "LACP allows directly connected multivendor switches to negotiate an EtherChannel link.", multi: true },
+        { id: 31, q: "A switch is configured to run STP. What term describes a non-root port that is permitted to forward traffic on the network?", options: ["root port", "designated port", "alternate port", "disabled"], answer: ["designated port"], exp: "Topic 5.2.6", multi: false },
+        { id: 32, q: "What are two advantages of EtherChannel? (Choose two.)", options: ["Spanning Tree Protocol views the physical links in an EtherChannel as one logical connection.", "Load balancing occurs between links configured as different EtherChannels.", "Configuring the EtherChannel interface provides consistency in the configuration of the physical links.", "Spanning Tree Protocol ensures redundancy by transitioning failed interfaces in an EtherChannel to a forwarding state.", "EtherChannel uses upgraded physical links to provide increased bandwidth."], answer: ["Spanning Tree Protocol views the physical links in an EtherChannel as one logical connection.", "Configuring the EtherChannel interface provides consistency in the configuration of the physical links."], exp: "EtherChannel bundles physical links into one logical connection, ensuring consistency and preventing STP recalculations during link failures.", multi: true },
+        { id: 37, q: "A set of switches is being connected in a LAN topology. Which STP bridge priority value will make it least likely for the switch to be selected as the root?", options: ["65535", "4096", "32768", "61440"], answer: ["61440"], exp: "The largest usable priority value is 61440. A higher priority value makes it less likely to be elected root.", multi: false },
+        { id: 38, q: "In which two PVST+ port states are MAC addresses learned? (Choose two.)", options: ["learning", "forwarding", "disabled", "listening", "blocking"], answer: ["learning", "forwarding"], exp: "MAC addresses are learned during the learning and forwarding states.", multi: true },
+        { id: 39, q: "Which port role is assigned to the switch port that has the lowest cost to reach the root bridge?", options: ["designated port", "disabled port", "root port", "non-designated port"], answer: ["root port"], exp: "The root port on a switch is the port with the lowest cost to reach the root bridge.", multi: false },
+        { id: 40, q: "A switch is configured to run STP. What term describes the switch port closest, in terms of overall cost, to the root bridge?", options: ["root port", "designated port", "alternate port", "disabled"], answer: ["root port"], exp: "Topic 5.2.5", multi: false },
+        { id: 42, q: "A switch is configured to run STP. What term describes a field used to specify a VLAN ID?", options: ["extended system ID", "port ID", "bridge priority", "bridge ID"], answer: ["extended system ID"], exp: "Topic 5.2.1", multi: false },
+        { id: 43, q: "A switch is configured to run STP. What term describes the reference point for all path calculations?", options: ["root bridge", "root port", "designated port", "alternate port"], answer: ["root bridge"], exp: "Topic 5.2.2", multi: false },
+        { id: 44, q: "A switch is configured to run STP. What term describes a field that has a default value of 32,768 and is the initial deciding factor when electing a root bridge?", options: ["bridge priority", "MAC Address", "extended system ID", "bridge ID"], answer: ["bridge priority"], exp: "Topic 5.2.1", multi: false },
+        { id: 45, q: "Which statement describes an EtherChannel implementation?", options: ["EtherChannel operates only at Layer 2.", "PAgP cannot be used in conjunction with EtherChannel.", "A trunked port can be part of an EtherChannel bundle.", "EtherChannel can support up to a maximum of ten separate links."], answer: ["A trunked port can be part of an EtherChannel bundle."], exp: "If a trunked port is part of an EtherChannel bundle, all ports in the bundle must be trunk ports.", multi: false },
+        { id: 47, q: "Which statement describes a characteristic of EtherChannel?", options: ["It can combine up to a maximum of 4 physical links.", "It can bundle mixed types of 100 Mb/s and 1Gb/s Ethernet links.", "It consists of multiple parallel links between a switch and a router.", "It is made by combining multiple physical links that are seen as one link between two switches."], answer: ["It is made by combining multiple physical links that are seen as one link between two switches."], exp: "An EtherChannel is formed by combining multiple Ethernet physical links so they are seen as one logical link.", multi: false },
+        { id: 48, q: "Which two channel group modes would place an interface in a negotiating state using PAgP? (Choose two.)", options: ["on", "desirable", "active", "auto", "passive"], answer: ["desirable", "auto"], exp: "Only desirable and auto place the interface in a negotiating state for PAgP.", multi: true },
+        { id: 49, q: "Which mode configuration setting would allow formation of an EtherChannel link between switches SW1 and SW2 without sending negotiation traffic?", options: ["SW1: on, SW2: on", "SW1: desirable, SW2: desirable", "SW1: auto, SW2: auto, trunking enabled", "SW1: auto, SW2: auto, PortFast enabled", "SW1: passive, SW2: active"], answer: ["SW1: on, SW2: on"], exp: "The 'on' mode forces an EtherChannel without exchanging protocol packets.", multi: false },
+        { id: 51, q: "When EtherChannel is configured, which mode will force an interface into a port channel without exchanging aggregation protocol packets?", options: ["active", "auto", "on", "desirable"], answer: ["on"], exp: "The 'on' mode forces an interface into an EtherChannel without protocol packet exchange.", multi: false },
+        { id: 52, q: "What are two load-balancing methods in the EtherChannel technology? (Choose two.)", options: ["combination of source port and IP to destination port and IP", "source IP to destination IP", "source port to destination port", "combination of source MAC and IP to destination MAC and IP", "source MAC to destination MAC"], answer: ["source IP to destination IP", "source MAC to destination MAC"], exp: "Load-balancing methods include source/destination MAC and source/destination IP address.", multi: true },
+        { id: 53, q: "Which protocol provides up to 16 instances of RSTP, combines many VLANs with the same physical and logical topology into a common RSTP instance, and provides support for PortFast, BPDU guard, BPDU filter, root guard, and loop guard?", options: ["STP", "Rapid PVST+", "PVST+", "MST"], answer: ["MST"], exp: "MST is the Cisco implementation of MSTP, which provides up to 16 instances of RSTP.", multi: false },
+        { id: 54, q: "What is the outcome of a Layer 2 broadcast storm?", options: ["Routers will take over the forwarding of frames as switches become congested.", "New traffic is discarded by the switch because it is unable to be processed.", "CSMA/CD will cause each host to continue transmitting frames.", "ARP broadcast requests are returned to the transmitting host."], answer: ["New traffic is discarded by the switch because it is unable to be processed."], exp: "When a network is saturated with looping broadcast traffic, new traffic is discarded as it cannot be processed.", multi: false },
+        { id: 55, q: "Which two network design features require Spanning Tree Protocol (STP) to ensure correct network operation? (Choose two.)", options: ["static default routes", "implementing VLANs to contain broadcasts", "redundant links between Layer 2 switches", "link-state dynamic routing that provides redundant routes", "removing single points of failure with multiple Layer 2 switches"], answer: ["redundant links between Layer 2 switches", "removing single points of failure with multiple Layer 2 switches"], exp: "STP is required when designing networks with redundant links between Layer 2 switches.", multi: true },
+        { id: 56, q: "A network administrator has configured an EtherChannel between two switches that are connected via four trunk links. If the physical interface for one of the trunk links changes to a down state, what happens to the EtherChannel?", options: ["Spanning Tree Protocol will transition the failed physical interface into forwarding mode.", "Spanning Tree Protocol will recalculate the remaining trunk links.", "The EtherChannel will transition to a down state.", "The EtherChannel will remain functional."], answer: ["The EtherChannel will remain functional."], exp: "Failure of one physical link within the EtherChannel will not create a change in the topology; it remains functional.", multi: false }
+    ];
+
+    let state = {
+        pool: [],
+        currentIndex: 0,
+        score: 0,
+        bookmarks: new Set(),
+        wrongList: [],
+        itemsPerPhase: 20,
+        isAnswered: false,
+        tempSelected: []
+    };
+
+    function shuffle(arr) {
+        let array = [...arr];
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function initQuiz() {
+        state.pool = shuffle(questionsData).map(q => ({
+            ...q,
+            options: shuffle(q.options)
+        }));
+        state.currentIndex = 0;
+        state.score = 0;
+        state.bookmarks.clear();
+        state.wrongList = [];
+        state.isAnswered = false;
+        state.tempSelected = [];
+        render();
+    }
+
+    function render() {
+        const view = document.getElementById('quiz-view');
+        if (state.currentIndex >= state.pool.length) {
+            renderFinal();
+            return;
+        }
+
+        const q = state.pool[state.currentIndex];
+        const progress = (state.currentIndex / state.pool.length) * 100;
+
+        view.innerHTML = `
+            <div class="header-status">
+                <span>STAGE ${Math.floor(state.currentIndex / state.itemsPerPhase) + 1}</span>
+                <span>${state.currentIndex + 1} / ${state.pool.length}</span>
+            </div>
+            <div class="progress"><div class="progress-bar" style="width: ${progress}%"></div></div>
+            
+            <div class="card">
+                <div class="q-header">
+                    <div class="q-text-wrapper">
+                        <span class="q-id-badge">ID: ${q.id}</span>
+                        <div class="q-text">${q.q} ${q.multi ? '(Multiple Choice)' : ''}</div>
+                    </div>
+                    <button class="bookmark-btn ${state.bookmarks.has(q.id) ? 'active' : ''}" onclick="toggleBookmark(${q.id})">
+                        ${state.bookmarks.has(q.id) ? '★ MARKED' : '☆ MARK'}
+                    </button>
+                </div>
+                <div class="options">
+                    ${q.options.map((opt, i) => `
+                        <div class="option" onclick="handleSelect('${opt.replace(/'/g, "\\'")}', this)">
+                            <input type="${q.multi ? 'checkbox' : 'radio'}" name="ans" value="${opt}" id="o${i}" ${state.tempSelected.includes(opt) ? 'checked' : ''}>
+                            <label for="o${i}">${opt}</label>
+                        </div>
+                    `).join('')}
+                </div>
+                <div id="feedback" class="feedback"></div>
+            </div>
+            
+            <div class="controls" id="btn-bar">
+                ${q.multi ? '<button class="btn-primary" onclick="submitMulti()">SUBMIT ANSWER</button>' : ''}
+            </div>
+        `;
+    }
+
+    window.toggleBookmark = function(id) {
+        if (state.bookmarks.has(id)) state.bookmarks.delete(id);
+        else state.bookmarks.add(id);
+        const btn = document.querySelector('.bookmark-btn');
+        if (btn) {
+            btn.classList.toggle('active');
+            btn.innerHTML = state.bookmarks.has(id) ? '★ MARKED' : '☆ MARK';
+        }
+    };
+
+    window.handleSelect = function(val, el) {
+        if (state.isAnswered) return;
+        const q = state.pool[state.currentIndex];
+
+        if (!q.multi) {
+            state.tempSelected = [val];
+            evaluate();
+        } else {
+            const idx = state.tempSelected.indexOf(val);
+            if (idx > -1) state.tempSelected.splice(idx, 1);
+            else state.tempSelected.push(val);
+            
+            document.querySelectorAll('.option').forEach(o => {
+                const checked = state.tempSelected.includes(o.querySelector('input').value);
+                o.querySelector('input').checked = checked;
+                if(checked) o.classList.add('selected'); else o.classList.remove('selected');
+            });
+        }
+    };
+
+    window.submitMulti = function() {
+        if (state.tempSelected.length === 0) return;
+        evaluate();
+    };
+
+    function evaluate() {
+        state.isAnswered = true;
+        const q = state.pool[state.currentIndex];
+        const feedback = document.getElementById('feedback');
+        const correct = state.tempSelected.length === q.answer.length && state.tempSelected.every(v => q.answer.includes(v));
+
+        if (correct) {
+            state.score++;
+            feedback.className = 'feedback correct';
+            feedback.innerHTML = `<strong>CORRECT!</strong>`;
+        } else {
+            state.wrongList.push(q);
+            feedback.className = 'feedback wrong';
+            feedback.innerHTML = `<strong>INCORRECT</strong><br>Correct Answer: ${q.answer.join(', ')}`;
+        }
+
+        feedback.innerHTML += `<div class="explanation">${q.exp}</div>`;
+        feedback.style.display = 'block';
+
+        document.querySelectorAll('.option').forEach(el => {
+            const val = el.querySelector('input').value;
+            if (q.answer.includes(val)) el.classList.add('correct');
+            else if (state.tempSelected.includes(val)) el.classList.add('wrong');
+        });
+
+        const bar = document.getElementById('btn-bar');
+        if (bar) bar.innerHTML = `<button class="btn-primary" onclick="nextQuestion()">NEXT QUESTION</button>`;
+    }
+
+    window.nextQuestion = function() {
+        state.currentIndex++;
+        state.isAnswered = false;
+        state.tempSelected = [];
+
+        if (state.currentIndex > 0 && state.currentIndex % state.itemsPerPhase === 0 && state.currentIndex < state.pool.length) {
+            renderBreak();
+        } else {
+            render();
+        }
+    };
+
+    function renderBreak() {
+        const view = document.getElementById('quiz-view');
+        view.innerHTML = `
+            <div class="card result-panel">
+                <div class="big-title" style="font-size: 1.8rem;">STAGE COMPLETED</div>
+                <p style="font-size: 1.1rem; color: #5a5c69; margin-bottom: 25px; text-align: center;">You've finished ${state.currentIndex} questions.</p>
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <button class="btn-primary" onclick="render()">CONTINUE QUIZ</button>
+                </div>
+                <div class="switch-tabs">
+                    <div class="tab active" onclick="switchReview('wrong', this)">❌ WRONG <span class="badge">${state.wrongList.length}</span></div>
+                    <div class="tab" onclick="switchReview('book', this)">★ MARKED <span class="badge badge-warn">${state.bookmarks.size}</span></div>
+                </div>
+                <div id="review-content" class="review-list"></div>
+            </div>
+        `;
+        switchReview('wrong');
+    }
+
+    window.switchReview = function(type, el) {
+        if (el) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+        }
+        const list = document.getElementById('review-content');
+        const items = type === 'wrong' ? state.wrongList : state.pool.filter(p => state.bookmarks.has(p.id));
+        list.innerHTML = items.map(it => `
+            <div class="review-item" style="border-left-color: ${type==='wrong' ? 'var(--danger)' : 'var(--warning)'}">
+                <span class="q-id-badge">ID: ${it.id}</span>
+                <strong>${it.q}</strong><br>
+                <span style="color:var(--success); font-weight:700;">Answer: ${it.answer.join(', ')}</span>
+                <div style="font-size:0.85rem; margin-top:5px; color:#777;">${it.exp}</div>
+            </div>
+        `).join('') || '<p style="text-align:center; padding:20px;">Category is empty.</p>';
+    };
+
+    function renderFinal() {
+        const view = document.getElementById('quiz-view');
+        const acc = Math.round((state.score / state.pool.length) * 100);
+        view.innerHTML = `
+            <div class="card result-panel">
+                <div class="big-title">FINAL RESULTS</div>
+                <div class="score-circle">${state.score} <span class="score-total">/ ${state.pool.length}</span></div>
+                <p style="font-size:1.5rem; font-weight:800; margin-bottom: 30px; color: #1cc88a; text-align: center;">ACCURACY: ${acc}%</p>
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <button class="btn-primary" onclick="initQuiz()">RESTART QUIZ</button>
+                </div>
+                <div class="switch-tabs">
+                    <div class="tab active" onclick="switchFinal('wrong', this)">❌ WRONG <span class="badge">${state.wrongList.length}</span></div>
+                    <div class="tab" onclick="switchFinal('book', this)">★ MARKED <span class="badge badge-warn">${state.bookmarks.size}</span></div>
+                </div>
+                <div id="final-review-list" class="review-list"></div>
+            </div>
+        `;
+        switchFinal('wrong');
+    }
+
+    window.switchFinal = function(type, el) {
+        if (el) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+        }
+        const list = document.getElementById('final-review-list');
+        const items = type === 'wrong' ? state.wrongList : state.pool.filter(p => state.bookmarks.has(p.id));
+        list.innerHTML = items.map(it => `
+            <div class="review-item" style="border-left-color: ${type==='wrong' ? 'var(--danger)' : 'var(--warning)'}">
+                <span class="q-id-badge">ID: ${it.id}</span>
+                <strong>${it.q}</strong><br>
+                <span style="color:var(--success); font-weight:700;">Correct Answer: ${it.answer.join(', ')}</span>
+                <p style="font-size:0.9rem; background:#f8f9fc; padding:15px; border-radius:8px; margin-top:10px;">${it.exp}</p>
+            </div>
+        `).join('') || '<p style="text-align:center; padding:20px;">List is empty.</p>';
+    };
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initQuiz);
+    } else {
+        initQuiz();
+    }
+</script>
+
+</body>
+</html>
