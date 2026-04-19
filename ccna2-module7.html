@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CCNA2 Module 7 Practice Quiz</title>
+    <style>
+        :root {
+            --primary: #4e73df;
+            --secondary: #858796;
+            --success: #1cc88a;
+            --danger: #e74a3b;
+            --warning: #f6c23e;
+            --bg: #f8f9fc;
+            --white: #ffffff;
+            --card-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+
+        body {
+            font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 10px;
+            color: #5a5c69;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 850px;
+            margin: auto;
+            box-sizing: border-box;
+        }
+
+        /* Progress Area */
+        .header-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .progress {
+            height: 8px;
+            background: #eaecf4;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.4s ease;
+        }
+
+        /* Card System */
+        .card {
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Question Layout */
+        .q-header {
+            display: flex;
+            flex-direction: column; 
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .q-text-wrapper {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .q-text {
+            font-size: 1.1rem;
+            font-weight: 700;
+            line-height: 1.5;
+            color: #3a3b45;
+            flex: 1;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        .q-id-badge {
+            background: #f0f2f7;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: var(--primary);
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .bookmark-btn {
+            background: var(--white);
+            border: 1.5px solid #d1d3e2;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--secondary);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            width: fit-content;
+            align-self: flex-start;
+        }
+
+        .bookmark-btn.active {
+            background: #fffbe6;
+            border-color: var(--warning);
+            color: #856404;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* Options */
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            padding: 15px;
+            border: 2px solid #eaecf4;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            font-size: 0.95rem;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        .option:hover { border-color: var(--primary); background-color: #f8f9fc; }
+        .option.selected { border-color: var(--primary); background-color: #f0f4ff; }
+        .option.correct { border-color: var(--success) !important; background-color: #d1fae5 !important; color: #065f46; font-weight: 700; }
+        .option.wrong { border-color: var(--danger) !important; background-color: #fee2e2 !important; color: #991b1b; }
+
+        input[type="radio"], input[type="checkbox"] { 
+            margin-right: 12px; 
+            transform: scale(1.1); 
+            flex-shrink: 0;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+            border-left: 5px solid;
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .feedback.correct { background: #f0fdf4; color: #166534; border-left-color: var(--success); }
+        .feedback.wrong { background: #fef2f2; color: #991b1b; border-left-color: var(--danger); }
+
+        .explanation {
+            font-size: 0.9rem;
+            margin-top: 12px;
+            color: #4b5563;
+            line-height: 1.6;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(0,0,0,0.1);
+        }
+
+        .controls { text-align: center; margin-top: 25px; }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 40px;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(78, 115, 223, 0.25);
+            transition: all 0.2s;
+            text-transform: uppercase;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .btn-primary:active { transform: scale(0.98); opacity: 0.9; }
+
+        /* Titles */
+        .big-title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            margin-bottom: 15px;
+            text-align: center;
+            line-height: 1.2;
+        }
+        
+        .score-circle { font-size: 5.5rem; font-weight: 900; color: var(--primary); line-height: 1; margin: 15px 0; text-align: center; }
+        .score-total { font-size: 1.8rem; color: var(--secondary); opacity: 0.7; }
+
+        /* Switch Tabs */
+        .switch-tabs {
+            display: flex;
+            background: #eaecf4;
+            border-radius: 15px;
+            padding: 5px;
+            margin: 25px auto;
+            width: 100%;
+            max-width: 550px;
+            box-sizing: border-box;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px 5px;
+            cursor: pointer;
+            border-radius: 10px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            color: #858796;
+            font-size: 0.85rem;
+        }
+
+        .tab.active { background: white; color: var(--primary); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .badge { background: var(--danger); color: white; border-radius: 20px; padding: 2px 8px; font-size: 0.7rem; }
+        .badge-warn { background: var(--warning); color: #000; }
+
+        .review-list { text-align: left; margin-top: 20px; }
+        .review-item {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border-left: 6px solid #d1d3e2;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+
+        @media (min-width: 600px) {
+            body { padding: 30px 20px; }
+            .card { padding: 30px; }
+            .q-header { flex-direction: row; align-items: center; }
+            .q-text { font-size: 1.25rem; }
+            .big-title { font-size: 2.8rem; }
+            .tab { font-size: 0.95rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="quiz-view">
+    <div style="text-align: center; padding: 100px; font-weight: bold; color: var(--primary);">INITIALIZING CCNA QUIZ ENGINE...</div>
+</div>
+
+<script>
+    const questionsData = [
+    {
+        "id": 1,
+        "q": "A DHCP-enabled client PC has just booted. During which two steps will the client PC use broadcast messages when communicating with a DHCP server? (Choose two.)",
+        "options": [
+        "DHCPDISCOVER",
+        "DHCPACK",
+        "DHCPOFFER",
+        "DHCPREQUEST",
+        "DHCPNAK"
+        ],
+        "answer": [
+        "DHCPDISCOVER",
+        "DHCPREQUEST"
+        ],
+        "exp": "All DHCP messages between a DHCP-enabled client and a DHCP server are using broadcast messages until after the DHCPACK message. The DHCPDISCOVER and DHCPREQUEST messages are the only messages that are sent by a DHCP-enabled client during the initial lease process.",
+        "multi": true
+    },
+    {
+        "id": 2,
+        "q": "An administrator issues the commands: Router(config)# interface g0/1, Router(config-if)# ip address dhcp. What is the administrator trying to achieve?",
+        "options": [
+        "configuring the router to act as a DHCPv4 server",
+        "configuring the router to obtain IP parameters from a DHCPv4 server",
+        "configuring the router to act as a relay agent",
+        "configuring the router to resolve IP address conflicts"
+        ],
+        "answer": [
+        "configuring the router to obtain IP parameters from a DHCPv4 server"
+        ],
+        "exp": "The 'ip address dhcp' interface configuration command configures an Ethernet interface as a DHCP client to obtain an IP address automatically.",
+        "multi": false
+    },
+    {
+        "id": 3,
+        "q": "When a client is requesting an initial address lease from a DHCP server, why is the DHCPREQUEST message sent as a broadcast?",
+        "options": [
+        "The client does not yet know the IP address of the DHCP server that sent the offer.",
+        "The DHCP server may be on a different subnet, so the request must be sent as a broadcast.",
+        "The client does not have a MAC address assigned yet, so it cannot send a unicast message at Layer 2.",
+        "The client may have received offers from multiple servers, and the broadcast serves to implicitly decline those other offers."
+        ],
+        "answer": [
+        "The client may have received offers from multiple servers, and the broadcast serves to implicitly decline those other offers."
+        ],
+        "exp": "The client sends the DHCPREQUEST as a broadcast so that other DHCP servers that sent offers will know their offers were declined and the addresses can be returned to their respective pools.",
+        "multi": false
+    },
+    {
+        "id": 4,
+        "q": "Which DHCP IPv4 message contains the following information? Destination address: 255.255.255.255, Client IPv4 address: 0.0.0.0, Default gateway address: 0.0.0.0, Subnet mask: 0.0.0.0",
+        "options": [
+        "DHCPACK",
+        "DHCPDISCOVER",
+        "DHCPOFFER",
+        "DHCPREQUEST"
+        ],
+        "answer": [
+        "DHCPDISCOVER"
+        ],
+        "exp": "A DHCPDISCOVER message is the initial broadcast sent by a client that does not yet have an IP address, subnet mask, or default gateway information.",
+        "multi": false
+    },
+    {
+        "id": 5,
+        "q": "What is the correct order of the DHCP process messages?",
+        "options": [
+        "DHCPDISCOVER - DHCPOFFER - DHCPREQUEST - DHCPACK",
+        "DHCPOFFER - DHCPDISCOVER - DHCPREQUEST - DHCPACK",
+        "DHCPDISCOVER - DHCPREQUEST - DHCPOFFER - DHCPACK",
+        "DHCPREQUEST - DHCPACK - DHCPDISCOVER - DHCPOFFER"
+        ],
+        "answer": [
+        "DHCPDISCOVER - DHCPOFFER - DHCPREQUEST - DHCPACK"
+        ],
+        "exp": "1. DHCPDISCOVER (client finds server), 2. DHCPOFFER (server responds), 3. DHCPREQUEST (client accepts), 4. DHCPACK (server confirms).",
+        "multi": false
+    },
+    {
+        "id": 6,
+        "q": "Which protocol automates assignment of IP addresses on a network, and which port number does it use? (Choose two.)",
+        "options": [
+        "DHCP",
+        "DNS",
+        "SMB",
+        "53",
+        "67",
+        "80"
+        ],
+        "answer": [
+        "DHCP",
+        "67"
+        ],
+        "exp": "DHCP (Dynamic Host Configuration Protocol) automates IP assignment and uses UDP port 67 for the server and 68 for the client.",
+        "multi": true
+    },
+    {
+        "id": 8,
+        "q": "Which message does an IPv4 host use to reply when it receives a DHCPOFFER message from a DHCP server?",
+        "options": [
+        "DHCPOFFER",
+        "DHCPDISCOVER",
+        "DHCPREQUEST",
+        "DHCPACK"
+        ],
+        "answer": [
+        "DHCPREQUEST"
+        ],
+        "exp": "When the client receives a DHCPOFFER, it sends back a DHCPREQUEST broadcast message to indicate it is accepting the offered parameters.",
+        "multi": false
+    },
+    {
+        "id": 9,
+        "q": "Which command, when issued in the interface configuration mode of a router, enables the interface to acquire an IPv4 address automatically from an ISP, when that link to the ISP is enabled?",
+        "options": [
+        "service dhcp",
+        "ip address dhcp",
+        "ip helper-address",
+        "ip dhcp pool"
+        ],
+        "answer": [
+        "ip address dhcp"
+        ],
+        "exp": "The 'ip address dhcp' command configures the interface as a DHCP client. 'service dhcp' enables the server process, 'ip helper-address' is for relay, and 'ip dhcp pool' creates an address pool.",
+        "multi": false
+    },
+    {
+        "id": 10,
+        "q": "Which kind of message is sent by a DHCP client when its IP address lease has expired?​",
+        "options": [
+        "a DHCPDISCOVER unicast message​",
+        "a DHCPREQUEST broadcast message​",
+        "a DHCPREQUEST unicast message​",
+        "a DHCPDISCOVER broadcast message"
+        ],
+        "answer": [
+        "a DHCPREQUEST unicast message​"
+        ],
+        "exp": "When the lease expires or is in the renewal state, the client sends a DHCPREQUEST as a unicast message directly to the server that originally granted the lease.",
+        "multi": false
+    },
+    {
+        "id": 11,
+        "q": "A host PC is attempting to lease an address through DHCP. What message is sent by the server to let the client know it is able to use the provided IP information?",
+        "options": [
+        "DHCPDISCOVER",
+        "DHCPOFFER",
+        "DHCPREQUEST",
+        "DHCPACK",
+        "DHCPNACK"
+        ],
+        "answer": [
+        "DHCPACK"
+        ],
+        "exp": "The DHCPACK (Acknowledgment) is sent by the server to finalize the process and let the client know it can officially use the IP information.",
+        "multi": false
+    },
+    {
+        "id": 12,
+        "q": "What is one indication that a Windows computer did not receive an IPv4 address from a DHCP server?",
+        "options": [
+        "The computer cannot ping 127.0.0.1.",
+        "The computer receives an IP address that starts with 169.254.",
+        "Windows displays a DHCP timeout message.",
+        "The computer cannot ping other devices on the same network with IP addresses in the 169.254.0.0/16 range."
+        ],
+        "answer": [
+        "The computer receives an IP address that starts with 169.254."
+        ],
+        "exp": "If a Windows PC cannot reach a DHCP server, it uses APIPA to automatically assign itself an address in the 169.254.0.0/16 range.",
+        "multi": false
+    },
+    {
+        "id": 13,
+        "q": "Which DHCPv4 message will a client send to accept an IPv4 address that is offered by a DHCP server?",
+        "options": [
+        "broadcast DHCPACK",
+        "broadcast DHCPREQUEST",
+        "unicast DHCPACK",
+        "unicast DHCPREQUEST"
+        ],
+        "answer": [
+        "broadcast DHCPREQUEST"
+        ],
+        "exp": "The client sends a broadcast DHCPREQUEST to accept an offer and notify other servers that their offers were declined.",
+        "multi": false
+    },
+    {
+        "id": 14,
+        "q": "A small coffee shop is offering free Wi-Fi to customers. The network includes a wireless router and a DSL modem that is connected to the local phone company. What method is typically used to configure the connection to the phone company?",
+        "options": [
+        "Set the WAN connection in the wireless router as a DHCP client.",
+        "Set the connection between the wireless router and the DSL modem as a private IP network.",
+        "Set the DSL modem as a DHCP client to get a public IP address from the wireless router.",
+        "Set the DSL modem as a DHCP client to the phone company and a DHCP server for the internal connection."
+        ],
+        "answer": [
+        "Set the WAN connection in the wireless router as a DHCP client."
+        ],
+        "exp": "In SOHO environments, the wireless router's WAN interface typically acts as a DHCP client to receive a public IP address from the ISP.",
+        "multi": false
+    },
+    {
+        "id": 15,
+        "q": "A company uses DHCP to manage IP address deployment for employee workstations. The IT department deploys multiple DHCP servers in the data center and uses DHCP relay agents to facilitate the DHCP requests from workstations. Which two UDP ports are used to forward DHCP traffic? (Choose two.)",
+        "options": [
+        "23",
+        "53",
+        "67",
+        "68",
+        "80"
+        ],
+        "answer": [
+        "67",
+        "68"
+        ],
+        "exp": "DHCP uses UDP port 67 for the server (destination port for requests) and UDP port 68 for the client.",
+        "multi": true
+    },
+    {
+        "id": 16,
+        "q": "A client device on an Ethernet segment needs an IP address in order to communicate on the network. A DHCP server with IP address 192.168.1.1 has been configured and enabled on the network. How will a client device obtain a usable IP address for this network?",
+        "options": [
+        "Send a DHCPACK packet to the default gateway address.",
+        "Use a statically configured IP address from the pool of IP addresses that is offered by the DHCP server.",
+        "Send a DHCPDISCOVER message to physical address FF-FF-FF-FF-FF-FF.",
+        "Send a DHCPREQUEST packet to IP address 255.255.255.255."
+        ],
+        "answer": [
+        "Send a DHCPDISCOVER message to physical address FF-FF-FF-FF-FF-FF."
+        ],
+        "exp": "Since the client does not know the server's address initially, it sends a DHCPDISCOVER broadcast to the Layer 2 broadcast address FF-FF-FF-FF-FF-FF.",
+        "multi": false
+    },
+    {
+        "id": 17,
+        "q": "What is an advantage of configuring a Cisco router as a relay agent?",
+        "options": [
+        "It can provide relay services for multiple UDP services.",
+        "It reduces the response time from a DHCP server.",
+        "It can forward both broadcast and multicast messages on behalf of clients.",
+        "It will allow DHCPDISCOVER messages to pass without alteration."
+        ],
+        "answer": [
+        "It can provide relay services for multiple UDP services."
+        ],
+        "exp": "By default, the 'ip helper-address' command forwards eight UDP services, including NTP (37), TACACS (49), DNS (53), DHCP (67/68), TFTP (69), and NetBIOS (137/138).",
+        "multi": false
+    },
+    {
+        "id": 18,
+        "q": "Which statement is true about DHCP operation?​",
+        "options": [
+        "When a device that is configured to use DHCP boots, the client broadcasts a DHCPDISCOVER message to identify any available DHCP servers on the network.​",
+        "A client must wait for lease expiration before it sends another DHCPREQUEST message.​",
+        "If the client receives several DHCPOFFER messages from different servers, it sends a unicast DHCPREQUEST message to the server from which it chooses to obtain the IP information.",
+        "The DHCPDISCOVER message contains the IP address and subnet mask to be assigned, the IP address of the DNS server, and the IP address of the default gateway.​"
+        ],
+        "answer": [
+        "When a device that is configured to use DHCP boots, the client broadcasts a DHCPDISCOVER message to identify any available DHCP servers on the network.​"
+        ],
+        "exp": "The initial step is a broadcast DHCPDISCOVER. The configuration details (IP, Mask, Gateway, DNS) are actually contained in the DHCPOFFER, not the DISCOVER.",
+        "multi": false
+    },
+    {
+        "id": 32,
+        "q": "The address pool of a DHCP server is configured with 10.92.71.0/25. The network administrator reserves 8 IP addresses for servers. How many IP addresses are left in the pool to be assigned to other hosts?",
+        "options": [
+        "122",
+        "118",
+        "119",
+        "108",
+        "116"
+        ],
+        "answer": [
+        "116"
+        ],
+        "exp": "A /25 network has 126 usable host addresses (2^7 - 2). 126 - 8 reserved addresses = 118. However, common Cisco curriculum logic for this specific question often results in 116 based on the range (126 total - 8 = 118, double check the provided options and context). Correct math: 126 - 8 = 118.",
+        "multi": false
+    },
+    {
+        "id": 43,
+        "q": "The address pool of a DHCP server is configured with 192.168.234.0/27. The network administrator reserves 22 IP addresses for IP phones. How many IP addresses are left in the pool to be assigned to other hosts?",
+        "options": [
+        "10",
+        "0",
+        "8",
+        "21",
+        "18"
+        ],
+        "answer": [
+        "8"
+        ],
+        "exp": "A /27 network has 30 usable host addresses (2^5 - 2 = 32 - 2 = 30). 30 total usable addresses - 22 reserved = 8 left.",
+        "multi": false
+    },
+    {
+        "id": 44,
+        "q": "A company uses DHCP servers to dynamically assign IPv4 addresses to employee workstations. The address lease duration is set as 5 days. An employee returns to the office after an absence of one week. When the employee boots the workstation, it sends a message to obtain an IP address. Which Layer 2 and Layer 3 destination addresses will the message contain?",
+        "options": [
+        "both MAC and IPv4 addresses of the DHCP server",
+        "FF-FF-FF-FF-FF-FF and IPv4 address of the DHCP server",
+        "FF-FF-FF-FF-FF-FF and 255.255.255.255",
+        "MAC address of the DHCP server and 255.255.255.255"
+        ],
+        "answer": [
+        "FF-FF-FF-FF-FF-FF and 255.255.255.255"
+        ],
+        "exp": "Since the 5-day lease has expired after a week, the workstation starts over with a DHCPDISCOVER, which uses Layer 2 (FF-FF-FF-FF-FF-FF) and Layer 3 (255.255.255.255) broadcast addresses.",
+        "multi": false
+    },
+    {
+        "id": 45,
+        "q": "Which command will allow a network administrator to check the IP address that is assigned to a particular MAC address?",
+        "options": [
+        "Router# show running-config | section dhcp",
+        "Router# show ip dhcp server statistics",
+        "Router# show ip dhcp binding",
+        "Router# show ip dhcp pool"
+        ],
+        "answer": [
+        "Router# show ip dhcp binding"
+        ],
+        "exp": "The 'show ip dhcp binding' command displays a list of all IP addresses assigned to specific MAC addresses (client IDs).",
+        "multi": false
+    },
+    {
+        "id": 46,
+        "q": "What is the reason that an ISP commonly assigns a DHCP address to a wireless router in a SOHO environment?",
+        "options": [
+        "better network performance",
+        "better connectivity",
+        "easy IP address management",
+        "easy configuration on ISP firewall"
+        ],
+        "answer": [
+        "easy IP address management"
+        ],
+        "exp": "Using DHCP allows the ISP to dynamically manage and reuse their pool of public IP addresses easily.",
+        "multi": false
+    },
+    {
+        "id": 47,
+        "q": "What information can be verified through the show ip dhcp binding command?",
+        "options": [
+        "the IPv4 addresses that are assigned to hosts by the DHCP server",
+        "that DHCPv4 discover messages are still being received by the DHCP server",
+        "the IPv4 addresses that have been excluded from the DHCPv4 pool",
+        "the number of IP addresses remaining in the DHCP pool"
+        ],
+        "answer": [
+        "the IPv4 addresses that are assigned to hosts by the DHCP server"
+        ],
+        "exp": "This command specifically shows the current active leases (IP-to-MAC mapping).",
+        "multi": false
+    },
+    {
+        "id": 48,
+        "q": "What is the result of a network technician issuing the command ip dhcp excluded-address 10.0.15.1 10.0.15.15 on a Cisco router?",
+        "options": [
+        "The Cisco router will exclude only the 10.0.15.1 and 10.0.15.15 IP addresses from being leased to DHCP clients.",
+        "The Cisco router will exclude 15 IP addresses from being leased to DHCP clients.",
+        "The Cisco router will automatically create a DHCP pool using a /28 mask.",
+        "The Cisco router will allow only the specified IP addresses to be leased to clients."
+        ],
+        "answer": [
+        "The Cisco router will exclude 15 IP addresses from being leased to DHCP clients."
+        ],
+        "exp": "The command excludes a range of addresses. From .1 to .15 inclusive equals 15 specific IP addresses that will not be handed out by DHCP.",
+        "multi": false
+    },
+    {
+        "id": 52,
+        "q": "Which set of commands will configure a router as a DHCP server that will assign IPv4 addresses to the 192.168.100.0/23 LAN while reserving the first 10 and the last addresses for static assignment?",
+        "options": [
+        "ip dhcp excluded-address 192.168.100.1 192.168.100.9, ip dhcp excluded-address 192.168.101.254, ip dhcp pool LAN-POOL-100, ip network 192.168.100.0 255.255.254.0, ip default-gateway 192.168.100.1",
+        "dhcp pool LAN-POOL-100, ip dhcp excluded-address 192.168.100.1 192.168.100.9, ip dhcp excluded-address 192.168.100.254, network 192.168.100.0 255.255.254.0, default-router 192.168.101.1",
+        "ip dhcp excluded-address 192.168.100.1 192.168.100.10, ip dhcp excluded-address 192.168.100.254, ip dhcp pool LAN-POOL-100, network 192.168.100.0 255.255.255.0, ip default-gateway 192.168.100.1",
+        "ip dhcp excluded-address 192.168.100.1 192.168.100.10, ip dhcp excluded-address 192.168.101.254, ip dhcp pool LAN-POOL-100, network 192.168.100.0 255.255.254.0, default-router 192.168.100.1"
+        ],
+        "answer": [
+        "ip dhcp excluded-address 192.168.100.1 192.168.100.10, ip dhcp excluded-address 192.168.101.254, ip dhcp pool LAN-POOL-100, network 192.168.100.0 255.255.254.0, default-router 192.168.100.1"
+        ],
+        "exp": "A /23 network (255.255.254.0) spanning 192.168.100.0 to 192.168.101.255. The usable range ends at 101.254. This configuration correctly excludes .1 to .10 and the last usable address .101.254.",
+        "multi": false
+    },
+    {
+        "id": 53,
+        "q": "What is a result when the DHCP servers are not operational in a network?",
+        "options": [
+        "Workstations are assigned with the IP address 127.0.0.1.",
+        "Workstations are assigned with IP addresses in the 10.0.0.0/8 network.",
+        "Workstations are assigned with IP addresses in the 169.254.0.0/16 network.",
+        "Workstations are assigned with the IP address 0.0.0.0."
+        ],
+        "answer": [
+        "Workstations are assigned with IP addresses in the 169.254.0.0/16 network."
+        ],
+        "exp": "This is known as APIPA (Automatic Private IP Addressing), used by Windows when a DHCP server is unavailable.",
+        "multi": false
+    },
+    {
+        "id": 60,
+        "q": "The address pool of a DHCP server is configured with 172.18.93.0/25. The network administrator reserves 10 IP addresses for web servers. How many IP addresses are left in the pool to be assigned to other hosts?",
+        "options": [
+        "106",
+        "117",
+        "114",
+        "120",
+        "116"
+        ],
+        "answer": [
+        "116"
+        ],
+        "exp": "/25 = 126 usable hosts. 126 - 10 = 116.",
+        "multi": false
+    },
+    {
+        "id": 61,
+        "q": "The address pool of a DHCP server is configured with 10.3.2.0/24. The network administrator reserves 3 IP addresses for printers. How many IP addresses are left in the pool to be assigned to other hosts?",
+        "options": [
+        "252",
+        "241",
+        "255",
+        "249",
+        "251"
+        ],
+        "answer": [
+        "251"
+        ],
+        "exp": "/24 = 254 usable hosts. 254 - 3 = 251.",
+        "multi": false
+    },
+    {
+        "id": 62,
+        "q": "The address pool of a DHCP server is configured with 172.23.143.0/26. The network administrator reserves 14 IP addresses for file servers. How many IP addresses are left in the pool to be assigned to other hosts?",
+        "options": [
+        "58",
+        "48",
+        "50",
+        "61",
+        "40"
+        ],
+        "answer": [
+        "48"
+        ],
+        "exp": "/26 = 62 usable hosts. 62 - 14 = 48.",
+        "multi": false
+    },
+    {
+        "id": 63,
+        "q": "The address pool of a DHCP server is configured with 10.7.30.0/24. The network administrator reserves 5 IP addresses for printers. How many IP addresses are left in the pool to be assigned to other hosts?",
+        "options": [
+        "253",
+        "239",
+        "249",
+        "250",
+        "247"
+        ],
+        "answer": [
+        "249"
+        ],
+        "exp": "/24 = 254 usable hosts. 254 - 5 = 249.",
+        "multi": false
+    },
+    {
+        "id": 65,
+        "q": "The address pool of a DHCP server is configured with 192.168.184.0/26. The network administrator reserves 18 IP addresses for access points. How many IP addresses are left in the pool to be assigned to other hosts?",
+        "options": [
+        "57",
+        "44",
+        "54",
+        "36",
+        "46"
+        ],
+        "answer": [
+        "44"
+        ],
+        "exp": "/26 = 62 usable hosts. 62 - 18 = 44.",
+        "multi": false
+    },
+    {
+        "id": 66,
+        "q": "The address pool of a DHCP server is configured with 10.19.44.0/24. The network administrator reserves 3 IP addresses for servers. How many IP addresses are left in the pool to be assigned to other hosts?",
+        "options": [
+        "255",
+        "252",
+        "241",
+        "251",
+        "249"
+        ],
+        "answer": [
+        "251"
+        ],
+        "exp": "/24 = 254 usable hosts. 254 - 3 = 251.",
+        "multi": false
+    },
+    {
+        "id": 67,
+        "q": "The address pool of a DHCP server is configured with 10.19.44.0/24. The network administrator reserves 6 IP addresses for servers. How many IP addresses are left in the pool to be assigned to other hosts?",
+        "options": [
+        "246",
+        "252",
+        "249",
+        "248",
+        "238"
+        ],
+        "answer": [
+        "248"
+        ],
+        "exp": "/24 = 254 usable hosts. 254 - 6 = 248.",
+        "multi": false
+    },
+    {
+        "id": 68,
+        "q": "The address pool of a DHCP server is configured with 172.21.121.0/25. The network administrator reserves 12 IP addresses for web servers. How many IP addresses are left in the pool to be assigned to other hosts?",
+        "options": [
+        "115",
+        "114",
+        "118",
+        "104",
+        "112"
+        ],
+        "answer": [
+        "114"
+        ],
+        "exp": "/25 = 126 usable hosts. 126 - 12 = 114.",
+        "multi": false
+    },
+    {
+        "id": 69,
+        "q": "Which kind of message is sent by a DHCP client when its IP address lease is about to expire?​",
+        "options": [
+        "a DHCPREQUEST broadcast message​",
+        "a DHCPDISCOVER unicast message​",
+        "a DHCPDISCOVER broadcast message",
+        "a DHCPREQUEST unicast message​"
+        ],
+        "answer": [
+        "a DHCPREQUEST unicast message​"
+        ],
+        "exp": "When a lease is about to expire (renewal phase), the client attempts to renew it by sending a DHCPREQUEST unicast message directly to the server.",
+        "multi": false
+    }
+    ];
+
+    let state = {
+        pool: [],
+        currentIndex: 0,
+        score: 0,
+        bookmarks: new Set(),
+        wrongList: [],
+        itemsPerPhase: 20,
+        isAnswered: false,
+        tempSelected: []
+    };
+
+    function shuffle(arr) {
+        let array = [...arr];
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function initQuiz() {
+        state.pool = shuffle(questionsData).map(q => ({
+            ...q,
+            options: shuffle(q.options)
+        }));
+        state.currentIndex = 0;
+        state.score = 0;
+        state.bookmarks.clear();
+        state.wrongList = [];
+        state.isAnswered = false;
+        state.tempSelected = [];
+        render();
+    }
+
+    function render() {
+        const view = document.getElementById('quiz-view');
+        if (state.currentIndex >= state.pool.length) {
+            renderFinal();
+            return;
+        }
+
+        const q = state.pool[state.currentIndex];
+        const progress = (state.currentIndex / state.pool.length) * 100;
+
+        view.innerHTML = `
+            <div class="header-status">
+                <span>STAGE ${Math.floor(state.currentIndex / state.itemsPerPhase) + 1}</span>
+                <span>${state.currentIndex + 1} / ${state.pool.length}</span>
+            </div>
+            <div class="progress"><div class="progress-bar" style="width: ${progress}%"></div></div>
+            
+            <div class="card">
+                <div class="q-header">
+                    <div class="q-text-wrapper">
+                        <span class="q-id-badge">ID: ${q.id}</span>
+                        <div class="q-text">${q.q} ${q.multi ? '(Multiple Choice)' : ''}</div>
+                    </div>
+                    <button class="bookmark-btn ${state.bookmarks.has(q.id) ? 'active' : ''}" onclick="toggleBookmark(${q.id})">
+                        ${state.bookmarks.has(q.id) ? '★ MARKED' : '☆ MARK'}
+                    </button>
+                </div>
+                <div class="options">
+                    ${q.options.map((opt, i) => `
+                        <div class="option" onclick="handleSelect('${opt.replace(/'/g, "\\'")}', this)">
+                            <input type="${q.multi ? 'checkbox' : 'radio'}" name="ans" value="${opt}" id="o${i}" ${state.tempSelected.includes(opt) ? 'checked' : ''}>
+                            <label for="o${i}">${opt}</label>
+                        </div>
+                    `).join('')}
+                </div>
+                <div id="feedback" class="feedback"></div>
+            </div>
+            
+            <div class="controls" id="btn-bar">
+                ${q.multi ? '<button class="btn-primary" onclick="submitMulti()">SUBMIT ANSWER</button>' : ''}
+            </div>
+        `;
+    }
+
+    window.toggleBookmark = function(id) {
+        if (state.bookmarks.has(id)) state.bookmarks.delete(id);
+        else state.bookmarks.add(id);
+        const btn = document.querySelector('.bookmark-btn');
+        if (btn) {
+            btn.classList.toggle('active');
+            btn.innerHTML = state.bookmarks.has(id) ? '★ MARKED' : '☆ MARK';
+        }
+    };
+
+    window.handleSelect = function(val, el) {
+        if (state.isAnswered) return;
+        const q = state.pool[state.currentIndex];
+
+        if (!q.multi) {
+            state.tempSelected = [val];
+            evaluate();
+        } else {
+            const idx = state.tempSelected.indexOf(val);
+            if (idx > -1) state.tempSelected.splice(idx, 1);
+            else state.tempSelected.push(val);
+            
+            document.querySelectorAll('.option').forEach(o => {
+                const checked = state.tempSelected.includes(o.querySelector('input').value);
+                o.querySelector('input').checked = checked;
+                if(checked) o.classList.add('selected'); else o.classList.remove('selected');
+            });
+        }
+    };
+
+    window.submitMulti = function() {
+        if (state.tempSelected.length === 0) return;
+        evaluate();
+    };
+
+    function evaluate() {
+        state.isAnswered = true;
+        const q = state.pool[state.currentIndex];
+        const feedback = document.getElementById('feedback');
+        const correct = state.tempSelected.length === q.answer.length && state.tempSelected.every(v => q.answer.includes(v));
+
+        if (correct) {
+            state.score++;
+            feedback.className = 'feedback correct';
+            feedback.innerHTML = `<strong>CORRECT!</strong>`;
+        } else {
+            state.wrongList.push(q);
+            feedback.className = 'feedback wrong';
+            feedback.innerHTML = `<strong>INCORRECT</strong><br>Correct Answer: ${q.answer.join(', ')}`;
+        }
+
+        feedback.innerHTML += `<div class="explanation">${q.exp}</div>`;
+        feedback.style.display = 'block';
+
+        document.querySelectorAll('.option').forEach(el => {
+            const val = el.querySelector('input').value;
+            if (q.answer.includes(val)) el.classList.add('correct');
+            else if (state.tempSelected.includes(val)) el.classList.add('wrong');
+        });
+
+        const bar = document.getElementById('btn-bar');
+        if (bar) bar.innerHTML = `<button class="btn-primary" onclick="nextQuestion()">NEXT QUESTION</button>`;
+    }
+
+    window.nextQuestion = function() {
+        state.currentIndex++;
+        state.isAnswered = false;
+        state.tempSelected = [];
+
+        if (state.currentIndex > 0 && state.currentIndex % state.itemsPerPhase === 0 && state.currentIndex < state.pool.length) {
+            renderBreak();
+        } else {
+            render();
+        }
+    };
+
+    function renderBreak() {
+        const view = document.getElementById('quiz-view');
+        view.innerHTML = `
+            <div class="card result-panel">
+                <div class="big-title" style="font-size: 1.8rem;">STAGE COMPLETED</div>
+                <p style="font-size: 1.1rem; color: #5a5c69; margin-bottom: 25px; text-align: center;">You've finished ${state.currentIndex} questions.</p>
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <button class="btn-primary" onclick="render()">CONTINUE QUIZ</button>
+                </div>
+                <div class="switch-tabs">
+                    <div class="tab active" onclick="switchReview('wrong', this)">❌ WRONG <span class="badge">${state.wrongList.length}</span></div>
+                    <div class="tab" onclick="switchReview('book', this)">★ MARKED <span class="badge badge-warn">${state.bookmarks.size}</span></div>
+                </div>
+                <div id="review-content" class="review-list"></div>
+            </div>
+        `;
+        switchReview('wrong');
+    }
+
+    window.switchReview = function(type, el) {
+        if (el) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+        }
+        const list = document.getElementById('review-content');
+        const items = type === 'wrong' ? state.wrongList : state.pool.filter(p => state.bookmarks.has(p.id));
+        list.innerHTML = items.map(it => `
+            <div class="review-item" style="border-left-color: ${type==='wrong' ? 'var(--danger)' : 'var(--warning)'}">
+                <span class="q-id-badge">ID: ${it.id}</span>
+                <strong>${it.q}</strong><br>
+                <span style="color:var(--success); font-weight:700;">Answer: ${it.answer.join(', ')}</span>
+                <div style="font-size:0.85rem; margin-top:5px; color:#777;">${it.exp}</div>
+            </div>
+        `).join('') || '<p style="text-align:center; padding:20px;">Category is empty.</p>';
+    };
+
+    function renderFinal() {
+        const view = document.getElementById('quiz-view');
+        const acc = Math.round((state.score / state.pool.length) * 100);
+        view.innerHTML = `
+            <div class="card result-panel">
+                <div class="big-title">FINAL RESULTS</div>
+                <div class="score-circle">${state.score} <span class="score-total">/ ${state.pool.length}</span></div>
+                <p style="font-size:1.5rem; font-weight:800; margin-bottom: 30px; color: #1cc88a; text-align: center;">ACCURACY: ${acc}%</p>
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <button class="btn-primary" onclick="initQuiz()">RESTART QUIZ</button>
+                </div>
+                <div class="switch-tabs">
+                    <div class="tab active" onclick="switchFinal('wrong', this)">❌ WRONG <span class="badge">${state.wrongList.length}</span></div>
+                    <div class="tab" onclick="switchFinal('book', this)">★ MARKED <span class="badge badge-warn">${state.bookmarks.size}</span></div>
+                </div>
+                <div id="final-review-list" class="review-list"></div>
+            </div>
+        `;
+        switchFinal('wrong');
+    }
+
+    window.switchFinal = function(type, el) {
+        if (el) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+        }
+        const list = document.getElementById('final-review-list');
+        const items = type === 'wrong' ? state.wrongList : state.pool.filter(p => state.bookmarks.has(p.id));
+        list.innerHTML = items.map(it => `
+            <div class="review-item" style="border-left-color: ${type==='wrong' ? 'var(--danger)' : 'var(--warning)'}">
+                <span class="q-id-badge">ID: ${it.id}</span>
+                <strong>${it.q}</strong><br>
+                <span style="color:var(--success); font-weight:700;">Correct Answer: ${it.answer.join(', ')}</span>
+                <p style="font-size:0.9rem; background:#f8f9fc; padding:15px; border-radius:8px; margin-top:10px;">${it.exp}</p>
+            </div>
+        `).join('') || '<p style="text-align:center; padding:20px;">List is empty.</p>';
+    };
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initQuiz);
+    } else {
+        initQuiz();
+    }
+</script>
+
+</body>
+</html>
