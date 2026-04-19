@@ -1,0 +1,66 @@
+/* Shared light/dark theme helpers (no persistence). */
+
+:root {
+    /* Default should be light. */
+    color-scheme: light;
+}
+
+html[data-theme="dark"] {
+    color-scheme: dark;
+
+    /*
+      These pages contain many hard-coded light colors.
+      A page-level filter provides a consistent dark mode
+      without refactoring every selector.
+    */
+    filter: invert(1) hue-rotate(180deg);
+}
+
+.theme-toggle-wrap {
+    position: relative;
+    z-index: 1;
+
+    display: flex;
+    justify-content: flex-start;
+
+    padding: 10px 0px 10px;
+
+    /* The wrapper should not block clicks on content beneath. */
+    pointer-events: none;
+}
+
+.theme-toggle {
+    pointer-events: auto;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 4px 10px;
+    border-radius: 30px;
+
+    border: 1.5px solid #d1d3e2;
+    background: var(--white, #ffffff);
+    color: var(--secondary, #858796);
+
+    font-weight: 800;
+    font-size: 0.8rem;
+    cursor: pointer;
+
+    -webkit-tap-highlight-color: transparent;
+}
+
+.theme-toggle:focus {
+    outline: none;
+}
+
+.theme-toggle:focus-visible {
+    outline: 2px solid var(--primary, #4e73df);
+    outline-offset: 2px;
+}
+
+@media print {
+    .theme-toggle {
+        display: none;
+    }
+}
