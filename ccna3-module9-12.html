@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CCNA3 Modules 9-12 Practice Quiz</title>
+    <script>
+        (function () {
+            try {
+                var t = sessionStorage.getItem('ccna-theme');
+                if (t === 'dark') document.documentElement.dataset.theme = 'dark';
+                else delete document.documentElement.dataset.theme;
+            } catch (e) {
+                // Ignore storage errors.
+            }
+        })();
+    </script>
+    <style>
+        :root {
+            --primary: #4e73df;
+            --secondary: #858796;
+            --success: #1cc88a;
+            --danger: #e74a3b;
+            --warning: #f6c23e;
+            --bg: #f8f9fc;
+            --white: #ffffff;
+            --card-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+
+        body {
+            font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 10px;
+            color: #5a5c69;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 850px;
+            margin: auto;
+            box-sizing: border-box;
+        }
+
+        /* Progress Area */
+        .header-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .progress {
+            height: 8px;
+            background: #eaecf4;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.4s ease;
+        }
+
+        /* Card System */
+        .card {
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Question Layout */
+        .q-header {
+            display: flex;
+            flex-direction: column; 
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .q-text-wrapper {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .q-text {
+            font-size: 1.1rem;
+            font-weight: 700;
+            line-height: 1.5;
+            color: #3a3b45;
+            flex: 1;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        .q-id-badge {
+            background: #f0f2f7;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: var(--primary);
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .bookmark-btn {
+            background: var(--white);
+            border: 1.5px solid #d1d3e2;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--secondary);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            width: fit-content;
+            align-self: flex-start;
+        }
+
+        .bookmark-btn.active {
+            background: #fffbe6;
+            border-color: var(--warning);
+            color: #856404;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* Options */
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            padding: 15px;
+            border: 2px solid #eaecf4;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            font-size: 0.95rem;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        .option:hover { border-color: var(--primary); background-color: #f8f9fc; }
+        .option.selected { border-color: var(--primary); background-color: #f0f4ff; }
+        .option.correct { border-color: var(--success) !important; background-color: #d1fae5 !important; color: #065f46; font-weight: 700; }
+        .option.wrong { border-color: var(--danger) !important; background-color: #fee2e2 !important; color: #991b1b; }
+
+        input[type="radio"], input[type="checkbox"] { 
+            margin-right: 12px; 
+            transform: scale(1.1); 
+            flex-shrink: 0;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+            border-left: 5px solid;
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .feedback.correct { background: #f0fdf4; color: #166534; border-left-color: var(--success); }
+        .feedback.wrong { background: #fef2f2; color: #991b1b; border-left-color: var(--danger); }
+
+        .explanation {
+            font-size: 0.9rem;
+            margin-top: 12px;
+            color: #4b5563;
+            line-height: 1.6;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(0,0,0,0.1);
+        }
+
+        .controls { text-align: center; margin-top: 25px; }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 40px;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(78, 115, 223, 0.25);
+            transition: all 0.2s;
+            text-transform: uppercase;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .btn-primary:active { transform: scale(0.98); opacity: 0.9; }
+
+        /* Titles */
+        .big-title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            margin-bottom: 15px;
+            text-align: center;
+            line-height: 1.2;
+        }
+        
+        .score-circle { font-size: 5.5rem; font-weight: 900; color: var(--primary); line-height: 1; margin: 15px 0; text-align: center; }
+        .score-total { font-size: 1.8rem; color: var(--secondary); opacity: 0.7; }
+
+        /* Switch Tabs */
+        .switch-tabs {
+            display: flex;
+            background: #eaecf4;
+            border-radius: 15px;
+            padding: 5px;
+            margin: 25px auto;
+            width: 100%;
+            max-width: 550px;
+            box-sizing: border-box;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px 5px;
+            cursor: pointer;
+            border-radius: 10px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            color: #858796;
+            font-size: 0.85rem;
+        }
+
+        .tab.active { background: white; color: var(--primary); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .badge { background: var(--danger); color: white; border-radius: 20px; padding: 2px 8px; font-size: 0.7rem; }
+        .badge-warn { background: var(--warning); color: #000; }
+
+        .review-list { text-align: left; margin-top: 20px; }
+        .review-item {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border-left: 6px solid #d1d3e2;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+
+        @media (min-width: 600px) {
+            body { padding: 30px 20px; }
+            .card { padding: 30px; }
+            .q-header { flex-direction: row; align-items: center; }
+            .q-text { font-size: 1.25rem; }
+            .big-title { font-size: 2.8rem; }
+            .tab { font-size: 0.95rem; }
+        }
+    </style>
+    <link rel="stylesheet" href="theme.css">
+    <script src="theme.js" defer></script>
+</head>
+<body>
+
+<div class="container" id="quiz-view">
+    <div style="text-align: center; padding: 100px; font-weight: bold; color: var(--primary);">INITIALIZING CCNA QUIZ ENGINE...</div>
+</div>
+
+<script>
+    const questionsData = [
+    {
+        id: 1,
+        q: "What is the term used to indicate a variation of delay?",
+        options: [
+        "latency",
+        "serialization delay",
+        "speed mismatch",
+        "jitter"
+        ],
+        answer: ["jitter"],
+        exp: "Topic 9.1.3 Jitter is a phenomenon caused by a variation in delay. Delay (or latency) is the time it takes for the packet to arrive at its destination. Jitter describes how the voice packets arrive at the destination at varying intervals (not in a steady, consistent stream).",
+        multi: false
+    },
+    {
+        id: 2,
+        q: "A network engineer performs a ping test and receives a value that shows the time it takes for a packet to travel from a source to a destination device and return. Which term describes the value?",
+        options: [
+        "jitter",
+        "latency",
+        "priority",
+        "bandwidth"
+        ],
+        answer: ["latency"],
+        exp: "Topic 9.1.3",
+        multi: false
+    },
+    {
+        id: 3,
+        q: "What role do network devices play in the IntServ QoS model?",
+        options: [
+        "Network devices ensure that resources are available before traffic is allowed to be sent by a host through the network.",
+        "Network devices provide a best-effort approach to forwarding traffic.",
+        "Network devices are configured to service multiple classes of traffic and handle traffic as it may arrive.",
+        "Network devices use QoS on a hop-by-hop basis to provide excellent scalability."
+        ],
+        answer: ["Network devices ensure that resources are available before traffic is allowed to be sent by a host through the network."],
+        exp: "Topic 9.4.4",
+        multi: false
+    },
+    {
+        id: 4,
+        q: "Which device would be classified as a trusted endpoint?",
+        options: [
+        "switch",
+        "router",
+        "firewall",
+        "IP phone"
+        ],
+        answer: ["IP phone"],
+        exp: "Topic 9.5.10 Trusted endpoints are devices that have the capability to mark application traffic at Layer 2 or Layer 3. Trusted endpoints include the following: – IP phones – Wireless access points – Videoconferencing gateways and systems – IP conferencing stations and more",
+        multi: false
+    },
+    {
+        id: 5,
+        q: "What is the benefit of deploying Layer 3 QoS marking across an enterprise network?",
+        options: [
+        "Layer 3 marking can carry the QoS information end-to-end.",
+        "Layer 3 marking can carry QoS information on switches that are not IP aware.",
+        "Layer 3 marking can be carried in the 802.1Q fields.",
+        "Layer 3 marking can be used to carry non-IP traffic."
+        ],
+        answer: ["Layer 3 marking can carry the QoS information end-to-end."],
+        exp: "Topic 9.5.4 Marking traffic at Layer 2 or Layer 3 is very important and will affect how traffic is treated in a network using QoS. Layer 2 marking of frames can be performed for non-IP traffic. Layer 2 marking of frames is the only QoS option available for switches that are not “IP aware.” Layer 3 marking will carry the QoS information end-to-end.",
+        multi: false
+    },
+    {
+        id: 6,
+        q: "What is the function of a QoS trust boundary?",
+        options: [
+        "A trust boundary identifies the location where traffic cannot be remarked.",
+        "A trust boundary only allows traffic to enter if it has previously been marked.",
+        "A trust boundary identifies which devices trust the marking on packets that enter a network.",
+        "A trust boundary only allows traffic from trusted endpoints to enter the network."
+        ],
+        answer: ["A trust boundary identifies which devices trust the marking on packets that enter a network."],
+        exp: "Topic 9.5.10 Network traffic is classified and marked as close to the source device as possible. The trust boundary is the location where the QoS markings on a packet are trusted as they enter an enterprise network.",
+        multi: false
+    },
+    {
+        id: 7,
+        q: "What are two approaches to prevent packet loss due to congestion on an interface? (Choose two.)",
+        options: [
+        "Decrease buffer space.",
+        "Disable queuing mechanisms.",
+        "Drop lower-priority packets.",
+        "Prevent bursts of traffic.",
+        "Increase link capacity."
+        ],
+        answer: [
+        "Drop lower-priority packets.",
+        "Increase link capacity."
+        ],
+        exp: "Topic 9.5.2 There are three approaches to prevent sensitive traffic from being dropped: Increase link capacity to ease or prevent congestion. Guarantee enough bandwidth and increase buffer space to accommodate bursts of traffic from fragile flows. Prevent congestion by dropping lower-priority packets before congestion occurs.",
+        multi: true
+    },
+    {
+        id: 8,
+        q: "What configuration scenario would offer the most protection to SNMP get and set messages?",
+        options: [
+        "SNMPv2 for in-band management with read-write community strings",
+        "SNMPv1 with out-of-band management in a private subnet",
+        "SNMPv3 configured with the auth security level",
+        "SNMP community strings"
+        ],
+        answer: ["SNMPv3 configured with the auth security level"],
+        exp: "Topic 10.4.4 SNMPv3 supports authentication and encryption with the auth and priv security levels. SNMPv1 and SNMPv2 do not support authentication or encryption. Using a default community string is not secure because the default string of “public” is well known and would allow anyone with SNMP systems to read device MIBs.",
+        multi: false
+    },
+    {
+        id: 10,
+        q: "The command ntp server 10.1.1.1 is issued on a router. What impact does this command have?",
+        options: [
+        "determines which server to send system log files to",
+        "synchronizes the system clock with the time source with IP address 10.1.1.1",
+        "identifies the server on which to store backup configurations",
+        "ensures that all logging will have a time stamp associated with it"
+        ],
+        answer: ["synchronizes the system clock with the time source with IP address 10.1.1.1"],
+        exp: "Topic 10.3.3 The ntp server ip-address global configuration command configures the NTP server for IOS devices.",
+        multi: false
+    },
+    {
+        id: 11,
+        q: "As the network administrator you have been asked to implement EtherChannel on the corporate network. What does this configuration consist of?",
+        options: [
+        "providing redundant links that dynamically block or forward traffic",
+        "grouping two devices to share a virtual IP address",
+        "grouping multiple physical ports to increase bandwidth between two switches",
+        "providing redundant devices to allow traffic to flow in the event of device failure"
+        ],
+        answer: ["grouping multiple physical ports to increase bandwidth between two switches"],
+        exp: "Topic 11.2.4 EtherChannel is utilized on a network to increase speed capabilities by grouping multiple physical ports into one or more logical EtherChannel links between two switches. STP is used to provide redundant links that dynamically block or forward traffic between switches. FHRPs are used to group physical devices to provide traffic flow in the event of failure.",
+        multi: false
+    },
+    {
+        id: 12,
+        q: "What is a definition of a two-tier LAN network design?",
+        options: [
+        "access and core layers collapsed into one tier, and the distribution layer on a separate tier",
+        "distribution and core layers collapsed into one tier, and the access layer on a separate tier",
+        "access, distribution, and core layers collapsed into one tier, with a separate backbone layer",
+        "access and distribution layers collapsed into one tier, and the core layer on a separate tier"
+        ],
+        answer: ["distribution and core layers collapsed into one tier, and the access layer on a separate tier"],
+        exp: "Topic 11.1.6 Maintaining three separate network tiers is not always required or cost-efficient. All network designs require an access layer, but a two-tier design can collapse the distribution and core layers into one layer to serve the needs of a small location with few users.",
+        multi: false
+    },
+    {
+        id: 13,
+        q: "What are two reasons to create a network baseline? (Choose two.)",
+        options: [
+        "to select a routing protocol",
+        "to determine what kind of equipment to implement",
+        "to design a network according to a proper model",
+        "to identify future abnormal network behavior",
+        "to evaluate security vulnerabilities in the network",
+        "to determine if the network can deliver the required policies"
+        ],
+        answer: [
+        "to identify future abnormal network behavior",
+        "to determine if the network can deliver the required policies"
+        ],
+        exp: "Topic 12.1.4 A network baseline is created to provide a comparison point, at the time that the network is performing optimally, to whatever changes are implemented in the infrastructure. A baseline helps to keep track of the performance, to track the traffic patterns, and to monitor network behavior.",
+        multi: true
+    },
+    {
+        id: 14,
+        q: "A computer can access devices on the same network but cannot access devices on other networks. What is the probable cause of this problem?",
+        options: [
+        "The computer has an incorrect subnet mask.",
+        "The computer has an invalid default gateway address.",
+        "The cable is not connected properly to the NIC.",
+        "The computer has an invalid IP address."
+        ],
+        answer: ["The computer has an invalid default gateway address."],
+        exp: "Topic 12.5.7 The default gateway is the address of the device a host uses to access the Internet or another network. If the default gateway is missing or incorrect, that host will not be able to communicate outside the local network. Because the host can access other hosts on the local network, the network cable and the other parts of the IP configuration are working.",
+        multi: false
+    },
+    {
+        id: 15,
+        q: "In which step of gathering symptoms does the network engineer determine if the problem is at the core, distribution, or access layer of the network?",
+        options: [
+        "Gather information.",
+        "Narrow the scope.",
+        "Document the symptoms.",
+        "Determine ownership.",
+        "Determine the symptoms."
+        ],
+        answer: ["Narrow the scope."],
+        exp: "Topic 12.2.2 In the “narrow the scope” step of gathering symptoms, a network engineer will determine if the network problem is at the core, distribution, or access layer of the network. Once this step is complete and the layer is identified, the network engineer can determine which pieces of equipment are the most likely cause.",
+        multi: false
+    },
+    {
+        id: 16,
+        q: "A network administrator is deploying QoS with the ability to provide a special queue for voice traffic so that voice traffic is forwarded before network traffic in other queues. Which queuing method would be the best choice?",
+        options: [
+        "LLQ",
+        "CBWFQ",
+        "WFQ",
+        "FIFO"
+        ],
+        answer: ["LLQ"],
+        exp: "Topic 9.3.6 Low latency queuing (LLQ) allows delay-sensitive data, such as voice traffic, to be defined in a strict priority queue (PQ) and to always be sent first before any packets in any other queue are forwarded.",
+        multi: false
+    },
+    {
+        id: 17,
+        q: "What are two characteristics of voice traffic? (Choose two.)",
+        options: [
+        "Voice traffic latency should not exceed 150 ms.",
+        "Voice traffic is unpredictable and inconsistent.",
+        "Voice traffic requires at least 384 kbs of bandwidth.",
+        "Voice traffic consumes lots of network resources.",
+        "Dropped voice packets are not retransmitted."
+        ],
+        answer: [
+        "Voice traffic latency should not exceed 150 ms.",
+        "Dropped voice packets are not retransmitted."
+        ],
+        exp: "Topic 9.2.3 Voice traffic does not consume a lot of network resources, such as bandwidth. However, it is very sensitive to delay and dropped packets cannot be retransmitted. For good voice quality, the amount of latency should always be less than 150 milliseconds.",
+        multi: true
+    },
+    {
+        id: 18,
+        q: "Which type of network traffic cannot be managed using congestion avoidance tools?",
+        options: [
+        "TCP",
+        "ICMP",
+        "IP",
+        "UDP"
+        ],
+        answer: ["UDP"],
+        exp: "Topic 9.5.11 Queuing and compression techniques can help to reduce and prevent UDP packet loss, but there is no congestion avoidance for User Datagram Protocol (UDP) based traffic.",
+        multi: false
+    },
+    {
+        id: 19,
+        q: "When QoS is implemented in a converged network, which two factors can be controlled to improve network performance for real-time traffic? (Choose two.)",
+        options: [
+        "delay",
+        "packet addressing",
+        "jitter",
+        "packet routing",
+        "link speed"
+        ],
+        answer: [
+        "delay",
+        "jitter"
+        ],
+        exp: "Topic 9.1.3 Delay is the latency between a sending and receiving device. Jitter is the variation in the delay of the received packets. Both delay and jitter need to be controlled in order to support real-time voice and video traffic.",
+        multi: true
+    },
+    {
+        id: 20,
+        q: "An administrator wants to replace the configuration file on a Cisco router by loading a new configuration file from a TFTP server. What two things does the administrator need to know before performing this task? (Choose two.)",
+        options: [
+        "name of the configuration file that is currently stored on the router",
+        "configuration register value",
+        "name of the configuration file that is stored on the TFTP server",
+        "router IP address",
+        "TFTP server IP address"
+        ],
+        answer: [
+        "name of the configuration file that is stored on the TFTP server",
+        "TFTP server IP address"
+        ],
+        exp: "Topic 10.6.5 In order to identify the exact location of the desired configuration file, the IP address of the TFTP server and the name of the configuration file are essential information. Because the file is a new configuration, the name of the current configuration file is not necessary.",
+        multi: true
+    },
+    {
+        id: 23,
+        q: "What are three functions provided by the syslog service? (Choose three.)",
+        options: [
+        "to select the type of logging information that is captured",
+        "to periodically poll agents for data",
+        "to provide statistics on packets that are flowing through a Cisco device",
+        "to provide traffic analysis",
+        "to gather logging information for monitoring and troubleshooting",
+        "to specify the destinations of captured messages"
+        ],
+        answer: [
+        "to select the type of logging information that is captured",
+        "to gather logging information for monitoring and troubleshooting",
+        "to specify the destinations of captured messages"
+        ],
+        exp: "Topic 10.5.1 There are three primary functions provided by the syslog service: gathering logging information, selection of the type of information to be logged, selection of the destination of the logged information.",
+        multi: true
+    },
+    {
+        id: 24,
+        q: "What is the function of the MIB element as part of a network management system?",
+        options: [
+        "to collect data from SNMP agents",
+        "to send and retrieve network management information",
+        "to change configurations on SNMP agents",
+        "to store data about a device"
+        ],
+        answer: ["to store data about a device"],
+        exp: "Topic 10.4.1 The Management Information Base (MIB) resides on a networking device and stores operational data about the device. The SNMP manager can collect information from SNMP agents. The SNMP agent provides access to the information.",
+        multi: false
+    },
+    {
+        id: 25,
+        q: "What network design would contain the scope of disruptions on a network should a failure occur?",
+        options: [
+        "the reduction in the number of redundant devices and connections in the network core",
+        "the installation of only enterprise class equipment throughout the network",
+        "the deployment of distribution layer switches in pairs and the division of access layer switch connections between them",
+        "the configuration of all access layer devices to share a single gateway"
+        ],
+        answer: ["the deployment of distribution layer switches in pairs and the division of access layer switch connections between them"],
+        exp: "Topic 11.2.3 One way to contain the impact of a failure on the network is to implement redundancy. One way this is accomplished is by deploying redundant distribution layer switches and dividing the access layer switch connections between the redundant distribution layer switches. This creates what is called a switch block. Failures in a switch block are contained to that block and do not bring down the whole network.",
+        multi: false
+    },
+    {
+        id: 26,
+        q: "Which action should be taken when planning for redundancy on a hierarchical network design?",
+        options: [
+        "add alternate physical paths for data to traverse the network",
+        "continually purchase backup equipment for the network",
+        "implement STP portfast between the switches on the network",
+        "immediately replace a non-functioning module, service or device on a network"
+        ],
+        answer: ["add alternate physical paths for data to traverse the network"],
+        exp: "Topic 11.2.2 One method of implementing redundancy is path redundancy, installing alternate physical paths for data to traverse the network. Redundant links in a switched network supports high availability and can be used for load balancing, reducing congestion on the network.",
+        multi: false
+    },
+    {
+        id: 27,
+        q: "What are two benefits of extending access layer connectivity to users through a wireless medium? (Choose two.)",
+        options: [
+        "increased flexibility",
+        "increased network management options",
+        "decreased number of critical points of failure",
+        "reduced costs",
+        "increased bandwidth availability"
+        ],
+        answer: [
+        "increased flexibility",
+        "reduced costs"
+        ],
+        exp: "Topic 11.2.5 Wireless connectivity at the access layer provides increased flexibility, reduced costs, and the ability to grow and adapt to changing business requirements. Utilizing wireless routers and access points can provide an increase in the number of central points of failure. Wireless routers and access points will not provide an increase in bandwidth availability.",
+        multi: true
+    },
+    {
+        id: 28,
+        q: "What is a basic function of the Cisco Borderless Architecture access layer?",
+        options: [
+        "aggregates Layer 2 broadcast domains",
+        "provides access to the user",
+        "aggregates Layer 3 routing boundaries",
+        "provides fault isolation"
+        ],
+        answer: ["provides access to the user"],
+        exp: "Topic 11.1.5 A function of the Cisco Borderless Architecture access layer is providing network access to the users. Layer 2 broadcast domain aggregation, Layer 3 routing boundaries aggregation, and high availability are distribution layer functions. The core layer provides fault isolation and high-speed backbone connectivity.",
+        multi: false
+    },
+    {
+        id: 29,
+        q: "Which characteristic would most influence a network design engineer to select a multilayer switch over a Layer 2 switch?",
+        options: [
+        "ability to have multiple forwarding paths through the switched network based on VLAN number(s)",
+        "ability to build a routing table",
+        "ability to provide power to directly-attached devices and the switch itself",
+        "ability to aggregate multiple ports for maximum data throughput"
+        ],
+        answer: ["ability to build a routing table"],
+        exp: "Topic 11.3.6 Multilayer switches, also known as Layer 3 switches, can route and build a routing table. This capability is required in a multi-VLAN network and would influence the network designer to select a multilayer switch. The other options are features also available on Layer 2 switches, so they would not influence the decision to select a multilayer switch.",
+        multi: false
+    },
+    {
+        id: 31,
+        q: "When is the most appropriate time to measure network operations to establish a network performance baseline?",
+        options: [
+        "whenever high network use is detected, so that how the network performs under stress can be monitored",
+        "during quiet vacation periods, so that the level of non-data traffic can be determined",
+        "at the same time each day across a set period of average working days, so that typical traffic patterns can be established",
+        "at random times during a 10 week period, so that abnormal traffic levels can be detected"
+        ],
+        answer: ["at the same time each day across a set period of average working days, so that typical traffic patterns can be established"],
+        exp: "Topic 12.1.7 The purpose of establishing a network performance baseline is to provide a reference of normal or average network use to enable data traffic anomalies to be detected and then investigated. Network operations that are not average, or are not normal, cannot be used to establish a network performance baseline.",
+        multi: false
+    },
+    {
+        id: 35,
+        q: "What type of traffic is described as requiring latency to be no more than 150 milliseconds (ms)?",
+        options: [
+        "voice",
+        "video",
+        "data"
+        ],
+        answer: ["voice"],
+        exp: "Topic 9.2.3",
+        multi: false
+    },
+    {
+        id: 36,
+        q: "A network manager wants to add a time to log messages so that there is record of when the message was generated. What command should the administrator use on a Cisco router?",
+        options: [
+        "show cdp interface",
+        "ntp server 10.10.14.9",
+        "service timestamps log datetime",
+        "clock timezone PST -7"
+        ],
+        answer: ["service timestamps log datetime"],
+        exp: "Topic 10.5.5",
+        multi: false
+    },
+    {
+        id: 39,
+        q: "What are two characteristics of the best-effort QoS model? (Choose two.)",
+        options: [
+        "It allows end hosts to signal their QoS needs to the network.",
+        "It uses a connection-oriented approach with QoS.",
+        "It provides preferential treatment for voice packets.",
+        "It does not provide a delivery guarantee for packets.",
+        "It treats all network packets in the same way."
+        ],
+        answer: [
+        "It does not provide a delivery guarantee for packets.",
+        "It treats all network packets in the same way."
+        ],
+        exp: "Topic 9.4.3 The best-effort QoS model provides no guarantees and it is commonly used on the Internet. The best-effort QoS model treats all network packets in the same way.",
+        multi: true
+    },
+    {
+        id: 40,
+        q: "Why is QoS an important issue in a converged network that combines voice, video, and data communications?",
+        options: [
+        "Data communications are sensitive to jitter.",
+        "Legacy equipment is unable to transmit voice and video without QoS.",
+        "Voice and video communications are more sensitive to latency.",
+        "Data communications must be given the first priority."
+        ],
+        answer: ["Voice and video communications are more sensitive to latency."],
+        exp: "Topic 9.2 Without any QoS mechanisms in place, time-sensitive packets, such as voice and video, will be dropped with the same frequency as email and web browsing traffic.",
+        multi: false
+    },
+    {
+        id: 42,
+        q: "Which statement describes SNMP operation?",
+        options: [
+        "An SNMP agent that resides on a managed device collects information about the device and stores that information remotely in the MIB that is located on the NMS.​",
+        "A set request is used by the NMS to change configuration variables in the agent device.",
+        "An NMS periodically polls the SNMP agents that are residing on managed devices by using traps to query the devices for data.​",
+        "A get request is used by the SNMP agent to query the device for data.​"
+        ],
+        answer: ["A set request is used by the NMS to change configuration variables in the agent device."],
+        exp: "Topic 10.4.2 An SNMP agent that resides on a managed device collects and stores information about the device and its operation. This information is stored by the agent locally in the MIB. An NMS periodically polls the SNMP agents that are residing on managed devices by using the get request to query the devices for data.",
+        multi: false
+    },
+    {
+        id: 44,
+        q: "What are the three layers of the switch hierarchical design model? (Choose three.)",
+        options: [
+        "distribution",
+        "network access",
+        "data link",
+        "enterprise",
+        "access",
+        "core"
+        ],
+        answer: [
+        "distribution",
+        "access",
+        "core"
+        ],
+        exp: "Topic 11.1.5 The access layer is the lowest layer and it provides network access to users. The distribution layer has many functions, but it aggregates data from the access layer, provides filtering, policy control, and sets Layer 3 routing boundaries. The core layer provides high speed connectivity.",
+        multi: true
+    },
+    {
+        id: 46,
+        q: "A network designer is considering whether to implement a switch block on the company network. What is the primary advantage of deploying a switch block?",
+        options: [
+        "This is network application software that prevents the failure of a single network device.",
+        "The failure of a switch block will not impact all end users.",
+        "This is a security feature that is available on all new Catalyst switches.",
+        "A single core router provides all the routing between VLANs."
+        ],
+        answer: ["The failure of a switch block will not impact all end users."],
+        exp: "Topic 11.2.3 The configuration of a switch block provides redundancy so that the failure of a single network device generally has little or no effect on end users.",
+        multi: false
+    },
+    {
+        id: 47,
+        q: "Which troubleshooting tool would a network administrator use to check the Layer 2 header of frames that are leaving a particular host?",
+        options: [
+        "knowledge base",
+        "protocol analyzer",
+        "CiscoView",
+        "baselining tool"
+        ],
+        answer: ["protocol analyzer"],
+        exp: "Topic 12.3.2 A protocol analyzer such as Wireshark is capable of displaying the headers of data at any OSI Layer.",
+        multi: false
+    },
+    {
+        id: 49,
+        q: "What type of traffic is described as not resilient to loss?",
+        options: [
+        "video",
+        "data",
+        "voice"
+        ],
+        answer: ["video"],
+        exp: "Topic 9.2.4 Video traffic tends to be unpredictable, inconsistent, and bursty compared to voice traffic. Compared to voice, video is less resilient to loss and has a higher volume of data per packet.",
+        multi: false
+    },
+    {
+        id: 50,
+        q: "A network manager wants lists the contents of flash. What command should the administrator use on a Cisco router?",
+        options: [
+        "show file systems",
+        "dir",
+        "lldp enable",
+        "service timestamps log datetime"
+        ],
+        answer: ["dir"],
+        exp: "Topic 10.6.1",
+        multi: false
+    },
+    {
+        id: 51,
+        q: "Voice packets are being received in a continuous stream by an IP phone, but because of network congestion the delay between each packet varies and is causing broken conversations. What term describes the cause of this condition?",
+        options: [
+        "buffering",
+        "latency",
+        "queuing",
+        "jitter"
+        ],
+        answer: ["jitter"],
+        exp: "Topic 9.1.3 Jitter is the variation in the latency or delay of received packets. When data is sent, packets are sent in a continuous stream and are spaced evenly apart. Because of network congestion, the delay between each packet can vary instead of remaining constant.",
+        multi: false
+    },
+    {
+        id: 52,
+        q: "A user is unable to reach the website when typing http://www.cisco.com in a web browser, but can reach the same site by typing http://72.163.4.161. What is the issue?",
+        options: [
+        "DHCP",
+        "DNS",
+        "Default Gateway",
+        "TCP/IP Protocol stack"
+        ],
+        answer: ["DNS"],
+        exp: "Topic 12.5.12 Domain Name Service (DNS) is used to translate a web address to an IP address. The address of the DNS server is provided via DHCP to host computers.​",
+        multi: false
+    },
+    {
+        id: 53,
+        q: "What type of traffic is described as tending to be unpredictable, inconsistent, and bursty?",
+        options: [
+        "Audio",
+        "Video",
+        "Data",
+        "Voice"
+        ],
+        answer: ["Video"],
+        exp: "Topic 9.2.4",
+        multi: false
+    },
+    {
+        id: 54,
+        q: "A network manager wants to determine the size of the Cisco IOS image file on the networking device. What command should the administrator use on a Cisco router?",
+        options: [
+        "show flash:0",
+        "copy flash: tftp:",
+        "config-register 0x2102",
+        "confreg 0x2142"
+        ],
+        answer: ["show flash:0"],
+        exp: "Topic 10.7.3",
+        multi: false
+    },
+    {
+        id: 55,
+        q: "What is the principle that is applied when a network technician is troubleshooting a network fault by using the divide-and-conquer method?",
+        options: [
+        "Testing is performed at Layer 7 and at Layer 1, then at Layers 6 and 2, and so on, working towards the middle of the stack until all layers are verified as operational.",
+        "Once it is verified that components in a particular layer are functioning properly, it can then be assumed that components in the layers below it are also functional.",
+        "Testing is performed at all layers of the OSI model until a non-functioning component is found.",
+        "Once it is verified that a component in a particular layer is functioning properly, testing can then be performed on any other layer."
+        ],
+        answer: ["Once it is verified that components in a particular layer are functioning properly, it can then be assumed that components in the layers below it are also functional."],
+        exp: "Topic 12.2.6 The nature of the OSI and TCP/IP layered models is that upper layers are dependent on lower layers. So when troubleshooting, if a particular layer is found to be working correctly then it can be assumed that all layers below it are also functioning correctly.",
+        multi: false
+    },
+    {
+        id: 56,
+        q: "Which queuing algorithm has only a single queue and treats all packets equally?",
+        options: [
+        "CBWFQ",
+        "FIFO",
+        "LLQ",
+        "WFQ"
+        ],
+        answer: ["FIFO"],
+        exp: "Topic 9.3.3",
+        multi: false
+    },
+    {
+        id: 57,
+        q: "What type of traffic is described as traffic that requires at least 30 Kbps of bandwidth?",
+        options: [
+        "voice",
+        "data",
+        "video"
+        ],
+        answer: ["voice"],
+        exp: "Topic 9.2.3",
+        multi: false
+    },
+    {
+        id: 58,
+        q: "What type of traffic is described as being able to tolerate a certain amount of latency, jitter, and loss without any noticeable effects?",
+        options: [
+        "voice",
+        "video",
+        "data"
+        ],
+        answer: ["voice"],
+        exp: "Topic 9.2.3 Voice traffic is described as smooth and predictable but very sensitive to delays. It can tolerate a specific amount of latency (up to 150 ms), jitter (up to 30 ms), and packet loss (up to 1%) without users experiencing any noticeable effects on quality. While video traffic has similar tolerances, it is considered less resilient to loss than voice. In contrast, data traffic is typically insensitive to delay and jitter but cannot tolerate any loss.",
+        multi: false
+    },
+    {
+        id: 59,
+        q: "A network manager wants to view the amount of available and free memory, the type of file system, and its permissions. What command should the administrator use on a Cisco router?",
+        options: [
+        "ntp server 10.10.14.9",
+        "lldp enable",
+        "clock timezone PST -7",
+        "show file systems"
+        ],
+        answer: ["show file systems"],
+        exp: "Topic 10.6.1",
+        multi: false
+    },
+    {
+        id: 60,
+        q: "What type of traffic is described as requiring latency to be no more than 400 milliseconds (ms)?",
+        options: [
+        "voice",
+        "data",
+        "video"
+        ],
+        answer: ["video"],
+        exp: "Topic 9.2.4 Video traffic is described as requiring a one-way latency (delay) of no more than 400 milliseconds (ms) to maintain an acceptable user experience. In contrast, voice traffic is much more sensitive to delay and requires latency to be no more than 150 ms. General data traffic is typically classified as being relatively insensitive to both drops and delays.",
+        multi: false
+    },
+    {
+        id: 61,
+        q: "What type of traffic is described as consisting of traffic that requires a higher priority if interactive?",
+        options: [
+        "data",
+        "voice",
+        "video"
+        ],
+        answer: ["data"],
+        exp: "Topic 9.2.5 While voice and video traffic are inherently sensitive to delay and always require high priority, data traffic priority is determined by specific factors. According to the sources, a network administrator must evaluate if data comes from an interactive application; if it is interactive and mission-critical, it should be prioritized to achieve a response time of 1 to 2 seconds. Non-interactive data, by contrast, is less sensitive to delay and can use leftover bandwidth.",
+        multi: false
+    },
+    {
+        id: 62,
+        q: "A network manager wants to configure the router to load a new image from flash during bootup. What command should the administrator use on a Cisco router?",
+        options: [
+        "copy flash: tftp:",
+        "boot system",
+        "clock set 14:25:00 nov 13 2018",
+        "copy tftp startup-config"
+        ],
+        answer: ["boot system"],
+        exp: "Topic 10.7.5",
+        multi: false
+    },
+    {
+        id: 63,
+        q: "What type of traffic is described as predictable and smooth?",
+        options: [
+        "data",
+        "video",
+        "voice"
+        ],
+        answer: ["voice"],
+        exp: "Topic 9.2.3",
+        multi: false
+    },
+    {
+        id: 64,
+        q: "A network manager wants to ensure that the device will ignore the startup config file during startup and bypass the required passwords. What command should the administrator use on a Cisco router?",
+        options: [
+        "copy usbflash0:/R1-Config",
+        "copy running-config tftp",
+        "confreg 0x2142",
+        "config-register 0x2102"
+        ],
+        answer: ["confreg 0x2142"],
+        exp: "Topic 10.6.9",
+        multi: false
+    },
+    {
+        id: 65,
+        q: "What type of traffic is described as having a high volume of data per packet?",
+        options: [
+        "video",
+        "voice",
+        "data"
+        ],
+        answer: ["video"],
+        exp: "Topic 9.2.4 Compared to voice traffic, video is described as having a higher volume of data per packet. While voice packets are typically small and predictable (approximately 200 bytes), video packets are significantly larger and vary in size based on the complexity and motion of the content being transmitted.",
+        multi: false
+    },
+    {
+        id: 66,
+        q: "A network manager wants to backup the running configuration to a file server. What command should the administrator use on a Cisco router?",
+        options: [
+        "cd usbflash0:",
+        "show file systems",
+        "copy running-config tftp",
+        "dir"
+        ],
+        answer: ["copy running-config tftp"],
+        exp: "Topic 10.6.5",
+        multi: false
+    },
+    {
+        id: 67,
+        q: "What type of traffic is described as consisting of traffic that gets a lower priority if it is not mission-critical?",
+        options: [
+        "voice",
+        "data",
+        "video"
+        ],
+        answer: ["data"],
+        exp: "Topic 9.2.5 The priority of data traffic is determined by whether the application is interactive or mission-critical. While voice and video traffic inherently require high priority, data traffic that is not mission-critical and not interactive is assigned a lower priority, essentially receiving only the leftover bandwidth after all other needs are met. In contrast, voice and video are always sensitive to delay and typically receive higher priority.",
+        multi: false
+    }
+    ];
+
+    let state = {
+        pool: [],
+        currentIndex: 0,
+        score: 0,
+        bookmarks: new Set(),
+        wrongList: [],
+        itemsPerPhase: 20,
+        isAnswered: false,
+        tempSelected: []
+    };
+
+    function shuffle(arr) {
+        let array = [...arr];
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function initQuiz() {
+        state.pool = shuffle(questionsData).map(q => ({
+            ...q,
+            options: shuffle(q.options)
+        }));
+        state.currentIndex = 0;
+        state.score = 0;
+        state.bookmarks.clear();
+        state.wrongList = [];
+        state.isAnswered = false;
+        state.tempSelected = [];
+        render();
+    }
+
+    function render() {
+        const view = document.getElementById('quiz-view');
+        if (state.currentIndex >= state.pool.length) {
+            renderFinal();
+            return;
+        }
+
+        const q = state.pool[state.currentIndex];
+        const progress = (state.currentIndex / state.pool.length) * 100;
+
+        view.innerHTML = `
+            <div class="header-status">
+                <span>STAGE ${Math.floor(state.currentIndex / state.itemsPerPhase) + 1}</span>
+                <span>${state.currentIndex + 1} / ${state.pool.length}</span>
+            </div>
+            <div class="progress"><div class="progress-bar" style="width: ${progress}%"></div></div>
+            
+            <div class="card">
+                <div class="q-header">
+                    <div class="q-text-wrapper">
+                        <span class="q-id-badge">ID: ${q.id}</span>
+                        <div class="q-text">${q.q} ${q.multi ? '(Multiple Choice)' : ''}</div>
+                    </div>
+                    <button class="bookmark-btn ${state.bookmarks.has(q.id) ? 'active' : ''}" onclick="toggleBookmark(${q.id})">
+                        ${state.bookmarks.has(q.id) ? '★ MARKED' : '☆ MARK'}
+                    </button>
+                </div>
+                <div class="options">
+                    ${q.options.map((opt, i) => `
+                        <div class="option" onclick="handleSelect('${opt.replace(/'/g, "\\'")}', this)">
+                            <input type="${q.multi ? 'checkbox' : 'radio'}" name="ans" value="${opt}" id="o${i}" ${state.tempSelected.includes(opt) ? 'checked' : ''}>
+                            <label for="o${i}">${opt}</label>
+                        </div>
+                    `).join('')}
+                </div>
+                <div id="feedback" class="feedback"></div>
+            </div>
+            
+            <div class="controls" id="btn-bar">
+                ${q.multi ? '<button class="btn-primary" onclick="submitMulti()">SUBMIT ANSWER</button>' : ''}
+            </div>
+        `;
+    }
+
+    window.toggleBookmark = function(id) {
+        if (state.bookmarks.has(id)) state.bookmarks.delete(id);
+        else state.bookmarks.add(id);
+        const btn = document.querySelector('.bookmark-btn');
+        if (btn) {
+            btn.classList.toggle('active');
+            btn.innerHTML = state.bookmarks.has(id) ? '★ MARKED' : '☆ MARK';
+        }
+    };
+
+    window.handleSelect = function(val, el) {
+        if (state.isAnswered) return;
+        const q = state.pool[state.currentIndex];
+
+        if (!q.multi) {
+            state.tempSelected = [val];
+            evaluate();
+        } else {
+            const idx = state.tempSelected.indexOf(val);
+            if (idx > -1) state.tempSelected.splice(idx, 1);
+            else state.tempSelected.push(val);
+            
+            document.querySelectorAll('.option').forEach(o => {
+                const checked = state.tempSelected.includes(o.querySelector('input').value);
+                o.querySelector('input').checked = checked;
+                if(checked) o.classList.add('selected'); else o.classList.remove('selected');
+            });
+        }
+    };
+
+    window.submitMulti = function() {
+        if (state.tempSelected.length === 0) return;
+        evaluate();
+    };
+
+    function evaluate() {
+        state.isAnswered = true;
+        const q = state.pool[state.currentIndex];
+        const feedback = document.getElementById('feedback');
+        const correct = state.tempSelected.length === q.answer.length && state.tempSelected.every(v => q.answer.includes(v));
+
+        if (correct) {
+            state.score++;
+            feedback.className = 'feedback correct';
+            feedback.innerHTML = `<strong>CORRECT!</strong>`;
+        } else {
+            state.wrongList.push(q);
+            feedback.className = 'feedback wrong';
+            feedback.innerHTML = `<strong>INCORRECT</strong><br>Correct Answer: ${q.answer.join(', ')}`;
+        }
+
+        feedback.innerHTML += `<div class="explanation">${q.exp}</div>`;
+        feedback.style.display = 'block';
+
+        document.querySelectorAll('.option').forEach(el => {
+            const val = el.querySelector('input').value;
+            if (q.answer.includes(val)) el.classList.add('correct');
+            else if (state.tempSelected.includes(val)) el.classList.add('wrong');
+        });
+
+        const bar = document.getElementById('btn-bar');
+        if (bar) bar.innerHTML = `<button class="btn-primary" onclick="nextQuestion()">NEXT QUESTION</button>`;
+    }
+
+    window.nextQuestion = function() {
+        state.currentIndex++;
+        state.isAnswered = false;
+        state.tempSelected = [];
+
+        if (state.currentIndex > 0 && state.currentIndex % state.itemsPerPhase === 0 && state.currentIndex < state.pool.length) {
+            renderBreak();
+        } else {
+            render();
+        }
+    };
+
+    function renderBreak() {
+        const view = document.getElementById('quiz-view');
+        view.innerHTML = `
+            <div class="card result-panel">
+                <div class="big-title" style="font-size: 1.8rem;">STAGE COMPLETED</div>
+                <p style="font-size: 1.1rem; color: #5a5c69; margin-bottom: 25px; text-align: center;">You've finished ${state.currentIndex} questions.</p>
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <button class="btn-primary" onclick="render()">CONTINUE QUIZ</button>
+                </div>
+                <div class="switch-tabs">
+                    <div class="tab active" onclick="switchReview('wrong', this)">❌ WRONG <span class="badge">${state.wrongList.length}</span></div>
+                    <div class="tab" onclick="switchReview('book', this)">★ MARKED <span class="badge badge-warn">${state.bookmarks.size}</span></div>
+                </div>
+                <div id="review-content" class="review-list"></div>
+            </div>
+        `;
+        switchReview('wrong');
+    }
+
+    window.switchReview = function(type, el) {
+        if (el) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+        }
+        const list = document.getElementById('review-content');
+        const items = type === 'wrong' ? state.wrongList : state.pool.filter(p => state.bookmarks.has(p.id));
+        list.innerHTML = items.map(it => `
+            <div class="review-item" style="border-left-color: ${type==='wrong' ? 'var(--danger)' : 'var(--warning)'}">
+                <span class="q-id-badge">ID: ${it.id}</span>
+                <strong>${it.q}</strong><br>
+                <span style="color:var(--success); font-weight:700;">Answer: ${it.answer.join(', ')}</span>
+                <div style="font-size:0.85rem; margin-top:5px; color:#777;">${it.exp}</div>
+            </div>
+        `).join('') || '<p style="text-align:center; padding:20px;">Category is empty.</p>';
+    };
+
+    function renderFinal() {
+        const view = document.getElementById('quiz-view');
+        const acc = Math.round((state.score / state.pool.length) * 100);
+        view.innerHTML = `
+            <div class="card result-panel">
+                <div class="big-title">FINAL RESULTS</div>
+                <div class="score-circle">${state.score} <span class="score-total">/ ${state.pool.length}</span></div>
+                <p style="font-size:1.5rem; font-weight:800; margin-bottom: 30px; color: #1cc88a; text-align: center;">ACCURACY: ${acc}%</p>
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <button class="btn-primary" onclick="initQuiz()">RESTART QUIZ</button>
+                </div>
+                <div class="switch-tabs">
+                    <div class="tab active" onclick="switchFinal('wrong', this)">❌ WRONG <span class="badge">${state.wrongList.length}</span></div>
+                    <div class="tab" onclick="switchFinal('book', this)">★ MARKED <span class="badge badge-warn">${state.bookmarks.size}</span></div>
+                </div>
+                <div id="final-review-list" class="review-list"></div>
+            </div>
+        `;
+        switchFinal('wrong');
+    }
+
+    window.switchFinal = function(type, el) {
+        if (el) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+        }
+        const list = document.getElementById('final-review-list');
+        const items = type === 'wrong' ? state.wrongList : state.pool.filter(p => state.bookmarks.has(p.id));
+        list.innerHTML = items.map(it => `
+            <div class="review-item" style="border-left-color: ${type==='wrong' ? 'var(--danger)' : 'var(--warning)'}">
+                <span class="q-id-badge">ID: ${it.id}</span>
+                <strong>${it.q}</strong><br>
+                <span style="color:var(--success); font-weight:700;">Correct Answer: ${it.answer.join(', ')}</span>
+                <p style="font-size:0.9rem; background:#f8f9fc; padding:15px; border-radius:8px; margin-top:10px;">${it.exp}</p>
+            </div>
+        `).join('') || '<p style="text-align:center; padding:20px;">List is empty.</p>';
+    };
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initQuiz);
+    } else {
+        initQuiz();
+    }
+</script>
+
+</body>
+</html>
