@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CCNA3 Modules 6-8 Practice Quiz</title>
+    <script>
+        (function () {
+            try {
+                var t = sessionStorage.getItem('ccna-theme');
+                if (t === 'dark') document.documentElement.dataset.theme = 'dark';
+                else delete document.documentElement.dataset.theme;
+            } catch (e) {
+                // Ignore storage errors.
+            }
+        })();
+    </script>
+    <style>
+        :root {
+            --primary: #4e73df;
+            --secondary: #858796;
+            --success: #1cc88a;
+            --danger: #e74a3b;
+            --warning: #f6c23e;
+            --bg: #f8f9fc;
+            --white: #ffffff;
+            --card-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+
+        body {
+            font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 10px;
+            color: #5a5c69;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 850px;
+            margin: auto;
+            box-sizing: border-box;
+        }
+
+        /* Progress Area */
+        .header-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .progress {
+            height: 8px;
+            background: #eaecf4;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.4s ease;
+        }
+
+        /* Card System */
+        .card {
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Question Layout */
+        .q-header {
+            display: flex;
+            flex-direction: column; 
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .q-text-wrapper {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .q-text {
+            font-size: 1.1rem;
+            font-weight: 700;
+            line-height: 1.5;
+            color: #3a3b45;
+            flex: 1;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        .q-id-badge {
+            background: #f0f2f7;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: var(--primary);
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .bookmark-btn {
+            background: var(--white);
+            border: 1.5px solid #d1d3e2;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--secondary);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            width: fit-content;
+            align-self: flex-start;
+        }
+
+        .bookmark-btn.active {
+            background: #fffbe6;
+            border-color: var(--warning);
+            color: #856404;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* Options */
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            padding: 15px;
+            border: 2px solid #eaecf4;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            font-size: 0.95rem;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        .option:hover { border-color: var(--primary); background-color: #f8f9fc; }
+        .option.selected { border-color: var(--primary); background-color: #f0f4ff; }
+        .option.correct { border-color: var(--success) !important; background-color: #d1fae5 !important; color: #065f46; font-weight: 700; }
+        .option.wrong { border-color: var(--danger) !important; background-color: #fee2e2 !important; color: #991b1b; }
+
+        input[type="radio"], input[type="checkbox"] { 
+            margin-right: 12px; 
+            transform: scale(1.1); 
+            flex-shrink: 0;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+            border-left: 5px solid;
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .feedback.correct { background: #f0fdf4; color: #166534; border-left-color: var(--success); }
+        .feedback.wrong { background: #fef2f2; color: #991b1b; border-left-color: var(--danger); }
+
+        .explanation {
+            font-size: 0.9rem;
+            margin-top: 12px;
+            color: #4b5563;
+            line-height: 1.6;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(0,0,0,0.1);
+        }
+
+        .controls { text-align: center; margin-top: 25px; }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 40px;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(78, 115, 223, 0.25);
+            transition: all 0.2s;
+            text-transform: uppercase;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .btn-primary:active { transform: scale(0.98); opacity: 0.9; }
+
+        /* Titles */
+        .big-title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            margin-bottom: 15px;
+            text-align: center;
+            line-height: 1.2;
+        }
+        
+        .score-circle { font-size: 5.5rem; font-weight: 900; color: var(--primary); line-height: 1; margin: 15px 0; text-align: center; }
+        .score-total { font-size: 1.8rem; color: var(--secondary); opacity: 0.7; }
+
+        /* Switch Tabs */
+        .switch-tabs {
+            display: flex;
+            background: #eaecf4;
+            border-radius: 15px;
+            padding: 5px;
+            margin: 25px auto;
+            width: 100%;
+            max-width: 550px;
+            box-sizing: border-box;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px 5px;
+            cursor: pointer;
+            border-radius: 10px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            color: #858796;
+            font-size: 0.85rem;
+        }
+
+        .tab.active { background: white; color: var(--primary); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .badge { background: var(--danger); color: white; border-radius: 20px; padding: 2px 8px; font-size: 0.7rem; }
+        .badge-warn { background: var(--warning); color: #000; }
+
+        .review-list { text-align: left; margin-top: 20px; }
+        .review-item {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border-left: 6px solid #d1d3e2;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+
+        @media (min-width: 600px) {
+            body { padding: 30px 20px; }
+            .card { padding: 30px; }
+            .q-header { flex-direction: row; align-items: center; }
+            .q-text { font-size: 1.25rem; }
+            .big-title { font-size: 2.8rem; }
+            .tab { font-size: 0.95rem; }
+        }
+    </style>
+    <link rel="stylesheet" href="theme.css">
+    <script src="theme.js" defer></script>
+</head>
+<body>
+
+<div class="container" id="quiz-view">
+    <div style="text-align: center; padding: 100px; font-weight: bold; color: var(--primary);">INITIALIZING CCNA QUIZ ENGINE...</div>
+</div>
+
+<script>
+    const questionsData = [
+    {
+        id: 1,
+        q: "Which two statements accurately describe an advantage or a disadvantage when deploying NAT for IPv4 in a network? (Choose two.)",
+        options: [
+        "NAT improves packet handling.",
+        "NAT adds authentication capability to IPv4.",
+        "NAT will impact negatively on switch performance.",
+        "NAT causes routing tables to include more information.",
+        "NAT provides a solution to slow down the IPv4 address depletion.",
+        "NAT introduces problems for some applications that require end-to-end connectivity."
+        ],
+        answer: [
+        "NAT provides a solution to slow down the IPv4 address depletion.",
+        "NAT introduces problems for some applications that require end-to-end connectivity."
+        ],
+        exp: "Topic 6.3.1 Network Address Translation (NAT) is a technology that is implemented within IPv4 networks. One application of NAT is to use private IP addresses inside a network and use NAT to share a few public IP addresses for many internal hosts. In this way it provides a solution to slow down the IPv4 address depletion. However, since NAT hides the actual IP addresses that are used by end devices, it may cause problems for some applications that require end-to-end connectivity.",
+        multi: true
+    },
+    {
+        id: 2,
+        q: "A network administrator wants to examine the active NAT translations on a border router. Which command would perform the task?",
+        options: [
+        "Router# show ip nat translations",
+        "Router# show ip nat statistics",
+        "Router# clear ip nat translations",
+        "Router# debug ip nat translations"
+        ],
+        answer: ["Router# show ip nat translations"],
+        exp: "Topic 6.4.4",
+        multi: false
+    },
+    {
+        id: 3,
+        q: "What are two tasks to perform when configuring static NAT? (Choose two.)",
+        options: [
+        "Configure a NAT pool.",
+        "Create a mapping between the inside local and outside local addresses.",
+        "Identify the participating interfaces as inside or outside interfaces.",
+        "Define the inside global address on the server",
+        "Define the outside global address."
+        ],
+        answer: [
+        "Create a mapping between the inside local and outside local addresses.",
+        "Identify the participating interfaces as inside or outside interfaces."
+        ],
+        exp: "Topic 6.4.2 There is no server involved when using NAT. The outside global address will change for each destination the inside host will try to reach. A NAT pool is only configured for dynamic NAT implementations.",
+        multi: true
+    },
+    {
+        id: 4,
+        q: "What is a disadvantage of NAT?",
+        options: [
+        "There is no end-to-end addressing.",
+        "The router does not need to alter the checksum of the IPv4 packets.​",
+        "The internal hosts have to use a single public IPv4 address for external communication.",
+        "The costs of readdressing hosts can be significant for a publicly addressed network.​"
+        ],
+        answer: ["There is no end-to-end addressing."],
+        exp: "Topic 6.3.2",
+        multi: false
+    },
+    {
+        id: 12,
+        q: "What is the purpose of the overload keyword in the ip nat inside source list 1 pool NAT_POOL overload command?",
+        options: [
+        "It allows many inside hosts to share one or a few inside global addresses.",
+        "It allows a list of internal hosts to communicate with a specific group of external hosts.",
+        "It allows external hosts to initiate sessions with internal hosts.",
+        "It allows a pool of inside global addresses to be used by internal hosts."
+        ],
+        answer: ["It allows many inside hosts to share one or a few inside global addresses."],
+        exp: "Topic 6.2.3 Dynamic NAT uses a pool of inside global addresses that are assigned to outgoing sessions. If there are more internal hosts than public addresses in the pool, then an administrator can enable port address translation with the addition of the overload keyword. With port address translation, many internal hosts can share a single inside global address because the NAT device will track the individual sessions by Layer 4 port number.",
+        multi: false
+    },
+    {
+        id: 15,
+        q: "Which situation describes data transmissions over a WAN connection?",
+        options: [
+        "A network administrator in the office remotely accesses a web server that is located in the data center at the edge of the campus.",
+        "A manager sends an email to all employees in the department with offices that are located in several buildings.",
+        "An employee prints a file through a networked printer that is located in another building.",
+        "An employee shares a database file with a co-worker who is located in a branch office on the other side of the city."
+        ],
+        answer: ["An employee shares a database file with a co-worker who is located in a branch office on the other side of the city."],
+        exp: "Topic 7.1.1 When two offices across a city are communicating , it is most likely that the data transmissions are over some type of WAN connection. Data communications within a campus are typically over LAN connections.",
+        multi: false
+    },
+    {
+        id: 16,
+        q: "Which two technologies are categorized as private WAN infrastructures? (Choose two.)",
+        options: [
+        "Frame Relay",
+        "VPN",
+        "MetroE",
+        "DSL",
+        "cable"
+        ],
+        answer: ["Frame Relay", "MetroE"],
+        exp: "Topic 7.2.2 Private WAN technologies include leased lines, dialup, ISDN, Frame Relay, ATM, Ethernet WAN (an example is MetroE), MPLS, and VSAT.",
+        multi: true
+    },
+    {
+        id: 17,
+        q: "Which network scenario will require the use of a WAN?",
+        options: [
+        "Employees need to connect to the corporate email server through a VPN while traveling.",
+        "Employees need to access web pages that are hosted on the corporate web servers in the DMZ within their building.",
+        "Employee workstations need to obtain dynamically assigned IP addresses.",
+        "Employees in the branch office need to share files with the headquarters office that is located in a separate building on the same campus network."
+        ],
+        answer: ["Employees need to connect to the corporate email server through a VPN while traveling."],
+        exp: "Topic 7.1.1 When traveling employees need to connect to a corporate email server through a WAN connection, the VPN will create a secure tunnel between an employee laptop and the corporate network over the WAN connection. Obtaining dynamic IP addresses through DHCP is a function of LAN communication. Sharing files among separate buildings on a corporate campus is accomplished through the LAN infrastructure. A DMZ is a protected network inside the corporate LAN infrastructure.",
+        multi: false
+    },
+    {
+        id: 18,
+        q: "What are two hashing algorithms used with IPsec AH to guarantee authenticity? (Choose two.)",
+        options: [
+        "SHA",
+        "RSA",
+        "DH",
+        "MD5",
+        "AES"
+        ],
+        answer: ["SHA", "MD5"],
+        exp: "Topic 8.3.5 The IPsec framework uses various protocols and algorithms to provide data confidentiality, data integrity, authentication, and secure key exchange. Two popular algorithms used to ensure that data is not intercepted and modified (data integrity and authenticity) are MD5 and SHA.",
+        multi: true
+    },
+    {
+        id: 19,
+        q: "What two algorithms can be part of an IPsec policy to provide encryption and hashing to protect interesting traffic? (Choose two.)",
+        options: [
+        "SHA",
+        "RSA",
+        "AES",
+        "DH",
+        "PSK"
+        ],
+        answer: ["SHA", "AES"],
+        exp: "Topic 8.3.2 The IPsec framework uses various protocols and algorithms to provide data confidentiality, data integrity, authentication, and secure key exchange. Two algorithms that can be used within an IPsec policy to protect interesting traffic are AES, which is an encryption protocol, and SHA, which is a hashing algorithm.",
+        multi: true
+    },
+    {
+        id: 20,
+        q: "Which VPN solution allows the use of a web browser to establish a secure, remote-access VPN tunnel to the ASA?",
+        options: [
+        "client-based SSL",
+        "site-to-site using an ACL",
+        "clientless SSL",
+        "site-to-site using a preshared key"
+        ],
+        answer: ["clientless SSL"],
+        exp: "Topic 8.2.1 When a web browser is used to securely access the corporate network, the browser must use a secure version of HTTP to provide SSL encryption. A VPN client is not required to be installed on the remote host, so a clientless SSL connection is used.",
+        multi: false
+    },
+    {
+        id: 21,
+        q: "Which IPsec security function provides assurance that the data received via a VPN has not been modified in transit?",
+        options: [
+        "integrity",
+        "authentication",
+        "confidentiality",
+        "secure key exchange"
+        ],
+        answer: ["integrity"],
+        exp: "Topic 8.3.5 Integrity is a function of IPsec and ensures data arrives unchanged at the destination through the use of a hash algorithm. Confidentiality is a function of IPsec and utilizes encryption to protect data transfers with a key. Authentication is a function of IPsec and provides specific access to users and devices with valid authentication factors. Secure key exchange is a function of IPsec and allows two peers to maintain their private key confidentiality while sharing their public key.",
+        multi: false
+    },
+    {
+        id: 22,
+        q: "Which two types of VPNs are examples of enterprise-managed remote access VPNs? (Choose two.)",
+        options: [
+        "clientless SSL VPN",
+        "client-based IPsec VPN",
+        "IPsec VPN",
+        "IPsec Virtual Tunnel Interface VPN",
+        "GRE over IPsec VPN"
+        ],
+        answer: ["clientless SSL VPN", "client-based IPsec VPN"],
+        exp: "Topic 8.1.4 Enterprise managed VPNs can be deployed in two configurations: Remote Access VPN – This VPN is created dynamically when required to establish a secure connection between a client and a VPN server. Remote access VPNs include client-based IPsec VPNs and clientless SSL VPNs. Site-to-site VPN – This VPN is created when interconnecting devices are preconfigured with information to establish a secure tunnel. VPN traffic is encrypted only between the interconnecting devices, and internal hosts have no knowledge that a VPN is used. Site-to-site VPNs include IPsec, GRE over IPsec, Cisco Dynamic Multipoint (DMVPN), and IPsec Virtual Tunnel Interface (VTI) VPNs.",
+        multi: true
+    },
+    {
+        id: 23,
+        q: "Which is a requirement of a site-to-site VPN?",
+        options: [
+        "It requires hosts to use VPN client software to encapsulate traffic.",
+        "It requires the placement of a VPN server at the edge of the company network.",
+        "It requires a VPN gateway at each end of the tunnel to encrypt and decrypt traffic.",
+        "It requires a client/server architecture."
+        ],
+        answer: ["It requires a VPN gateway at each end of the tunnel to encrypt and decrypt traffic."],
+        exp: "Topic 8.2.3 Site-to-site VPNs are static and are used to connect entire networks. Hosts have no knowledge of the VPN and send TCP/IP traffic to VPN gateways. The VPN gateway is responsible for encapsulating the traffic and forwarding it through the VPN tunnel to a peer gateway at the other end which decapsulates the traffic.",
+        multi: false
+    },
+    {
+        id: 24,
+        q: "What is the function of the Diffie-Hellman algorithm within the IPsec framework?",
+        options: [
+        "guarantees message integrity",
+        "allows peers to exchange shared keys",
+        "provides authentication",
+        "provides strong data encryption"
+        ],
+        answer: ["allows peers to exchange shared keys"],
+        exp: "Topic 8.3.7 The IPsec framework uses various protocols and algorithms to provide data confidentiality, data integrity, authentication, and secure key exchange. DH (Diffie-Hellman) is an algorithm used for key exchange. DH is a public key exchange method that allows two IPsec peers to establish a shared secret key over an insecure channel.",
+        multi: false
+    },
+    {
+        id: 25,
+        q: "What does NAT overloading use to track multiple internal hosts that use one inside global address?",
+        options: [
+        "port numbers",
+        "IP addresses",
+        "autonomous system numbers",
+        "MAC addresses"
+        ],
+        answer: ["port numbers"],
+        exp: "Topic 6.2.3 NAT overloading, also known as Port Address Translation (PAT), uses port numbers to differentiate between multiple internal hosts.",
+        multi: false
+    },
+    {
+        id: 26,
+        q: "What type of address is 192.168.7.98?",
+        options: [
+        "public",
+        "private"
+        ],
+        answer: ["private"],
+        exp: "Topic 6.1.1",
+        multi: false
+    },
+    {
+        id: 28,
+        q: "Which type of VPN uses the public key infrastructure and digital certificates?​",
+        options: [
+        "SSL VPN",
+        "GRE over IPsec",
+        "IPsec virtual tunnel interface",
+        "dynamic multipoint VPN"
+        ],
+        answer: ["SSL VPN"],
+        exp: "Topic 8.2.2",
+        multi: false
+    },
+    {
+        id: 29,
+        q: "Which two WAN infrastructure services are examples of private connections? (Choose two.)",
+        options: [
+        "cable",
+        "DSL",
+        "Frame Relay",
+        "T1/E1",
+        "wireless"
+        ],
+        answer: ["Frame Relay", "T1/E1"],
+        exp: "Topic 7.3.1 Private WANs can use T1/E1, T3/E3, PSTN, ISDN, Metro Ethernet, MPLS, Frame Relay, ATM, or VSAT technology.",
+        multi: true
+    },
+    {
+        id: 30,
+        q: "Which two statements about the relationship between LANs and WANs are true? (Choose two.)",
+        options: [
+        "Both LANs and WANs connect end devices.",
+        "WANs are typically operated through multiple ISPs, but LANs are typically operated by single organizations or individuals.",
+        "WANs must be publicly-owned, but LANs can be owned by either public or private entities.",
+        "WANs connect LANs at slower speed bandwidth than LANs connect their internal end devices.​",
+        "LANs connect multiple WANs together."
+        ],
+        answer: [
+        "WANs are typically operated through multiple ISPs, but LANs are typically operated by single organizations or individuals.",
+        "WANs connect LANs at slower speed bandwidth than LANs connect their internal end devices.​"
+        ],
+        exp: "Topic 7.1.1 Although LANs and WANs can employ the same network media and intermediary devices, they serve very different areas and purposes. The administrative and geographical scope of a WAN is larger than that of a LAN. Bandwidth speeds are slower on WANs because of their increased complexity. The Internet is a network of networks, which can function under either public or private management.",
+        multi: true
+    },
+    {
+        id: 31,
+        q: "Which statement describes an important characteristic of a site-to-site VPN?",
+        options: [
+        "It must be statically set up.",
+        "It is ideally suited for use by mobile workers.",
+        "It requires using a VPN client on the host PC.",
+        "After the initial connection is established, it can dynamically change connection information.",
+        "It is commonly implemented over dialup and cable modem networks."
+        ],
+        answer: ["It must be statically set up."],
+        exp: "Topic 8.1.3 A site-to-site VPN is created between the network devices of two separate networks. The VPN is static and stays established. The internal hosts of the two networks have no knowledge of the VPN.",
+        multi: false
+    },
+    {
+        id: 32,
+        q: "How is “tunneling” accomplished in a VPN?",
+        options: [
+        "New headers from one or more VPN protocols encapsulate the original packets.",
+        "All packets between two hosts are assigned to a single physical medium to ensure that the packets are kept private.",
+        "Packets are disguised to look like other types of traffic so that they will be ignored by potential attackers.",
+        "A dedicated circuit is established between the source and destination devices for the duration of the connection."
+        ],
+        answer: ["New headers from one or more VPN protocols encapsulate the original packets."],
+        exp: "Topic 8.2.4 Packets in a VPN are encapsulated with the headers from one or more VPN protocols before being sent across the third party network. This is referred to as “tunneling”. These outer headers can be used to route the packets, authenticate the source, and prevent unauthorized users from reading the contents of the packets.",
+        multi: false
+    },
+    {
+        id: 33,
+        q: "Which statement describes a VPN?",
+        options: [
+        "VPNs use open source virtualization software to create the tunnel through the Internet.",
+        "VPNs use logical connections to create public networks through the Internet.",
+        "VPNs use dedicated physical connections to transfer data between remote users.",
+        "VPNs use virtual connections to create a private network through a public network."
+        ],
+        answer: ["VPNs use virtual connections to create a private network through a public network."],
+        exp: "Topic 8.1.1 A VPN is a private network that is created over a public network. Instead of using dedicated physical connections, a VPN uses virtual connections routed through a public network between two network devices.",
+        multi: false
+    },
+    {
+        id: 35,
+        q: "What type of address is 64.100.190.189?",
+        options: [
+        "public",
+        "private"
+        ],
+        answer: ["public"],
+        exp: "Topic 6.5.5 The output of show ip nat statistics shows that the inside interface is FastEthernet0/0 but that no interface has been designated as the outside interface. This can be fixed by adding the command ip nat outside to interface Serial0/0/0.",
+        multi: false
+    },
+    {
+        id: 36,
+        q: "Which type of VPN routes packets through virtual tunnel interfaces for encryption and forwarding?",
+        options: [
+        "MPLS VPN",
+        "IPsec virtual tunnel interface",
+        "dynamic multipoint VPN",
+        "GRE over IPsec"
+        ],
+        answer: ["IPsec virtual tunnel interface"],
+        exp: "Topic 8.2.6 The output of show ip nat statistics shows that the inside interface is FastEthernet0/0 but that no interface has been designated as the outside interface. This can be fixed by adding the command ip nat outside to interface Serial0/0/0.",
+        multi: false
+    },
+    {
+        id: 40,
+        q: "In NAT terms, what address type refers to the globally routable IPv4 address of a destination host on the Internet?",
+        options: [
+        "outside global",
+        "inside global",
+        "outside local",
+        "inside local"
+        ],
+        answer: ["outside global"],
+        exp: "Topic 6.1.4 From the perspective of a NAT device, inside global addresses are used by external users to reach internal hosts. Inside local addresses are the addresses assigned to internal hosts. Outside global addresses are the addresses of destinations on the external network. Outside local addresses are the actual private addresses of destination hosts behind other NAT devices.",
+        multi: false
+    },
+    {
+        id: 42,
+        q: "Which circumstance would result in an enterprise deciding to implement a corporate WAN?",
+        options: [
+        "when the enterprise decides to secure its corporate LAN",
+        "when its employees become distributed across many branch locations",
+        "when the number of employees exceeds the capacity of the LAN",
+        "when the network will span multiple buildings"
+        ],
+        answer: ["when its employees become distributed across many branch locations."],
+        exp: "Topic 7.1.5 WANs cover a greater geographic area than LANs do, so having employees distributed across many locations would require the implementation of WAN technologies to connect those locations. Customers will access corporate web services via a public WAN that is implemented by a service provider, not by the enterprise itself. When employee numbers grow, the LAN has to expand as well. A WAN is not required unless the employees are in remote locations. LAN security is not related to the decision to implement a WAN.",
+        multi: false
+    },
+    {
+        id: 43,
+        q: "What is the function of the Hashed Message Authentication Code (HMAC) algorithm in setting up an IPsec VPN?",
+        options: [
+        "protects IPsec keys during session negotiation",
+        "authenticates the IPsec peers",
+        "creates a secure channel for key negotiation",
+        "guarantees message integrity"
+        ],
+        answer: ["guarantees message integrity"],
+        exp: "Topic 8.3.5 The IPsec framework uses various protocols and algorithms to provide data confidentiality, data integrity, authentication, and secure key exchange. The Hashed Message Authentication Code (HMAC) is a data integrity algorithm that uses a hash value to guarantee the integrity of a message.",
+        multi: false
+    },
+    {
+        id: 44,
+        q: "What algorithm is used with IPsec to provide data confidentiality?",
+        options: [
+        "Diffie-Hellman",
+        "SHA",
+        "MD5",
+        "RSA",
+        "AES"
+        ],
+        answer: ["AES"],
+        exp: "Topic 8.3.4 The IPsec framework uses various protocols and algorithms to provide data confidentiality, data integrity, authentication, and secure key exchange. Two popular algorithms that are used to ensure that data is not intercepted and modified (data integrity) are MD5 and SHA. AES is an encryption protocol and provides data confidentiality. DH (Diffie-Hellman) is an algorithm that is used for key exchange. RSA is an algorithm that is used for authentication.",
+        multi: false
+    },
+    {
+        id: 45,
+        q: "Which two technologies provide enterprise-managed VPN solutions? (Choose two.)",
+        options: [
+        "remote access VPN",
+        "Frame Relay",
+        "Layer 2 MPLS VPN",
+        "site-to-site VPN",
+        "Layer 3 MPLS VPN"
+        ],
+        answer: ["remote access VPN", "site-to-site VPN"],
+        exp: "Topic 8.1.4 VPNs can be managed and deployed as either of two types: Enterprise VPNs – Enterprise-managed VPNs are a common solution for securing enterprise traffic across the internet. Site-to-site and remote access VPNs are examples of enterprise managed VPNs. Service Provider VPNs – Service provider managed VPNs are created and managed over the provider network. Layer 2 and Layer 3 MPLS are examples of service provider managed VPNs. Other legacy WAN solutions include Frame Relay and ATM VPNs.",
+        multi: true
+    },
+    {
+        id: 46,
+        q: "Which two end points can be on the other side of an ASA site-to-site VPN? (Choose two.)",
+        options: [
+        "DSL switch",
+        "router",
+        "another ASA",
+        "multilayer switch",
+        "Frame Relay switch"
+        ],
+        answer: ["router", "another ASA"],
+        exp: "Topic 8.1.1 In a site-to-site VPN, end hosts send and receive normal unencrypted TCP/IP traffic through a VPN terminating device, typically called a VPN gateway. A VPN gateway device could be a router or a firewall. A Cisco Adaptive Security Appliance (ASA) is a standalone firewall device that combines firewall, VPN concentrator, and intrusion prevention functionality into one software image.",
+        multi: true
+    },
+    {
+        id: 48,
+        q: "What type of address is 10.100.126.126?",
+        options: [
+        "private",
+        "public"
+        ],
+        answer: ["private"],
+        exp: "Topic 6.1.1",
+        multi: false
+    },
+    {
+        id: 49,
+        q: "Which type of VPN connects using the Transport Layer Security (TLS) feature?",
+        options: [
+        "SSL VPN",
+        "MPLS VPN",
+        "IPsec virtual tunnel interface",
+        "dynamic multipoint VPN"
+        ],
+        answer: ["SSL VPN"],
+        exp: "Topic 8.2.2 When a client negotiates an SSL VPN connection with the VPN gateway, it connects using Transport Layer Security (TLS). TLS is the newer version of SSL and is sometimes expressed as SSL/TLS. The two terms are often used interchangeably.",
+        multi: false
+    },
+    {
+        id: 50,
+        q: "Which two end points can be on the other side of an ASA site-to-site VPN configured using ASDM? (Choose two.)",
+        options: [
+        "DSL switch",
+        "ISR router",
+        "another ASA",
+        "multilayer switch",
+        "Frame Relay switch"
+        ],
+        answer: ["ISR router", "another ASA"],
+        exp: "Topic 8.2.3 ASDM supports creating an ASA site-to-site VPN between two ASAs or between an ASA and an ISR router.",
+        multi: true
+    },
+    {
+        id: 51,
+        q: "Which protocol creates a virtual point-to-point connection to tunnel unencrypted traffic between Cisco routers from a variety of protocols?",
+        options: [
+        "IKE",
+        "IPsec",
+        "OSPF",
+        "GRE"
+        ],
+        answer: ["GRE"],
+        exp: "Topic 8.2.4 Generic Routing Encapsulation (GRE) is a tunneling protocol developed by Cisco that encapsulates multiprotocol traffic between remote Cisco routers. GRE does not encrypt data. OSPF is a open source routing protocol. IPsec is a suite of protocols that allow for the exchange of information that can be encrypted and verified. Internet Key Exchange (IKE) is a key management standard used with IPsec.",
+        multi: false
+    },
+    {
+        id: 52,
+        q: "What is a disadvantage when both sides of a communication use PAT?",
+        options: [
+        "End-to-end IPv4 traceability is lost.",
+        "The flexibility of connections to the Internet is reduced.",
+        "The security of the communication is negatively impacted.",
+        "Host IPv4 addressing is complicated."
+        ],
+        answer: ["End-to-end IPv4 traceability is lost."],
+        exp: "Topic 6.3.2 With the use of NAT, especially PAT, end-to-end traceability is lost. This is because the host IP address in the packets during a communication is translated when it leaves and enters the network. With the use of NAT/PAT, both the flexibility of connections to the Internet and security are actually enhanced. Host IPv4 addressing is provided by DHCP and not related to NAT/PAT.",
+        multi: false
+    },
+    {
+        id: 53,
+        q: "What two addresses are specified in a static NAT configuration?",
+        options: [
+        "the outside global and the outside local",
+        "the inside local and the outside global",
+        "the inside global and the outside local",
+        "the inside local and the inside global"
+        ],
+        answer: ["the inside local and the inside global"],
+        exp: "Topic 6.4.2",
+        multi: false
+    },
+    {
+        id: 54,
+        q: "A company is considering updating the campus WAN connection. Which two WAN options are examples of the private WAN architecture? (Choose two.)",
+        options: [
+        "municipal Wi-Fi",
+        "digital subscriber line",
+        "leased line",
+        "Ethernet WAN",
+        "cable"
+        ],
+        answer: ["leased line", "Ethernet WAN"],
+        exp: "Topic 7.4.2 An organization can connect to a WAN through basic two options: Private WAN infrastructure – such as dedicated point-to-point leased lines, PSTN, ISDN, Ethernet WAN, ATM, or Frame Relay. Public WAN infrastructure – such as digital subscriber line (DSL), cable, satellite access, municipal Wi-Fi, WiMAX, or wireless cellular including 3G/4G.",
+        multi: true
+    },
+    {
+        id: 55,
+        q: "What type of address is 128.107.240.239?",
+        options: [
+        "Public",
+        "Private"
+        ],
+        answer: ["Public"],
+        exp: "Topic 6.1.1",
+        multi: false
+    },
+    {
+        id: 56,
+        q: "Which type of VPN has both Layer 2 and Layer 3 implementations?",
+        options: [
+        "IPsec virtual tunnel interface",
+        "dynamic multipoint VPN",
+        "GRE over IPsec",
+        "MPLS VPN"
+        ],
+        answer: ["MPLS VPN"],
+        exp: "Topic 8.2.7",
+        multi: false
+    },
+    {
+        id: 59,
+        q: "Which type of VPN allows multicast and broadcast traffic over a secure site-to-site VPN?",
+        options: [
+        "dynamic multipoint VPN",
+        "SSL VPN",
+        "IPsec virtual tunnel interface",
+        "GRE over IPsec"
+        ],
+        answer: ["GRE over IPsec"],
+        exp: "Topic 8.2.4 Generic Routing Encapsulation (GRE) is a tunneling protocol that supports both multicast and broadcast traffic, which is essential for the operation of routing protocols over a VPN. Because standard IPsec tunnels are limited to unicast traffic, GRE over IPsec is used to encapsulate these non-unicast frames into GRE packets, which are then securely encrypted by IPsec for transport across the public network.",
+        multi: false
+    },
+    {
+        id: 61,
+        q: "Which type of VPN involves passenger, carrier, and transport protocols?",
+        options: [
+        "GRE over IPsec",
+        "dynamic multipoint VPN",
+        "MPLS VPN",
+        "IPsec virtual tunnel interface"
+        ],
+        answer: ["GRE over IPsec"],
+        exp: "Topic 8.2.4 In a GRE over IPsec tunnel, the term passenger protocol refers to the original packet that is to be encapsulated by GRE. The carrier protocol is the protocol that encapsulates the original passenger packet. The transport protocol is the protocol that will be used to forward the packet.",
+        multi: false
+    },
+    {
+        id: 64,
+        q: "What type of address is 10.131.48.7?",
+        options: [
+        "Private",
+        "Public"
+        ],
+        answer: ["Private"],
+        exp: "Topic 6.1.1",
+        multi: false
+    },
+    {
+        id: 65,
+        q: "Which type of VPN supports multiple sites by applying configurations to virtual interfaces instead of physical interfaces?",
+        options: [
+        "dynamic multipoint VPN",
+        "IPsec virtual tunnel interface",
+        "MPLS VPN",
+        "GRE over IPsec"
+        ],
+        answer: ["IPsec virtual tunnel interface"],
+        exp: "8.2.6 An IPsec VTI is a newer IPsec VPN technology that simplifies the configuration required to support multiple sites and remote access. IPsec VTI configurations use virtual interfaces to send and receive IP unicast and multicast encrypted traffic. Therefore, routing protocols are automatically supported without requiring configuration of GRE tunnels.",
+        multi: false
+    },
+    {
+        id: 66,
+        q: "Which type of VPN involves a nonsecure tunneling protocol being encapsulated by IPsec?",
+        options: [
+        "dynamic multipoint VPN",
+        "SSL VPN",
+        "IPsec virtual tunnel interface",
+        "GRE over IPsec"
+        ],
+        answer: ["GRE over IPsec"],
+        exp: "Topic 8.2.4",
+        multi: false
+    },
+    {
+        id: 67,
+        q: "What type of address is 10.19.6.7?",
+        options: [
+        "private",
+        "public"
+        ],
+        answer: ["private"],
+        exp: "Topic 6.1.1",
+        multi: false
+    },
+    {
+        id: 68,
+        q: "What type of address is 64.101.198.197?",
+        options: [
+        "public",
+        "private"
+        ],
+        answer: ["public"],
+        exp: "Topic 6.1.1",
+        multi: false
+    },
+    {
+        id: 69,
+        q: "What type of address is 64.101.198.107",
+        options: [
+        "public",
+        "private"
+        ],
+        answer: ["public"],
+        exp: "Topic 6.1.1",
+        multi: false
+    },
+    {
+        id: 70,
+        q: "What type of address is 10.100.34.34?",
+        options: [
+        "private",
+        "public"
+        ],
+        answer: ["private"],
+        exp: "Topic 6.1.1",
+        multi: false
+    },
+    {
+        id: 71,
+        q: "What type of address is 192.168.7.126?",
+        options: [
+        "Private.",
+        "Public"
+        ],
+        answer: ["Private."],
+        exp: "Topic 6.1.1",
+        multi: false
+    },
+    {
+        id: 72,
+        q: "What type of address is 198.133.219.148?",
+        options: [
+        "Private.",
+        "Public"
+        ],
+        answer: ["Public"],
+        exp: "Topic 6.1.1",
+        multi: false
+    }
+    ];
+
+    let state = {
+        pool: [],
+        currentIndex: 0,
+        score: 0,
+        bookmarks: new Set(),
+        wrongList: [],
+        itemsPerPhase: 20,
+        isAnswered: false,
+        tempSelected: []
+    };
+
+    function shuffle(arr) {
+        let array = [...arr];
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function initQuiz() {
+        state.pool = shuffle(questionsData).map(q => ({
+            ...q,
+            options: shuffle(q.options)
+        }));
+        state.currentIndex = 0;
+        state.score = 0;
+        state.bookmarks.clear();
+        state.wrongList = [];
+        state.isAnswered = false;
+        state.tempSelected = [];
+        render();
+    }
+
+    function render() {
+        const view = document.getElementById('quiz-view');
+        if (state.currentIndex >= state.pool.length) {
+            renderFinal();
+            return;
+        }
+
+        const q = state.pool[state.currentIndex];
+        const progress = (state.currentIndex / state.pool.length) * 100;
+
+        view.innerHTML = `
+            <div class="header-status">
+                <span>STAGE ${Math.floor(state.currentIndex / state.itemsPerPhase) + 1}</span>
+                <span>${state.currentIndex + 1} / ${state.pool.length}</span>
+            </div>
+            <div class="progress"><div class="progress-bar" style="width: ${progress}%"></div></div>
+            
+            <div class="card">
+                <div class="q-header">
+                    <div class="q-text-wrapper">
+                        <span class="q-id-badge">ID: ${q.id}</span>
+                        <div class="q-text">${q.q} ${q.multi ? '(Multiple Choice)' : ''}</div>
+                    </div>
+                    <button class="bookmark-btn ${state.bookmarks.has(q.id) ? 'active' : ''}" onclick="toggleBookmark(${q.id})">
+                        ${state.bookmarks.has(q.id) ? '★ MARKED' : '☆ MARK'}
+                    </button>
+                </div>
+                <div class="options">
+                    ${q.options.map((opt, i) => `
+                        <div class="option" onclick="handleSelect('${opt.replace(/'/g, "\\'")}', this)">
+                            <input type="${q.multi ? 'checkbox' : 'radio'}" name="ans" value="${opt}" id="o${i}" ${state.tempSelected.includes(opt) ? 'checked' : ''}>
+                            <label for="o${i}">${opt}</label>
+                        </div>
+                    `).join('')}
+                </div>
+                <div id="feedback" class="feedback"></div>
+            </div>
+            
+            <div class="controls" id="btn-bar">
+                ${q.multi ? '<button class="btn-primary" onclick="submitMulti()">SUBMIT ANSWER</button>' : ''}
+            </div>
+        `;
+    }
+
+    window.toggleBookmark = function(id) {
+        if (state.bookmarks.has(id)) state.bookmarks.delete(id);
+        else state.bookmarks.add(id);
+        const btn = document.querySelector('.bookmark-btn');
+        if (btn) {
+            btn.classList.toggle('active');
+            btn.innerHTML = state.bookmarks.has(id) ? '★ MARKED' : '☆ MARK';
+        }
+    };
+
+    window.handleSelect = function(val, el) {
+        if (state.isAnswered) return;
+        const q = state.pool[state.currentIndex];
+
+        if (!q.multi) {
+            state.tempSelected = [val];
+            evaluate();
+        } else {
+            const idx = state.tempSelected.indexOf(val);
+            if (idx > -1) state.tempSelected.splice(idx, 1);
+            else state.tempSelected.push(val);
+            
+            document.querySelectorAll('.option').forEach(o => {
+                const checked = state.tempSelected.includes(o.querySelector('input').value);
+                o.querySelector('input').checked = checked;
+                if(checked) o.classList.add('selected'); else o.classList.remove('selected');
+            });
+        }
+    };
+
+    window.submitMulti = function() {
+        if (state.tempSelected.length === 0) return;
+        evaluate();
+    };
+
+    function evaluate() {
+        state.isAnswered = true;
+        const q = state.pool[state.currentIndex];
+        const feedback = document.getElementById('feedback');
+        const correct = state.tempSelected.length === q.answer.length && state.tempSelected.every(v => q.answer.includes(v));
+
+        if (correct) {
+            state.score++;
+            feedback.className = 'feedback correct';
+            feedback.innerHTML = `<strong>CORRECT!</strong>`;
+        } else {
+            state.wrongList.push(q);
+            feedback.className = 'feedback wrong';
+            feedback.innerHTML = `<strong>INCORRECT</strong><br>Correct Answer: ${q.answer.join(', ')}`;
+        }
+
+        feedback.innerHTML += `<div class="explanation">${q.exp}</div>`;
+        feedback.style.display = 'block';
+
+        document.querySelectorAll('.option').forEach(el => {
+            const val = el.querySelector('input').value;
+            if (q.answer.includes(val)) el.classList.add('correct');
+            else if (state.tempSelected.includes(val)) el.classList.add('wrong');
+        });
+
+        const bar = document.getElementById('btn-bar');
+        if (bar) bar.innerHTML = `<button class="btn-primary" onclick="nextQuestion()">NEXT QUESTION</button>`;
+    }
+
+    window.nextQuestion = function() {
+        state.currentIndex++;
+        state.isAnswered = false;
+        state.tempSelected = [];
+
+        if (state.currentIndex > 0 && state.currentIndex % state.itemsPerPhase === 0 && state.currentIndex < state.pool.length) {
+            renderBreak();
+        } else {
+            render();
+        }
+    };
+
+    function renderBreak() {
+        const view = document.getElementById('quiz-view');
+        view.innerHTML = `
+            <div class="card result-panel">
+                <div class="big-title" style="font-size: 1.8rem;">STAGE COMPLETED</div>
+                <p style="font-size: 1.1rem; color: #5a5c69; margin-bottom: 25px; text-align: center;">You've finished ${state.currentIndex} questions.</p>
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <button class="btn-primary" onclick="render()">CONTINUE QUIZ</button>
+                </div>
+                <div class="switch-tabs">
+                    <div class="tab active" onclick="switchReview('wrong', this)">❌ WRONG <span class="badge">${state.wrongList.length}</span></div>
+                    <div class="tab" onclick="switchReview('book', this)">★ MARKED <span class="badge badge-warn">${state.bookmarks.size}</span></div>
+                </div>
+                <div id="review-content" class="review-list"></div>
+            </div>
+        `;
+        switchReview('wrong');
+    }
+
+    window.switchReview = function(type, el) {
+        if (el) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+        }
+        const list = document.getElementById('review-content');
+        const items = type === 'wrong' ? state.wrongList : state.pool.filter(p => state.bookmarks.has(p.id));
+        list.innerHTML = items.map(it => `
+            <div class="review-item" style="border-left-color: ${type==='wrong' ? 'var(--danger)' : 'var(--warning)'}">
+                <span class="q-id-badge">ID: ${it.id}</span>
+                <strong>${it.q}</strong><br>
+                <span style="color:var(--success); font-weight:700;">Answer: ${it.answer.join(', ')}</span>
+                <div style="font-size:0.85rem; margin-top:5px; color:#777;">${it.exp}</div>
+            </div>
+        `).join('') || '<p style="text-align:center; padding:20px;">Category is empty.</p>';
+    };
+
+    function renderFinal() {
+        const view = document.getElementById('quiz-view');
+        const acc = Math.round((state.score / state.pool.length) * 100);
+        view.innerHTML = `
+            <div class="card result-panel">
+                <div class="big-title">FINAL RESULTS</div>
+                <div class="score-circle">${state.score} <span class="score-total">/ ${state.pool.length}</span></div>
+                <p style="font-size:1.5rem; font-weight:800; margin-bottom: 30px; color: #1cc88a; text-align: center;">ACCURACY: ${acc}%</p>
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <button class="btn-primary" onclick="initQuiz()">RESTART QUIZ</button>
+                </div>
+                <div class="switch-tabs">
+                    <div class="tab active" onclick="switchFinal('wrong', this)">❌ WRONG <span class="badge">${state.wrongList.length}</span></div>
+                    <div class="tab" onclick="switchFinal('book', this)">★ MARKED <span class="badge badge-warn">${state.bookmarks.size}</span></div>
+                </div>
+                <div id="final-review-list" class="review-list"></div>
+            </div>
+        `;
+        switchFinal('wrong');
+    }
+
+    window.switchFinal = function(type, el) {
+        if (el) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+        }
+        const list = document.getElementById('final-review-list');
+        const items = type === 'wrong' ? state.wrongList : state.pool.filter(p => state.bookmarks.has(p.id));
+        list.innerHTML = items.map(it => `
+            <div class="review-item" style="border-left-color: ${type==='wrong' ? 'var(--danger)' : 'var(--warning)'}">
+                <span class="q-id-badge">ID: ${it.id}</span>
+                <strong>${it.q}</strong><br>
+                <span style="color:var(--success); font-weight:700;">Correct Answer: ${it.answer.join(', ')}</span>
+                <p style="font-size:0.9rem; background:#f8f9fc; padding:15px; border-radius:8px; margin-top:10px;">${it.exp}</p>
+            </div>
+        `).join('') || '<p style="text-align:center; padding:20px;">List is empty.</p>';
+    };
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initQuiz);
+    } else {
+        initQuiz();
+    }
+</script>
+
+</body>
+</html>
