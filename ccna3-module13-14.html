@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CCNA3 Modules 13-14 Practice Quiz</title>
+    <script>
+        (function () {
+            try {
+                var t = sessionStorage.getItem('ccna-theme');
+                if (t === 'dark') document.documentElement.dataset.theme = 'dark';
+                else delete document.documentElement.dataset.theme;
+            } catch (e) {
+                // Ignore storage errors.
+            }
+        })();
+    </script>
+    <style>
+        :root {
+            --primary: #4e73df;
+            --secondary: #858796;
+            --success: #1cc88a;
+            --danger: #e74a3b;
+            --warning: #f6c23e;
+            --bg: #f8f9fc;
+            --white: #ffffff;
+            --card-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+
+        body {
+            font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 10px;
+            color: #5a5c69;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 850px;
+            margin: auto;
+            box-sizing: border-box;
+        }
+
+        /* Progress Area */
+        .header-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .progress {
+            height: 8px;
+            background: #eaecf4;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.4s ease;
+        }
+
+        /* Card System */
+        .card {
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Question Layout */
+        .q-header {
+            display: flex;
+            flex-direction: column; 
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .q-text-wrapper {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .q-text {
+            font-size: 1.1rem;
+            font-weight: 700;
+            line-height: 1.5;
+            color: #3a3b45;
+            flex: 1;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        .q-id-badge {
+            background: #f0f2f7;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: var(--primary);
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .bookmark-btn {
+            background: var(--white);
+            border: 1.5px solid #d1d3e2;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--secondary);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            width: fit-content;
+            align-self: flex-start;
+        }
+
+        .bookmark-btn.active {
+            background: #fffbe6;
+            border-color: var(--warning);
+            color: #856404;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* Options */
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            padding: 15px;
+            border: 2px solid #eaecf4;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            font-size: 0.95rem;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        .option:hover { border-color: var(--primary); background-color: #f8f9fc; }
+        .option.selected { border-color: var(--primary); background-color: #f0f4ff; }
+        .option.correct { border-color: var(--success) !important; background-color: #d1fae5 !important; color: #065f46; font-weight: 700; }
+        .option.wrong { border-color: var(--danger) !important; background-color: #fee2e2 !important; color: #991b1b; }
+
+        input[type="radio"], input[type="checkbox"] { 
+            margin-right: 12px; 
+            transform: scale(1.1); 
+            flex-shrink: 0;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+            border-left: 5px solid;
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .feedback.correct { background: #f0fdf4; color: #166534; border-left-color: var(--success); }
+        .feedback.wrong { background: #fef2f2; color: #991b1b; border-left-color: var(--danger); }
+
+        .explanation {
+            font-size: 0.9rem;
+            margin-top: 12px;
+            color: #4b5563;
+            line-height: 1.6;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(0,0,0,0.1);
+        }
+
+        .controls { text-align: center; margin-top: 25px; }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 40px;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(78, 115, 223, 0.25);
+            transition: all 0.2s;
+            text-transform: uppercase;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .btn-primary:active { transform: scale(0.98); opacity: 0.9; }
+
+        /* Titles */
+        .big-title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            margin-bottom: 15px;
+            text-align: center;
+            line-height: 1.2;
+        }
+        
+        .score-circle { font-size: 5.5rem; font-weight: 900; color: var(--primary); line-height: 1; margin: 15px 0; text-align: center; }
+        .score-total { font-size: 1.8rem; color: var(--secondary); opacity: 0.7; }
+
+        /* Switch Tabs */
+        .switch-tabs {
+            display: flex;
+            background: #eaecf4;
+            border-radius: 15px;
+            padding: 5px;
+            margin: 25px auto;
+            width: 100%;
+            max-width: 550px;
+            box-sizing: border-box;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px 5px;
+            cursor: pointer;
+            border-radius: 10px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            color: #858796;
+            font-size: 0.85rem;
+        }
+
+        .tab.active { background: white; color: var(--primary); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .badge { background: var(--danger); color: white; border-radius: 20px; padding: 2px 8px; font-size: 0.7rem; }
+        .badge-warn { background: var(--warning); color: #000; }
+
+        .review-list { text-align: left; margin-top: 20px; }
+        .review-item {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border-left: 6px solid #d1d3e2;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+
+        @media (min-width: 600px) {
+            body { padding: 30px 20px; }
+            .card { padding: 30px; }
+            .q-header { flex-direction: row; align-items: center; }
+            .q-text { font-size: 1.25rem; }
+            .big-title { font-size: 2.8rem; }
+            .tab { font-size: 0.95rem; }
+        }
+    </style>
+    <link rel="stylesheet" href="theme.css">
+    <script src="theme.js" defer></script>
+</head>
+<body>
+
+<div class="container" id="quiz-view">
+    <div style="text-align: center; padding: 100px; font-weight: bold; color: var(--primary);">INITIALIZING CCNA QUIZ ENGINE...</div>
+</div>
+
+<script>
+    const questionsData = [
+        {
+            id: 1,
+            q: "A company uses a cloud-based payroll system. Which cloud computing technology is this company using?",
+            options: [
+            "browser as a service (BaaS)",
+            "infrastructure as a service (IaaS)",
+            "software as a service (SaaS)",
+            "wireless as a service (WaaS)"
+            ],
+            answer: ["software as a service (SaaS)"],
+            exp: "Topic 13.1.3 Infrastructure as a service (IaaS) is when key network devices such as routers and firewalls are leased from a provider. Wireless as a service (WaaS) is when a provider provides wireless connectivity at a fixed monthly cost.",
+            multi: false
+        },
+        {
+            id: 2,
+            q: "For a data center, what is the difference in the server virtualization data traffic compared with the traditional client-server model?",
+            options: [
+            "Data traffic from clients will be routed to multiple virtual servers.",
+            "There are significant data exchanges between virtual servers.",
+            "There is more data traffic flowing from virtual servers to clients.",
+            "More network control traffic is generated between virtual servers and clients."
+            ],
+            answer: ["There are significant data exchanges between virtual servers."],
+            exp: "Topic 13.3.3",
+            multi: false
+        },
+        {
+            id: 3,
+            q: "Which component in a traditional infrastructure device provides Layer 2 and Layer 3 functions to create data paths within a network?",
+            options: [
+            "data plane",
+            "control plane",
+            "adjacency table",
+            "forwarding information base"
+            ],
+            answer: ["data plane"],
+            exp: "Topic 13.4.2",
+            multi: false
+        },
+        {
+            id: 4,
+            q: "Which network traffic management technology is a basic element in SDN implementations?",
+            options: [
+            "OpenFlow",
+            "OpenStack",
+            "IEEE 802.1aq",
+            "Interface to the Routing System"
+            ],
+            answer: ["OpenFlow"],
+            exp: "Topic 13.4.3 OpenFlow was developed at Stanford University to manage traffic between routers, switches, and wireless access points and a controller. It is the original and widely implemented southbound API for SDN.​ OpenStack is a virtualization and orchestration platform available to build scalable cloud environments and provide an infrastructure as a service (IaaS) solution. It is often used with Cisco ACI. IEEE 802.1aq is a replacement to the Spanning Tree Protocol (STP) that allows all paths to be active with multiple equal cost paths.​ Interface to the Routing System uses a fast path protocol to populate the network device routing table.​",
+            multi: false
+        },
+        {
+            id: 5,
+            q: "Which type of hypervisor would most likely be used in a data center?",
+            options: [
+            "Type 2",
+            "Type 1",
+            "Nexus",
+            "Hadoop"
+            ],
+            answer: ["Type 1"],
+            exp: "Topic 13.3.1 The two type of hypervisors are Type 1 and Type 2. Type 1 hypervisors are usually used on enterprise servers. Enterprise servers rather than virtualized PCs are more likely to be in a data center.",
+            multi: false
+        },
+        {
+            id: 6,
+            q: "Which is a characteristic of a Type 1 hypervisor?​",
+            options: [
+            "installed directly on a server​",
+            "best suited for consumers and not for an enterprise environment",
+            "does not require management console software",
+            "installed on an existing operating system​"
+            ],
+            answer: ["installed directly on a server​"],
+            exp: "Topic 13.3.1 Type 1 hypervisors are installed directly on a server and are known as “bare metal” solutions giving direct access to hardware resources. They also require a management console and are best suited for enterprise environments.​",
+            multi: false
+        },
+        {
+            id: 7,
+            q: "Which two layers of the OSI model are associated with SDN network control plane functions that make forwarding decisions? (Choose two.)​",
+            options: [
+            "Layer 1",
+            "Layer 2",
+            "Layer 3",
+            "Layer 4",
+            "Layer 5"
+            ],
+            answer: [
+            "Layer 2",
+            "Layer 3"
+            ],
+            exp: "Topic 13.4.2 The SDN control plane uses the Layer 2 ARP table and the Layer 3 routing table to make decisions about forwarding traffic.",
+            multi: true
+        },
+        {
+            id: 8,
+            q: "What pre-populates the FIB on Cisco devices that use CEF to process packets?",
+            options: [
+            "the routing table",
+            "the adjacency table",
+            "the ARP table",
+            "the DSP"
+            ],
+            answer: ["the routing table"],
+            exp: "Topic 13.4.2 CEF uses the FIB and adjacency table to make fast forwarding decisions without control plane processing. The adjacency table is pre-populated by the ARP table and the FIB is pre-populated by the routing table.​",
+            multi: false
+        },
+        {
+            id: 9,
+            q: "What is a function of the data plane of a network device?",
+            options: [
+            "sending information to the CPU for processing",
+            "building the routing table",
+            "resolving MAC addresses",
+            "forwarding traffic flows"
+            ],
+            answer: ["forwarding traffic flows"],
+            exp: "Topic 13.4.2 Networking devices operate in two planes; the data plane and the control plane. The control plane maintains Layer 2 and Layer 3 forwarding mechanisms using the CPU. The data plane forwards traffic flows.",
+            multi: false
+        },
+        {
+            id: 10,
+            q: "Which statement describes the concept of cloud computing?",
+            options: [
+            "separation of application from hardware",
+            "separation of management plane from control plane",
+            "separation of operating system from hardware",
+            "separation of control plane from data plane"
+            ],
+            answer: ["separation of application from hardware"],
+            exp: "Topic 13.1 Cloud computing is used to separate the application or service from hardware. Virtualization separates the operating system from the hardware.",
+            multi: false
+        },
+        {
+            id: 11,
+            q: "Which cloud model provides services for a specific organization or entity?",
+            options: [
+            "a public cloud",
+            "a hybrid cloud",
+            "a private cloud",
+            "a community cloud"
+            ],
+            answer: ["a private cloud"],
+            exp: "Topic 13.1.4 Private clouds are used to provide services and applications to a specific organization and may be set up within the private network of the organization or managed by an outside organization.",
+            multi: false
+        },
+        {
+            id: 12,
+            q: "What two benefits are gained when an organization adopts cloud computing and virtualization? (Choose two.)",
+            options: [
+            "provides a “pay-as-you-go” model, allowing organizations to treat computing and storage expenses as a utility",
+            "enables rapid responses to increasing data volume requirements",
+            "distributed processing of large data sets in the size of terabytes",
+            "elimination of vulnerabilities to cyber attacks",
+            "increases the dependance on onsite IT resources"
+            ],
+            answer: [
+            "provides a “pay-as-you-go” model, allowing organizations to treat computing and storage expenses as a utility",
+            "enables rapid responses to increasing data volume requirements"
+            ],
+            exp: "Topic 13.1.2 Organizations can use virtualization to consolidate the number of required servers by running many virtual servers on a single physical server. Cloud computing allows organizations to scale their solutions as required and to pay only for the resources they require.",
+            multi: true
+        },
+        {
+            id: 13,
+            q: "Which type of Hypervisor is implemented when a user with a laptop running the Mac OS installs a Windows virtual OS instance?",
+            options: [
+            "type 2",
+            "virtual machine",
+            "type 1",
+            "bare metal"
+            ],
+            answer: ["type 2"],
+            exp: "Topic 13.2.6 Type 2 hypervisors, also know as hosted hypervisors, are installed on top of an existing operating system, such as Mac OS, Windows, or Linux.",
+            multi: false
+        },
+        {
+            id: 14,
+            q: "A small company is considering moving many of its data center functions to the cloud. What are three advantages of this plan? (Choose three.)",
+            options: [
+            "The company only needs to pay for the amount of processing and storage capacity that it uses.",
+            "Cloud services are billed at a fixed fee no matter how much processing and storage are used by the company.",
+            "The company does not need to be concerned about how to handle increasing data storage and processing demands with in-house data center equipment.",
+            "The company can increase processing and storage capacity as needed and then decrease capacity when it is no longer needed.",
+            "Single-tenant data centers can easily grow to accommodate increasing data storage requirements.",
+            "Cloud services enable the company to own and administer its own servers and storage devices."
+            ],
+            answer: [
+            "The company only needs to pay for the amount of processing and storage capacity that it uses.",
+            "The company does not need to be concerned about how to handle increasing data storage and processing demands with in-house data center equipment.",
+            "The company can increase processing and storage capacity as needed and then decrease capacity when it is no longer needed."
+            ],
+            exp: "Topic 13.1.2 Cloud computing offers many advantages to the company. Since the cloud data storage and processing facilities are owned by third-parties, the company does not need to be concerned about how it will handle increasing data storage and processing demands with its own data center equipment. The company can easily increase or decrease processing power and storage capacity based on need. Also, cloud services are billed by usage, so the company does not have the costs of supporting its own expensive data center that is not always used to maximum capacity.",
+            multi: true
+        },
+        {
+            id: 15,
+            q: "How does virtualization help with disaster recovery within a data center?",
+            options: [
+            "support of live migration",
+            "guarantee of power",
+            "improvement of business practices",
+            "supply of consistent air flow"
+            ],
+            answer: ["support of live migration"],
+            exp: "Topic 13.2.4 Live migration allows moving of one virtual server to another virtual server that could be in a different location that is some distance from the original data center.",
+            multi: false
+        },
+        {
+            id: 16,
+            q: "What technology allows users to access data anywhere and at any time?",
+            options: [
+            "Cloud computing",
+            "virtualization",
+            "micromarketing",
+            "data analytics"
+            ],
+            answer: ["Cloud computing"],
+            exp: "Topic 13.1.2 Cloud computing allows organizations to eliminate the need for on-site IT equipment, maintenance, and management. Cloud computing allows organizations to expand their services or capabilities while avoiding the increased costs of energy and space.",
+            multi: false
+        },
+        {
+            id: 17,
+            q: "Which action takes place in the assurance element of the IBN model?",
+            options: [
+            "verification and corrective action",
+            "configuring systems",
+            "translation of policies",
+            "integrity checks"
+            ],
+            answer: ["verification and corrective action"],
+            exp: "Topic 14.6.2 The assurance element of the IBN model is concerned with end-to-end verification of network-wide behavior.",
+            multi: false
+        },
+        {
+            id: 19,
+            q: "What is the function of the key contained in most RESTful APIs?",
+            options: [
+            "It is the top-level object of the API query.",
+            "It is used to authenticate the requesting source.",
+            "It represents the main query components in the API request.",
+            "It is used in the encryption of the message by an API request."
+            ],
+            answer: ["It is used to authenticate the requesting source."],
+            exp: "Topic 14.4.5 Many RESTful APIs, including public APIs, require a key. The key is used to identify the source of the request through authentication.",
+            multi: false
+        },
+        {
+            id: 20,
+            q: "Which two configuration management tools are developed using Ruby? (Choose two.)",
+            options: [
+            "Puppet",
+            "Ansible",
+            "SaltStack",
+            "Chef",
+            "RESTCONF"
+            ],
+            answer: [
+            "Puppet",
+            "Chef"
+            ],
+            exp: "Topic 14.5.5 Chef and Puppet are configuration management tools developed using Ruby. Ansible and SaltStack are configuration management tools developed using Python. Ruby is typically considered a more difficult language to learn than Python. RESTCONF is a network management protocol.",
+            multi: true
+        },
+        {
+            id: 21,
+            q: "Which term is used to describe a set of instructions for execution by the configuration management tool Puppet?",
+            options: [
+            "Playbook",
+            "Cookbook",
+            "Manifest",
+            "Pillar"
+            ],
+            answer: ["Manifest"],
+            exp: "Topic 14.5.5 The configuration management tool Puppet uses the name Manifest to describe the set of instructions to be executed.",
+            multi: false
+        },
+        {
+            id: 22,
+            q: "Which term is used to describe a set of instructions for execution by the configuration management tool SaltStack?",
+            options: [
+            "Cookbook",
+            "Manifest",
+            "Pillar",
+            "Playbook"
+            ],
+            answer: ["Pillar"],
+            exp: "Topic 14.5.5 The configuration management tool SaltStack uses the name Pillar to describe the set of instructions to be executed.",
+            multi: false
+        },
+        {
+            id: 23,
+            q: "Which scenario describes the use of a public API?",
+            options: [
+            "It requires a license.",
+            "It can be used with no restrictions.",
+            "It is used between a company and its business partners.",
+            "It is used only within an organization."
+            ],
+            answer: ["It can be used with no restrictions."],
+            exp: "Topic 14.3.4 Public, or open, APIs have no restrictions and are available to the public. Some API providers do require a user to obtain a free key or token prior to using the API in order to control the volume of API requests received and processed.",
+            multi: false
+        },
+        {
+            id: 24,
+            q: "What is YAML?",
+            options: [
+            "It is a scripting language.",
+            "It is a data format and superset of JSON.",
+            "It is a compiled programming language.",
+            "It is a web application."
+            ],
+            answer: ["It is a data format and superset of JSON."],
+            exp: "Topic 14.2.7 Like JSON, YAML Ain’t Markup Language (YAML) is a data format used by applications to store and transport data. YAML is considered a superset of JSON.",
+            multi: false
+        },
+        {
+            id: 25,
+            q: "Which RESTFul operation corresponds to the HTTP GET method?",
+            options: [
+            "post",
+            "patch",
+            "update",
+            "read"
+            ],
+            answer: ["read"],
+            exp: "Topic 14.4.3 RESTful operations correspond to the following HTTP methods (shown to the left with the RESTful operation on the right): POST > Create, GET > Read, PUT/PATCH > Update, DELETE > Delete.",
+            multi: false
+        },
+        {
+            id: 26,
+            q: "Which technology virtualizes the network control plane and moves it to a centralized controller?​",
+            options: [
+            "SDN",
+            "fog computing",
+            "cloud computing",
+            "IaaS"
+            ],
+            answer: ["SDN"],
+            exp: "Topic 13.4.2 Networking devices operate in two planes: the data plane and the control plane. The control plane maintains Layer 2 and Layer 3 forwarding mechanisms using the CPU. The data plane forwards traffic flows. SDN virtualizes the control plane and moves it to a centralized network controller.​",
+            multi: false
+        },
+        {
+            id: 27,
+            q: "What are two functions of hypervisors? (Choose two.)",
+            options: [
+            "to partition the hard drive to run virtual machines",
+            "to manage virtual machines",
+            "to protect the host from malware infection from the virtual machines",
+            "to share the antivirus software across the virtual machines",
+            "to allocate physical system resources to virtual machines"
+            ],
+            answer: [
+            "to manage virtual machines",
+            "to allocate physical system resources to virtual machines"
+            ],
+            exp: "Topic 13.2.3 The hypervisor does not protect the hosting OS from malware. Neither does it allow sharing software across virtual machines. The hard drive of the supporting computer does not need to be partitioned to run virtual machines. The hypervisor creates and manages virtual machines on a host computer and allocates physical system resources to them.",
+            multi: true
+        },
+        {
+            id: 28,
+            q: "What is a difference between the functions of Cloud computing and virtualization?",
+            options: [
+            "Cloud computing requires hypervisor technology whereas virtualization is a fault tolerance technology.",
+            "Cloud computing separates the application from the hardware whereas virtualization separates the OS from the underlying hardware.",
+            "Cloud computing provides services on web-based access whereas virtualization provides services on data access through virtualized Internet connections.",
+            "Cloud computing utilizes data center technology whereas virtualization is not used in data centers."
+            ],
+            answer: ["Cloud computing separates the application from the hardware whereas virtualization separates the OS from the underlying hardware."],
+            exp: "Topic 13.2.1 Cloud computing separates the application from the hardware. Virtualization separates the OS from the underlying hardware. Virtualization is a typical component within cloud computing. Virtualization is also widely used in data centers. Although the implementation of virtualization facilitates an easy server fault tolerance setup, it is not a fault tolerance technology by design. The Internet connection from a data center or service provider needs redundant physical WAN connections to ISPs.​​",
+            multi: false
+        },
+        {
+            id: 29,
+            q: "How is the YAML data format structure different from JSON?",
+            options: [
+            "It uses indentations.",
+            "It uses end tags.",
+            "It uses hierarchical levels of nesting.",
+            "It uses brackets and commas."
+            ],
+            answer: ["It uses indentations."],
+            exp: "Topic 14.2.7 The structure in YAML is defined by indentations rather than brackets and commas.",
+            multi: false
+        },
+        {
+            id: 30,
+            q: "What is the most widely used API for web services?",
+            options: [
+            "XML-RPC",
+            "SOAP",
+            "JSON-RPC",
+            "REST"
+            ],
+            answer: ["REST"],
+            exp: "Topic 14.3.5 REST accounts for more than 80% of all API types used for web services, making it the most widely used web service API.",
+            multi: false
+        },
+        {
+            id: 31,
+            q: "What is REST?",
+            options: [
+            "It is a way to store and interchange data in a structured format.",
+            "It is an architecture style for designing web service applications.",
+            "It is a human readable data structure that is used by applications for storing, transforming, and reading data.",
+            "It is a protocol that allows administrators to manage nodes on an IP network."
+            ],
+            answer: ["It is an architecture style for designing web service applications."],
+            exp: "Topic 14.4.2 REST is not a protocol or service, but rather a style of software architecture for designing web service applications.",
+            multi: false
+        },
+        {
+            id: 32,
+            q: "What is a difference between the XML and HTML data formats?",
+            options: [
+            "XML does not use predefined tags whereas HTML does use predefined tags.",
+            "XML encloses data within a pair of tags whereas HTML uses a pair of quotation makes to enclose data.",
+            "XML formats data in binary whereas HTML formats data in plain text.",
+            "XML does not require indentation for each key/value pair but HTML does require indentation."
+            ],
+            answer: ["XML does not use predefined tags whereas HTML does use predefined tags."],
+            exp: "Topic 14.2.8 XML is a human readable data structure used to store, transfer, and read data by applications. Like HTML, XML uses a related set of tags to enclose data. However, unlike HTML, XML uses no predefined tags or document structure.",
+            multi: false
+        },
+        {
+            id: 33,
+            q: "To avoid purchasing new hardware, a company wants to take advantage of idle system resources and consolidate the number of servers while allowing for multiple operating systems on a single hardware platform. What service or technology would support this requirement?",
+            options: [
+            "dedicated servers",
+            "Cisco ACI",
+            "virtualization",
+            "software defined networking"
+            ],
+            answer: ["virtualization"],
+            exp: "Topic 13.2.3",
+            multi: false
+        },
+        {
+            id: 35,
+            q: "Which cloud computing opportunity would provide the use of network hardware such as routers and switches for a particular company?",
+            options: [
+            "software as a service (SaaS)",
+            "wireless as a service (WaaS)",
+            "infrastructure as a service (IaaS)",
+            "browser as a service (BaaS)"
+            ],
+            answer: ["infrastructure as a service (IaaS)"],
+            exp: "Topic 13.1.3 Routers, switches, and firewalls are infrastructure devices that can be provided in the cloud.",
+            multi: false
+        },
+        {
+            id: 36,
+            q: "What component is considered the brains of the ACI architecture and translates application policies​?",
+            options: [
+            "the Application Network Profile endpoints",
+            "the Nexus 9000 switch",
+            "the hypervisor​",
+            "the Application Policy Infrastructure Controller"
+            ],
+            answer: ["the Application Policy Infrastructure Controller"],
+            exp: "Topic 13.5.3 The ACI architecture consists of three core components: the Application Network Profile, the Application Policy Infrastructure Controller, which serves as the brains of the ACI architecture, and the Cisco Nexus 9000 switch.",
+            multi: false
+        },
+        {
+            id: 37,
+            q: "Which statement describes the concept of cloud computing?",
+            options: [
+            "separation of management plane from control plane",
+            "separation of control plane from data plane",
+            "separation of application from hardware",
+            "separation of operating system from hardware"
+            ],
+            answer: ["separation of application from hardware"],
+            exp: "Topic 13.2.1 Cloud computing is used to separate the application or service from hardware. Virtualization separates the operating system from the hardware.",
+            multi: false
+        },
+        {
+            id: 38,
+            q: "In which situation would a partner API be appropriate?",
+            options: [
+            "an internet search engine allowing developers to integrate the search engine into their own software applications",
+            "company sales staff accessing internal sales data from their mobile devices",
+            "someone creating an account on an external app or website by using his or her social media credentials",
+            "a vacation service site interacting with hotel databases to display information from all the hotels on its web site"
+            ],
+            answer: ["a vacation service site interacting with hotel databases to display information from all the hotels on its web site."],
+            exp: "Topic 14.3.4 Partner API programs incorporate collaboration with other business. They facilitate communication and integration of software between a company and its business partners.",
+            multi: false
+        },
+        {
+            id: 39,
+            q: "Because of enormous growth in web traffic, a company has planned to purchase additional servers to help handle the web traffic. What service or technology would support this requirement?",
+            options: [
+            "virtualization",
+            "data center",
+            "cloud services",
+            "dedicated servers"
+            ],
+            answer: ["cloud services"],
+            exp: "Topic 13.1.2",
+            multi: false
+        },
+        {
+            id: 40,
+            q: "ABCTech is investigating the use of automation for some of its products. In order to control and test these products, the programmers require Windows, Linux, and MAC OS on their computers. What service or technology would support this requirement?",
+            options: [
+            "dedicated servers",
+            "software defined networking",
+            "virtualization",
+            "Cisco ACI"
+            ],
+            answer: ["virtualization"],
+            exp: "Topic 13.2.3 Virtualization is the technology that separates the operating system (OS) from the underlying hardware. This separation allows multiple operating systems—such as Windows, Linux, and MAC OS—to exist and run simultaneously on a single hardware platform. Specifically, Type 2 hypervisors can be installed on a programmer’s computer to create virtual machine instances for each required OS, providing isolated environments for controlling and testing automated products.",
+            multi: false
+        },
+        {
+            id: 41,
+            q: "What are three components used in the query portion of a typical RESTful API request? (Choose three.)",
+            options: [
+            "API server",
+            "format",
+            "parameters",
+            "key",
+            "protocol",
+            "resources"
+            ],
+            answer: [
+            "format",
+            "parameters",
+            "key"
+            ],
+            exp: "Topic 14.4.5 The query portion in a RESTful API request specifies the data format and information the client is requesting from the API service. Queries can include the following: Format – JSON, YAML, XML, and other supported data format; Key – for authentication of the requesting source; Parameters – used to send information pertaining to the query request.",
+            multi: true
+        },
+        {
+            id: 42,
+            q: "A company has recently become multinational. Employees are working remotely, in different time zones, and they need access to company services from any place at any time. What service or technology would support this requirement?",
+            options: [
+            "dedicated servers",
+            "cloud services",
+            "Cisco ACI",
+            "virtualization"
+            ],
+            answer: ["cloud services"],
+            exp: "Topic 13.1.2",
+            multi: false
+        },
+        {
+            id: 43,
+            q: "Following a multicontinent advertising campaign for a new product, a company finds its client database and volume of orders are overloading its on-site computer systems but the company does not have any room to expand. What service or technology would support this requirement?",
+            options: [
+            "cloud services",
+            "dedicated servers",
+            "data center",
+            "virtualization"
+            ],
+            answer: ["cloud services"],
+            exp: "Topic 13.1.2",
+            multi: false
+        },
+        {
+            id: 44,
+            q: "A network administrator has been tasked with creating a disaster recovery plan. As part of this plan, the administrator is looking for a backup site for all of the data on the company servers. What service or technology would support this requirement?",
+            options: [
+            "virtualization",
+            "software defined networking",
+            "data center",
+            "dedicated servers"
+            ],
+            answer: ["data center"],
+            exp: "Topic 13.1.5 A data center is a dedicated facility used for the storage and processing of data, which can be managed by an in-house IT department or leased from an offsite provider. Because data centers provide the physical infrastructure for compute and storage needs, they serve as the primary backup site for disaster recovery plans, especially for smaller organizations that lease these services to reduce the cost of ownership. While virtualization is a technology used to improve disaster recovery, the data center is the actual service or facility that supports the requirement for a physical backup site.",
+            multi: false
+        },
+        {
+            id: 45,
+            q: "Which is a requirement of a site-to-site VPN?",
+            options: [
+            "It requires hosts to use VPN client software to encapsulate traffic.",
+            "It requires a VPN gateway at each end of the tunnel to encrypt and decrypt traffic.",
+            "It requires the placement of a VPN server at the edge of the company network.",
+            "It requires a client/server architecture."
+            ],
+            answer: ["It requires a VPN gateway at each end of the tunnel to encrypt and decrypt traffic."],
+            exp: "Topic 14.6.3 Site-to-site VPNs are static and are used to connect entire networks. Hosts have no knowledge of the VPN and send TCP/IP traffic to VPN gateways. The VPN gateway is responsible for encapsulating the traffic and forwarding it through the VPN tunnel to a peer gateway at the other end which decapsulates the traffic.",
+            multi: false
+        },
+        {
+            id: 46,
+            q: "Which statement describes an important characteristic of a site-to-site VPN?",
+            options: [
+            "It must be statically set up.",
+            "After the initial connection is established, it can dynamically change connection information.",
+            "It requires using a VPN client on the host PC.",
+            "It is commonly implemented over dialup and cable modem networks.",
+            "It is ideally suited for use by mobile workers."
+            ],
+            answer: ["It must be statically set up."],
+            exp: "Topic 14.6.3 A site-to-site VPN is created between the network devices of two separate networks. The VPN is static and stays established. The internal hosts of the two networks have no knowledge of the VPN.",
+            multi: false
+        },
+        {
+            id: 47,
+            q: "Which protocol is attacked when a cybercriminal provides an invalid gateway in order to create a man-in-the-middle attack?",
+            options: [
+            "DHCP",
+            "ICMP",
+            "DNS",
+            "HTTP or HTTPS"
+            ],
+            answer: ["DHCP"],
+            exp: "Topic 13.2.2 A cybercriminal could set up a rogue DHCP server that provides one or more of the following: Wrong default gateway that is used to create a man-in-the-middle attack and allow the attacker to intercept data; Wrong DNS server that results in the user being sent to a malicious website; Invalid default gateway IP address that results in a denial of service attack on the DHCP client.",
+            multi: false
+        },
+        {
+            id: 48,
+            q: "In which TCP attack is the cybercriminal attempting to overwhelm a target host with half-open TCP connections?",
+            options: [
+            "reset attack",
+            "session hijacking attack",
+            "SYN flood attack",
+            "port scan attack"
+            ],
+            answer: ["SYN flood attack"],
+            exp: "Topic 10.2.2 In a TCP SYN flood attack, the attacker sends to the target host a continuous flood of TCP SYN session requests with a spoofed source IP address. The target host responds with a TCP-SYN-ACK to each of the SYN session requests and waits for a TCP ACK that will never arrive. Eventually the target is overwhelmed with half-open TCP connections.",
+            multi: false
+        },
+        {
+            id: 49,
+            q: "Which statement describes a VPN?",
+            options: [
+            "VPNs use logical connections to create public networks through the Internet.",
+            "VPNs use open source virtualization software to create the tunnel through the Internet.",
+            "VPNs use dedicated physical connections to transfer data between remote users.",
+            "VPNs use virtual connections to create a private network through a public network."
+            ],
+            answer: ["VPNs use virtual connections to create a private network through a public network."],
+            exp: "Topic 14.6.3 A VPN is a private network that is created over a public network. Instead of using dedicated physical connections, a VPN uses virtual connections routed through a public network between two network devices.",
+            multi: false
+        }
+    ];
+
+    let state = {
+        pool: [],
+        currentIndex: 0,
+        score: 0,
+        bookmarks: new Set(),
+        wrongList: [],
+        itemsPerPhase: 20,
+        isAnswered: false,
+        tempSelected: []
+    };
+
+    function shuffle(arr) {
+        let array = [...arr];
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function initQuiz() {
+        state.pool = shuffle(questionsData).map(q => ({
+            ...q,
+            options: shuffle(q.options)
+        }));
+        state.currentIndex = 0;
+        state.score = 0;
+        state.bookmarks.clear();
+        state.wrongList = [];
+        state.isAnswered = false;
+        state.tempSelected = [];
+        render();
+    }
+
+    function render() {
+        const view = document.getElementById('quiz-view');
+        if (state.currentIndex >= state.pool.length) {
+            renderFinal();
+            return;
+        }
+
+        const q = state.pool[state.currentIndex];
+        const progress = (state.currentIndex / state.pool.length) * 100;
+
+        view.innerHTML = `
+            <div class="header-status">
+                <span>STAGE ${Math.floor(state.currentIndex / state.itemsPerPhase) + 1}</span>
+                <span>${state.currentIndex + 1} / ${state.pool.length}</span>
+            </div>
+            <div class="progress"><div class="progress-bar" style="width: ${progress}%"></div></div>
+            
+            <div class="card">
+                <div class="q-header">
+                    <div class="q-text-wrapper">
+                        <span class="q-id-badge">ID: ${q.id}</span>
+                        <div class="q-text">${q.q} ${q.multi ? '(Multiple Choice)' : ''}</div>
+                    </div>
+                    <button class="bookmark-btn ${state.bookmarks.has(q.id) ? 'active' : ''}" onclick="toggleBookmark(${q.id})">
+                        ${state.bookmarks.has(q.id) ? '★ MARKED' : '☆ MARK'}
+                    </button>
+                </div>
+                <div class="options">
+                    ${q.options.map((opt, i) => `
+                        <div class="option" onclick="handleSelect('${opt.replace(/'/g, "\\'")}', this)">
+                            <input type="${q.multi ? 'checkbox' : 'radio'}" name="ans" value="${opt}" id="o${i}" ${state.tempSelected.includes(opt) ? 'checked' : ''}>
+                            <label for="o${i}">${opt}</label>
+                        </div>
+                    `).join('')}
+                </div>
+                <div id="feedback" class="feedback"></div>
+            </div>
+            
+            <div class="controls" id="btn-bar">
+                ${q.multi ? '<button class="btn-primary" onclick="submitMulti()">SUBMIT ANSWER</button>' : ''}
+            </div>
+        `;
+    }
+
+    window.toggleBookmark = function(id) {
+        if (state.bookmarks.has(id)) state.bookmarks.delete(id);
+        else state.bookmarks.add(id);
+        const btn = document.querySelector('.bookmark-btn');
+        if (btn) {
+            btn.classList.toggle('active');
+            btn.innerHTML = state.bookmarks.has(id) ? '★ MARKED' : '☆ MARK';
+        }
+    };
+
+    window.handleSelect = function(val, el) {
+        if (state.isAnswered) return;
+        const q = state.pool[state.currentIndex];
+
+        if (!q.multi) {
+            state.tempSelected = [val];
+            evaluate();
+        } else {
+            const idx = state.tempSelected.indexOf(val);
+            if (idx > -1) state.tempSelected.splice(idx, 1);
+            else state.tempSelected.push(val);
+            
+            document.querySelectorAll('.option').forEach(o => {
+                const checked = state.tempSelected.includes(o.querySelector('input').value);
+                o.querySelector('input').checked = checked;
+                if(checked) o.classList.add('selected'); else o.classList.remove('selected');
+            });
+        }
+    };
+
+    window.submitMulti = function() {
+        if (state.tempSelected.length === 0) return;
+        evaluate();
+    };
+
+    function evaluate() {
+        state.isAnswered = true;
+        const q = state.pool[state.currentIndex];
+        const feedback = document.getElementById('feedback');
+        const correct = state.tempSelected.length === q.answer.length && state.tempSelected.every(v => q.answer.includes(v));
+
+        if (correct) {
+            state.score++;
+            feedback.className = 'feedback correct';
+            feedback.innerHTML = `<strong>CORRECT!</strong>`;
+        } else {
+            state.wrongList.push(q);
+            feedback.className = 'feedback wrong';
+            feedback.innerHTML = `<strong>INCORRECT</strong><br>Correct Answer: ${q.answer.join(', ')}`;
+        }
+
+        feedback.innerHTML += `<div class="explanation">${q.exp}</div>`;
+        feedback.style.display = 'block';
+
+        document.querySelectorAll('.option').forEach(el => {
+            const val = el.querySelector('input').value;
+            if (q.answer.includes(val)) el.classList.add('correct');
+            else if (state.tempSelected.includes(val)) el.classList.add('wrong');
+        });
+
+        const bar = document.getElementById('btn-bar');
+        if (bar) bar.innerHTML = `<button class="btn-primary" onclick="nextQuestion()">NEXT QUESTION</button>`;
+    }
+
+    window.nextQuestion = function() {
+        state.currentIndex++;
+        state.isAnswered = false;
+        state.tempSelected = [];
+
+        if (state.currentIndex > 0 && state.currentIndex % state.itemsPerPhase === 0 && state.currentIndex < state.pool.length) {
+            renderBreak();
+        } else {
+            render();
+        }
+    };
+
+    function renderBreak() {
+        const view = document.getElementById('quiz-view');
+        view.innerHTML = `
+            <div class="card result-panel">
+                <div class="big-title" style="font-size: 1.8rem;">STAGE COMPLETED</div>
+                <p style="font-size: 1.1rem; color: #5a5c69; margin-bottom: 25px; text-align: center;">You've finished ${state.currentIndex} questions.</p>
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <button class="btn-primary" onclick="render()">CONTINUE QUIZ</button>
+                </div>
+                <div class="switch-tabs">
+                    <div class="tab active" onclick="switchReview('wrong', this)">❌ WRONG <span class="badge">${state.wrongList.length}</span></div>
+                    <div class="tab" onclick="switchReview('book', this)">★ MARKED <span class="badge badge-warn">${state.bookmarks.size}</span></div>
+                </div>
+                <div id="review-content" class="review-list"></div>
+            </div>
+        `;
+        switchReview('wrong');
+    }
+
+    window.switchReview = function(type, el) {
+        if (el) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+        }
+        const list = document.getElementById('review-content');
+        const items = type === 'wrong' ? state.wrongList : state.pool.filter(p => state.bookmarks.has(p.id));
+        list.innerHTML = items.map(it => `
+            <div class="review-item" style="border-left-color: ${type==='wrong' ? 'var(--danger)' : 'var(--warning)'}">
+                <span class="q-id-badge">ID: ${it.id}</span>
+                <strong>${it.q}</strong><br>
+                <span style="color:var(--success); font-weight:700;">Answer: ${it.answer.join(', ')}</span>
+                <div style="font-size:0.85rem; margin-top:5px; color:#777;">${it.exp}</div>
+            </div>
+        `).join('') || '<p style="text-align:center; padding:20px;">Category is empty.</p>';
+    };
+
+    function renderFinal() {
+        const view = document.getElementById('quiz-view');
+        const acc = Math.round((state.score / state.pool.length) * 100);
+        view.innerHTML = `
+            <div class="card result-panel">
+                <div class="big-title">FINAL RESULTS</div>
+                <div class="score-circle">${state.score} <span class="score-total">/ ${state.pool.length}</span></div>
+                <p style="font-size:1.5rem; font-weight:800; margin-bottom: 30px; color: #1cc88a; text-align: center;">ACCURACY: ${acc}%</p>
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <button class="btn-primary" onclick="initQuiz()">RESTART QUIZ</button>
+                </div>
+                <div class="switch-tabs">
+                    <div class="tab active" onclick="switchFinal('wrong', this)">❌ WRONG <span class="badge">${state.wrongList.length}</span></div>
+                    <div class="tab" onclick="switchFinal('book', this)">★ MARKED <span class="badge badge-warn">${state.bookmarks.size}</span></div>
+                </div>
+                <div id="final-review-list" class="review-list"></div>
+            </div>
+        `;
+        switchFinal('wrong');
+    }
+
+    window.switchFinal = function(type, el) {
+        if (el) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+        }
+        const list = document.getElementById('final-review-list');
+        const items = type === 'wrong' ? state.wrongList : state.pool.filter(p => state.bookmarks.has(p.id));
+        list.innerHTML = items.map(it => `
+            <div class="review-item" style="border-left-color: ${type==='wrong' ? 'var(--danger)' : 'var(--warning)'}">
+                <span class="q-id-badge">ID: ${it.id}</span>
+                <strong>${it.q}</strong><br>
+                <span style="color:var(--success); font-weight:700;">Correct Answer: ${it.answer.join(', ')}</span>
+                <p style="font-size:0.9rem; background:#f8f9fc; padding:15px; border-radius:8px; margin-top:10px;">${it.exp}</p>
+            </div>
+        `).join('') || '<p style="text-align:center; padding:20px;">List is empty.</p>';
+    };
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initQuiz);
+    } else {
+        initQuiz();
+    }
+</script>
+
+</body>
+</html>
