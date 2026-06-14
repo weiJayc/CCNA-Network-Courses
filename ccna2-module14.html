@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CCNA3 Modules 13 Practice Quiz</title>
+    <script>
+        (function () {
+            try {
+                var t = sessionStorage.getItem('ccna-theme');
+                if (t === 'dark') document.documentElement.dataset.theme = 'dark';
+                else delete document.documentElement.dataset.theme;
+            } catch (e) {
+                // Ignore storage errors.
+            }
+        })();
+    </script>
+    <style>
+        :root {
+            --primary: #4e73df;
+            --secondary: #858796;
+            --success: #1cc88a;
+            --danger: #e74a3b;
+            --warning: #f6c23e;
+            --bg: #f8f9fc;
+            --white: #ffffff;
+            --card-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+
+        body {
+            font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 10px;
+            color: #5a5c69;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 850px;
+            margin: auto;
+            box-sizing: border-box;
+        }
+
+        /* Progress Area */
+        .header-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .progress {
+            height: 8px;
+            background: #eaecf4;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.4s ease;
+        }
+
+        /* Card System */
+        .card {
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Question Layout */
+        .q-header {
+            display: flex;
+            flex-direction: column; 
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .q-text-wrapper {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .q-text {
+            font-size: 1.1rem;
+            font-weight: 700;
+            line-height: 1.5;
+            color: #3a3b45;
+            flex: 1;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        .q-id-badge {
+            background: #f0f2f7;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: var(--primary);
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .bookmark-btn {
+            background: var(--white);
+            border: 1.5px solid #d1d3e2;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--secondary);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            width: fit-content;
+            align-self: flex-start;
+        }
+
+        .bookmark-btn.active {
+            background: #fffbe6;
+            border-color: var(--warning);
+            color: #856404;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* Options */
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            padding: 15px;
+            border: 2px solid #eaecf4;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            font-size: 0.95rem;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        .option:hover { border-color: var(--primary); background-color: #f8f9fc; }
+        .option.selected { border-color: var(--primary); background-color: #f0f4ff; }
+        .option.correct { border-color: var(--success) !important; background-color: #d1fae5 !important; color: #065f46; font-weight: 700; }
+        .option.wrong { border-color: var(--danger) !important; background-color: #fee2e2 !important; color: #991b1b; }
+
+        input[type="radio"], input[type="checkbox"] { 
+            margin-right: 12px; 
+            transform: scale(1.1); 
+            flex-shrink: 0;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+            border-left: 5px solid;
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .feedback.correct { background: #f0fdf4; color: #166534; border-left-color: var(--success); }
+        .feedback.wrong { background: #fef2f2; color: #991b1b; border-left-color: var(--danger); }
+
+        .explanation {
+            font-size: 0.9rem;
+            margin-top: 12px;
+            color: #4b5563;
+            line-height: 1.6;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(0,0,0,0.1);
+        }
+
+        .controls { text-align: center; margin-top: 25px; }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 40px;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(78, 115, 223, 0.25);
+            transition: all 0.2s;
+            text-transform: uppercase;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .btn-primary:active { transform: scale(0.98); opacity: 0.9; }
+
+        /* Titles */
+        .big-title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            margin-bottom: 15px;
+            text-align: center;
+            line-height: 1.2;
+        }
+        
+        .score-circle { font-size: 5.5rem; font-weight: 900; color: var(--primary); line-height: 1; margin: 15px 0; text-align: center; }
+        .score-total { font-size: 1.8rem; color: var(--secondary); opacity: 0.7; }
+
+        /* Switch Tabs */
+        .switch-tabs {
+            display: flex;
+            background: #eaecf4;
+            border-radius: 15px;
+            padding: 5px;
+            margin: 25px auto;
+            width: 100%;
+            max-width: 550px;
+            box-sizing: border-box;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px 5px;
+            cursor: pointer;
+            border-radius: 10px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            color: #858796;
+            font-size: 0.85rem;
+        }
+
+        .tab.active { background: white; color: var(--primary); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .badge { background: var(--danger); color: white; border-radius: 20px; padding: 2px 8px; font-size: 0.7rem; }
+        .badge-warn { background: var(--warning); color: #000; }
+
+        .review-list { text-align: left; margin-top: 20px; }
+        .review-item {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border-left: 6px solid #d1d3e2;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+
+        @media (min-width: 600px) {
+            body { padding: 30px 20px; }
+            .card { padding: 30px; }
+            .q-header { flex-direction: row; align-items: center; }
+            .q-text { font-size: 1.25rem; }
+            .big-title { font-size: 2.8rem; }
+            .tab { font-size: 0.95rem; }
+        }
+    </style>
+    <link rel="stylesheet" href="theme.css">
+    <script src="theme.js" defer></script>
+</head>
+<body>
+
+<div class="container" id="quiz-view">
+    <div style="text-align: center; padding: 100px; font-weight: bold; color: var(--primary);">INITIALIZING CCNA QUIZ ENGINE...</div>
+</div>
+
+<script>
+    const questionsData = [
+        {
+            id: 1,
+            q: "Which feature on a Cisco router permits the forwarding of traffic for which there is no specific route?",
+            options: [
+            "next-hop",
+            "gateway of last resort",
+            "route source",
+            "outgoing interface"
+            ],
+            answer: ["gateway of last resort"],
+            exp: "Topic 14.4.9 A default static route is used as a gateway of last resort to forward unknown destination traffic to a next hop/exit interface. The next-hop or exit interface is the destination to send traffic to on a network after the traffic is matched in a router. The route source is the location a route was learned from.",
+            multi: false
+        },
+        {
+            id: 2,
+            q: "Which three advantages are provided by static routing? (Choose three.)",
+            options: [
+            "Static routing does not advertise over the network, thus providing better security.",
+            "Configuration of static routes is error-free.",
+            "Static routes scale well as the network grows.",
+            "Static routing typically uses less network bandwidth and fewer CPU operations than dynamic routing does.",
+            "The path a static route uses to send data is known.",
+            "No intervention is required to maintain changing route information."
+            ],
+            answer: [
+            "Static routing does not advertise over the network, thus providing better security.",
+            "Static routing typically uses less network bandwidth and fewer CPU operations than dynamic routing does.",
+            "The path a static route uses to send data is known."
+            ],
+            exp: "Topic 14.5.1 Static routes are prone to errors from incorrect configuration by the administrator. They do not scale well, because the routes must be manually reconfigured to accommodate a growing network. Intervention is required each time a route change is necessary. They do provide better security, use less bandwidth, and provide a known path to the destination.",
+            multi: true
+        },
+        {
+            id: 3,
+            q: "What are two functions of dynamic routing protocols? (Choose two.)",
+            options: [
+            "to maintain routing tables",
+            "to assure low router overhead",
+            "to avoid exposing network information",
+            "to discover the network",
+            "to choose the path that is specified by the administrator"
+            ],
+            answer: [
+            "to maintain routing tables",
+            "to discover the network"
+            ],
+            exp: "Topic 14.5.3 Dynamic routing protocols exist to discover the network, maintain routing tables, and calculate the best path. Having low levels of routing overhead, using the path specified by the administrator, and avoiding the exposure of network information are functions of static routing.",
+            multi: true
+        },
+        {
+            id: 4,
+            q: "What is an advantage of using dynamic routing protocols instead of static routing?",
+            options: [
+            "easier to implement",
+            "more secure in controlling routing updates",
+            "fewer router resource overhead requirements",
+            "ability to actively search for new routes if the current path becomes unavailable​"
+            ],
+            answer: ["ability to actively search for new routes if the current path becomes unavailable​"],
+            exp: "Topic 14.5.3 Dynamic routing has the ability to search and find a new best path if the current path is no longer available. The other options are actually the advantages of static routing.",
+            multi: false
+        },
+        {
+            id: 5,
+            q: "What happens to a static route entry in a routing table when the outgoing interface associated with that route goes into the down state?",
+            options: [
+            "The static route is removed from the routing table.",
+            "The router polls neighbors for a replacement route.",
+            "The router automatically redirects the static route to use another interface.",
+            "The static route remains in the table because it was defined as static."
+            ],
+            answer: ["The static route is removed from the routing table."],
+            exp: "Topic 14.1.6 When the interface associated with a static route goes down, the router will remove the route because it is no longer valid.",
+            multi: false
+        },
+        {
+            id: 7,
+            q: "When would it be more beneficial to use a dynamic routing protocol instead of static routing?",
+            options: [
+            "in an organization where routers suffer from performance issues",
+            "on a stub network that has a single exit point",
+            "in an organization with a smaller network that is not expected to grow in size",
+            "on a network where there is a lot of topology changes"
+            ],
+            answer: ["on a network where there is a lot of topology changes"],
+            exp: "Topic 14.5.1 Dynamic routing protocols consume more router resources, are suitable for larger networks, and are more useful on networks that are growing and changing.",
+            multi: false
+        },
+        {
+            id: 8,
+            q: "Which route would be used to forward a packet with a source IP address of 192.168.10.1 and a destination IP address of 10.1.1.1?",
+            options: [
+            "C 192.168.10.0/30 is directly connected, GigabitEthernet0/1",
+            "O 10.1.1.0/24 [110/65] via 192.168.200.2, 00:01:20, Serial0/1/0",
+            "S* 0.0.0.0/0 [1/0] via 172.16.1.1",
+            "S 10.1.0.0/16 is directly connected, GigabitEthernet0/0"
+            ],
+            answer: ["O 10.1.1.0/24 [110/65] via 192.168.200.2, 00:01:20, Serial0/1/0"],
+            exp: "Topic 14.1.3 Even though OSPF has a higher administrative distance value (less trustworthy), the best match is the route in the routing table that has the most number of far left matching bits.",
+            multi: false
+        },
+        {
+            id: 10,
+            q: "Which value in a routing table represents trustworthiness and is used by the router to determine which route to install into the routing table when there are multiple routes toward the same destination?",
+            options: [
+            "administrative distance",
+            "metric",
+            "outgoing interface",
+            "routing protocol"
+            ],
+            answer: ["administrative distance"],
+            exp: "Topic 14.4.12 The administrative distance represents the trustworthiness of a particular route. The lower an administrative distance, the more trustworthy the learned route is. When a router learns multiple routes toward the same destination, the router uses the administrative distance value to determine which route to place into the routing table. A metric is used by a routing protocol to compare routes received from the routing protocol. An exit interface is the interface used to send a packet in the direction of the destination network. A routing protocol is used to exchange routing updates between two or more adjacent routers.",
+            multi: false
+        },
+        {
+            id: 31,
+            q: "Refer to the exhibit. Which interface will be the exit interface to forward a data packet that has the destination IP address 172.19.115.206?\n\nGateway of last resort is not set.\n172.19.115.0/26 is variously subnetted, 7 subnets, 3 masks\nO 172.19.115.0/26 [110/10] via 172.19.39.1, 00:00:24, Serial0/0/0\nO 172.19.115.64/26 [110/20] via 172.19.39.6, 00:00:56, Serial 0/0/1\nO 172.19.115.128/26 [110/10] via 172.19.39.1, 00:00:24, Serial 0/0/0\nC 172.19.115.192/27 is directly connected, GigabitEthernet0/0\nL 172.19.115.193/27 is directly connected, GigabitEthernet0/0\nC 172.19.115.224/27 is directly connected, GigabitEthernet0/1\nL 172.19.115.225/27 is directly connected, GigabitEthernet0/1\n172.19.39.0/24 is variably subnetted, 4 subnets, 2 masks\nC 172.19.39.0/30 is directly connected, Serial0/0/0\nL 172.19.39.2/32 is directly connected, Serial0/0/0\nC 172.19.39.4/30 is directly connected, Serial0/0/1\nL 172.19.39.5/32 is directly connected, Serial0/0/1\nS 172.19.40.0/26 [1/0] via 172.19.39.1, 00:00:24, Serial0/0/0",
+            options: [
+            "GigabitEthernet0/1",
+            "None, the packet will be dropped.",
+            "GigabitEthernet0/0",
+            "Serial0/0/1"
+            ],
+            answer: ["GigabitEthernet0/0"],
+            exp: "Topic 14.1.3",
+            multi: false
+        },
+        {
+            id: 41,
+            q: "What route would have the lowest administrative distance?",
+            options: [
+            "a route received through the OSPF routing protocol",
+            "a directly connected network",
+            "a static route",
+            "a route received through the EIGRP routing protocol"
+            ],
+            answer: ["a directly connected network"],
+            exp: "Topic 14.4.12 The most believable route or the route with the lowest administrative distance is one that is directly connected to a router.",
+            multi: false
+        },
+        {
+            id: 47,
+            q: "Refer to the exhibit. Which interface will be the exit interface to forward a data packet that has the destination IP address 172.18.109.152?\n\nGateway of last resort is not set.\n172.18.109.0/26 is variously subnetted, 7 subnets, 3 masks\nO 172.18.109.0/26 [110/10] via 172.18.32.1, 00:00:24, Serial0/0/0\nO 172.18.109.64/26 [110/20] via 172.18.32.6, 00:00:56, Serial 0/0/1\nO 172.18.109.128/26 [110/10] via 172.18.32.1, 00:00:24, Serial 0/0/0\nC 172.18.109.192/27 is directly connected, GigabitEthernet0/0\nL 172.18.109.193/27 is directly connected, GigabitEthernet0/0\nC 172.18.109.224/27 is directly connected, GigabitEthernet0/1\nL 172.18.109.225/27 is directly connected, GigabitEthernet0/1\n172.18.32.0/24 is variably subnetted, 4 subnets, 2 masks\nC 172.18.32.0/30 is directly connected, Serial0/0/0\nL 172.18.32.2/32 is directly connected, Serial0/0/0\nC 172.18.32.4/30 is directly connected, Serial0/0/1\nL 172.18.32.5/32 is directly connected, Serial0/0/1\nS 172.18.33.0/26 [1/0] via 172.18.32.1, 00:00:24, Serial0/0/0",
+            options: [
+            "GigabitEthernet0/0",
+            "GigabitEthernet0/1",
+            "Serial0/0/0",
+            "None, the packet will be dropped."
+            ],
+            answer: ["Serial0/0/0"],
+            exp: "Topic 14.1.3",
+            multi: false
+        },
+        {
+            id: 50,
+            q: "What are two advantages of static routing over dynamic routing? (Choose two.)",
+            options: [
+            "Static routing is more secure because it does not advertise over the network.",
+            "Static routing scales well with expanding networks.",
+            "Static routing requires very little knowledge of the network for correct implementation.",
+            "Static routing uses fewer router resources than dynamic routing.",
+            "Static routing is relatively easy to configure for large networks."
+            ],
+            answer: [
+            "Static routing is more secure because it does not advertise over the network.",
+            "Static routing uses fewer router resources than dynamic routing."
+            ],
+            exp: "Topic 14.5.1 Static routing requires a thorough understanding of the entire network for proper implementation. It can be prone to errors and does not scale well for large networks. Static routing uses fewer router resources, because no computing is required for updating routes. Static routing can also be more secure because it does not advertise over the network.",
+            multi: true
+        },
+        {
+            id: 52,
+            q: "A network administrator configures the interface fa0/0 on the router R1 with the command ip address 172.16.1.254 255.255.255.0. However, when the administrator issues the command show ip route, the routing table does not show the directly connected network. What is the possible cause of the problem?",
+            options: [
+            "The subnet mask is incorrect for the IPv4 address.",
+            "The configuration needs to be saved first.",
+            "The interface fa0/0 has not been activated.",
+            "No packets with a destination network of 172.16.1.0 have been sent to R1."
+            ],
+            answer: ["The interface fa0/0 has not been activated."],
+            exp: "Topic 14.4.4 A directly connected network will be added to the routing table when these three conditions are met: (1) the interface is configured with a valid IP address; (2) it is activated with no shutdown command; and (3) it receives a carrier signal from another device that is connected to the interface. An incorrect subnet mask for an IPv4 address will not prevent its appearance in the routing table, although the error may prevent successful communications.",
+            multi: false
+        },
+        {
+            id: 55,
+            q: "Refer to the exhibit. Which interface will be the exit interface to forward a data packet that has the destination IP address 192.168.139.244?\n\nGateway of last resort is not set.\n192.168.139.0/26 is variously subnetted, 7 subnets, 3 masks\nO 192.168.139.0/26 [110/10] via 192.168.70.1, 00:00:24, Serial0/0/0\nO 192.168.139.64/26 [110/20] via 192.168.70.6, 00:00:56, Serial 0/0/1\nO 192.168.139.128/26 [110/10] via 192.168.70.1, 00:00:24, Serial 0/0/0\nC 192.168.139.192/27 is directly connected, GigabitEthernet0/0\nL 192.168.139.193/27 is directly connected, GigabitEthernet0/0\nC 192.168.139.224/27 is directly connected, GigabitEthernet0/1\nL 192.168.139.225/27 is directly connected, GigabitEthernet0/1\n192.168.70.0/24 is variably subnetted, 4 subnets, 2 masks\nC 192.168.70.0/30 is directly connected, Serial0/0/0\nL 192.168.70.2/32 is directly connected, Serial0/0/0\nC 192.168.70.4/30 is directly connected, Serial0/0/1\nL 192.168.70.5/32 is directly connected, Serial0/0/1\nS 192.168.71.0/26 [1/0] via 192.168.70.1, 00:00:24, Serial0/0/0",
+            options: [
+            "GigabitEthernet0/1",
+            "None, the packet will be dropped.",
+            "Serial0/0/1",
+            "GigabitEthernet0/0"
+            ],
+            answer: ["GigabitEthernet0/1"],
+            exp: "Topic 14.1.3",
+            multi: false
+        },
+        {
+            id: 57,
+            q: "Refer to the exhibit. Which interface will be the exit interface to forward a data packet that has the destination IP address 192.168.71.52?\n\nGateway of last resort is not set.\n192.168.139.0/26 is variously subnetted, 7 subnets, 3 masks\nO 192.168.139.0/26 [110/10] via 192.168.70.1, 00:00:24, Serial0/0/0\nO 192.168.139.64/26 [110/20] via 192.168.70.6, 00:00:56, Serial 0/0/1\nO 192.168.139.128/26 [110/10] via 192.168.70.1, 00:00:24, Serial 0/0/0\nC 192.168.139.192/27 is directly connected, GigabitEthernet0/0\nL 192.168.139.193/27 is directly connected, GigabitEthernet0/0\nC 192.168.139.224/27 is directly connected, GigabitEthernet0/1\nL 192.168.139.225/27 is directly connected, GigabitEthernet0/1\n192.168.70.0/24 is variably subnetted, 4 subnets, 2 masks\nC 192.168.70.0/30 is directly connected, Serial0/0/0\nL 192.168.70.2/32 is directly connected, Serial0/0/0\nC 192.168.70.4/30 is directly connected, Serial0/0/1\nL 192.168.70.5/32 is directly connected, Serial0/0/1\nS 192.168.71.0/26 [1/0] via 192.168.70.1, 00:00:24, Serial0/0/0",
+            options: [
+            "The packet will take the gateway of last resort.",
+            "GigabitEthernet0/1",
+            "Serial0/0/0",
+            "None, the packet will be dropped."
+            ],
+            answer: ["None, the packet will be dropped."],
+            exp: "Topic 14.1.3",
+            multi: false
+        },
+        {
+            id: 58,
+            q: "What characteristic completes the following statement?\n\nWhen an IPv6 static route is configured, the installation of the route can be verified with ……",
+            options: [
+            "a destination host route with a /128 prefix.",
+            "the interface type and interface number.",
+            "the “show ipv6 route static” command.",
+            "an administrative distance of 2."
+            ],
+            answer: ["the “show ipv6 route static” command."],
+            exp: "Topic 15.2.7",
+            multi: false
+        },
+        {
+            id: 59,
+            q: "Refer to the exhibit. Which interface will be the exit interface to forward a data packet that has the destination IP address 10.55.99.78?\n\nGateway of last resort is not set.\n10.55.99.0/26 is variously subnetted, 7 subnets, 3 masks\nO 10.55.99.0/26 [110/10] via 10.55.18.1, 00:00:24, Serial0/0/0\nO 10.55.99.64/26 [110/20] via 10.55.18.6, 00:00:56, Serial 0/0/1\nO 10.55.99.128/26 [110/10] via 10.55.18.1, 00:00:24, Serial 0/0/0\nC 10.55.99.192/27 is directly connected, GigabitEthernet0/0\nL 10.55.99.193/27 is directly connected, GigabitEthernet0/0\nC 10.55.99.224/27 is directly connected, GigabitEthernet0/1\nL 10.55.99.225/27 is directly connected, GigabitEthernet0/1\n10.55.18.0/24 is variably subnetted, 4 subnets, 2 masks\nC 10.55.18.0/30 is directly connected, Serial0/0/0\nL 10.55.18.2/32 is directly connected, Serial0/0/0\nC 10.55.18.4/30 is directly connected, Serial0/0/1\nL 10.55.18.5/32 is directly connected, Serial0/0/1\nS 10.55.19.0/26 [1/0] via 10.55.18.1, 00:00:24, Serial0/0/0",
+            options: [
+            "None, the packet will be dropped.",
+            "GigabitEthernet0/0",
+            "GigabitEthernet0/1",
+            "Serial0/0/1"
+            ],
+            answer: ["Serial0/0/1"],
+            exp: "Topic 14.1.3",
+            multi: false
+        },
+        {
+            id: 60,
+            q: "A network administrator configures the interface fa0/0 on the router R1 with the command ip address 172.16.1.254 255.255.255.0. However, when the administrator issues the command show ip route, the routing table does not show the directly connected network. What is the possible cause of the problem?",
+            options: [
+            "The subnet mask is incorrect for the IPv4 address.",
+            "No packets with a destination network of 172.16.1.0 have been sent to R1.",
+            "The configuration needs to be saved first.",
+            "The interface fa0/0 has not been activated."
+            ],
+            answer: ["The interface fa0/0 has not been activated."],
+            exp: "Topic 14.4.4 A directly connected network will be added to the routing table when these three conditions are met: (1) the interface is configured with a valid IP address; (2) it is activated with no shutdown command; and (3) it receives a carrier signal from another device that is connected to the interface. An incorrect subnet mask for an IPv4 address will not prevent its appearance in the routing table, although the error may prevent successful communications.",
+            multi: false
+        },
+        {
+            id: 61,
+            q: "Refer to the exhibit. Which interface will be the exit interface to forward a data packet that has the destination IP address 10.3.86.2?\n\nGateway of last resort is not set.\n10.3.86.0/26 is variously subnetted, 7 subnets, 3 masks\nO 10.3.86.0/26 [110/10] via 10.3.2.1, 00:00:24, Serial0/0/0\nO 10.3.86.64/26 [110/20] via 10.3.2.6, 00:00:56, Serial 0/0/1\nO 10.3.86.128/26 [110/10] via 10.3.2.1, 00:00:24, Serial 0/0/0\nC 10.3.86.192/27 is directly connected, GigabitEthernet0/0\nL 10.3.86.193/27 is directly connected, GigabitEthernet0/0\nC 10.3.86.224/27 is directly connected, GigabitEthernet0/1\nL 10.3.86.225/27 is directly connected, GigabitEthernet0/1\n10.3.2.0/24 is variably subnetted, 4 subnets, 2 masks\nC 10.3.2.0/30 is directly connected, Serial0/0/0\nL 10.3.2.2/32 is directly connected, Serial0/0/0\nC 10.3.2.4/30 is directly connected, Serial0/0/1\nL 10.3.2.5/32 is directly connected, Serial0/0/1\nS 10.3.3.0/26 [1/0] via 10.3.2.1, 00:00:24, Serial0/0/0",
+            options: [
+            "GigabitEthernet0/1",
+            "Serial0/0/1",
+            "GigabitEthernet0/0",
+            "Serial0/0/0"
+            ],
+            answer: ["Serial0/0/0"],
+            exp: "Topic 14.1.3",
+            multi: false
+        },
+        {
+            id: 63,
+            q: "Refer to the exhibit. Which interface will be the exit interface to forward a data packet that has the destination IP address 172.25.128.244?\n\nGateway of last resort is not set.\n172.25.128.0/26 is variously subnetted, 7 subnets, 3 masks\nO 172.25.128.0/26 [110/10] via 172.25.56.1, 00:00:24, Serial0/0/0\nO 172.25.128.64/26 [110/20] via 172.25.56.6, 00:00:56, Serial 0/0/1\nO 172.25.128.128/26 [110/10] via 172.25.56.1, 00:00:24, Serial 0/0/0\nC 172.25.128.192/27 is directly connected, GigabitEthernet0/0\nL 172.25.128.193/27 is directly connected, GigabitEthernet0/0\nC 172.25.128.224/27 is directly connected, GigabitEthernet0/1\nL 172.25.128.225/27 is directly connected, GigabitEthernet0/1\n172.25.56.0/24 is variably subnetted, 4 subnets, 2 masks\nC 172.25.56.0/30 is directly connected, Serial0/0/0\nL 172.25.56.2/32 is directly connected, Serial0/0/0\nC 172.25.56.4/30 is directly connected, Serial0/0/1\nL 172.25.56.5/32 is directly connected, Serial0/0/1\nS 172.25.57.0/26 [1/0] via 172.25.56.1, 00:00:24, Serial0/0/0",
+            options: [
+            "GigabitEthernet0/0",
+            "GigabitEthernet0/1",
+            "None, the packet will be dropped.",
+            "Serial0/0/1"
+            ],
+            answer: ["None, the packet will be dropped."],
+            exp: "Topic 14.1.3",
+            multi: false
+        }
+    ];
+
+    let state = {
+        pool: [],
+        currentIndex: 0,
+        score: 0,
+        bookmarks: new Set(),
+        wrongList: [],
+        itemsPerPhase: 20,
+        isAnswered: false,
+        tempSelected: []
+    };
+
+    function shuffle(arr) {
+        let array = [...arr];
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function initQuiz() {
+        state.pool = shuffle(questionsData).map(q => ({
+            ...q,
+            options: shuffle(q.options)
+        }));
+        state.currentIndex = 0;
+        state.score = 0;
+        state.bookmarks.clear();
+        state.wrongList = [];
+        state.isAnswered = false;
+        state.tempSelected = [];
+        render();
+    }
+
+    function render() {
+        const view = document.getElementById('quiz-view');
+        if (state.currentIndex >= state.pool.length) {
+            renderFinal();
+            return;
+        }
+
+        const q = state.pool[state.currentIndex];
+        const progress = (state.currentIndex / state.pool.length) * 100;
+
+        view.innerHTML = `
+            <div class="header-status">
+                <span>STAGE ${Math.floor(state.currentIndex / state.itemsPerPhase) + 1}</span>
+                <span>${state.currentIndex + 1} / ${state.pool.length}</span>
+            </div>
+            <div class="progress"><div class="progress-bar" style="width: ${progress}%"></div></div>
+            
+            <div class="card">
+                <div class="q-header">
+                    <div class="q-text-wrapper">
+                        <span class="q-id-badge">ID: ${q.id}</span>
+                        <div class="q-text">${q.q} ${q.multi ? '(Multiple Choice)' : ''}</div>
+                    </div>
+                    <button class="bookmark-btn ${state.bookmarks.has(q.id) ? 'active' : ''}" onclick="toggleBookmark(${q.id})">
+                        ${state.bookmarks.has(q.id) ? '★ MARKED' : '☆ MARK'}
+                    </button>
+                </div>
+                <div class="options">
+                    ${q.options.map((opt, i) => `
+                        <div class="option" onclick="handleSelect('${opt.replace(/'/g, "\\'")}', this)">
+                            <input type="${q.multi ? 'checkbox' : 'radio'}" name="ans" value="${opt}" id="o${i}" ${state.tempSelected.includes(opt) ? 'checked' : ''}>
+                            <label for="o${i}">${opt}</label>
+                        </div>
+                    `).join('')}
+                </div>
+                <div id="feedback" class="feedback"></div>
+            </div>
+            
+            <div class="controls" id="btn-bar">
+                ${q.multi ? '<button class="btn-primary" onclick="submitMulti()">SUBMIT ANSWER</button>' : ''}
+            </div>
+        `;
+    }
+
+    window.toggleBookmark = function(id) {
+        if (state.bookmarks.has(id)) state.bookmarks.delete(id);
+        else state.bookmarks.add(id);
+        const btn = document.querySelector('.bookmark-btn');
+        if (btn) {
+            btn.classList.toggle('active');
+            btn.innerHTML = state.bookmarks.has(id) ? '★ MARKED' : '☆ MARK';
+        }
+    };
+
+    window.handleSelect = function(val, el) {
+        if (state.isAnswered) return;
+        const q = state.pool[state.currentIndex];
+
+        if (!q.multi) {
+            state.tempSelected = [val];
+            evaluate();
+        } else {
+            const idx = state.tempSelected.indexOf(val);
+            if (idx > -1) state.tempSelected.splice(idx, 1);
+            else state.tempSelected.push(val);
+            
+            document.querySelectorAll('.option').forEach(o => {
+                const checked = state.tempSelected.includes(o.querySelector('input').value);
+                o.querySelector('input').checked = checked;
+                if(checked) o.classList.add('selected'); else o.classList.remove('selected');
+            });
+        }
+    };
+
+    window.submitMulti = function() {
+        if (state.tempSelected.length === 0) return;
+        evaluate();
+    };
+
+    function evaluate() {
+        state.isAnswered = true;
+        const q = state.pool[state.currentIndex];
+        const feedback = document.getElementById('feedback');
+        const correct = state.tempSelected.length === q.answer.length && state.tempSelected.every(v => q.answer.includes(v));
+
+        if (correct) {
+            state.score++;
+            feedback.className = 'feedback correct';
+            feedback.innerHTML = `<strong>CORRECT!</strong>`;
+        } else {
+            state.wrongList.push(q);
+            feedback.className = 'feedback wrong';
+            feedback.innerHTML = `<strong>INCORRECT</strong><br>Correct Answer: ${q.answer.join(', ')}`;
+        }
+
+        feedback.innerHTML += `<div class="explanation">${q.exp}</div>`;
+        feedback.style.display = 'block';
+
+        document.querySelectorAll('.option').forEach(el => {
+            const val = el.querySelector('input').value;
+            if (q.answer.includes(val)) el.classList.add('correct');
+            else if (state.tempSelected.includes(val)) el.classList.add('wrong');
+        });
+
+        const bar = document.getElementById('btn-bar');
+        if (bar) bar.innerHTML = `<button class="btn-primary" onclick="nextQuestion()">NEXT QUESTION</button>`;
+    }
+
+    window.nextQuestion = function() {
+        state.currentIndex++;
+        state.isAnswered = false;
+        state.tempSelected = [];
+
+        if (state.currentIndex > 0 && state.currentIndex % state.itemsPerPhase === 0 && state.currentIndex < state.pool.length) {
+            renderBreak();
+        } else {
+            render();
+        }
+    };
+
+    function renderBreak() {
+        const view = document.getElementById('quiz-view');
+        view.innerHTML = `
+            <div class="card result-panel">
+                <div class="big-title" style="font-size: 1.8rem;">STAGE COMPLETED</div>
+                <p style="font-size: 1.1rem; color: #5a5c69; margin-bottom: 25px; text-align: center;">You've finished ${state.currentIndex} questions.</p>
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <button class="btn-primary" onclick="render()">CONTINUE QUIZ</button>
+                </div>
+                <div class="switch-tabs">
+                    <div class="tab active" onclick="switchReview('wrong', this)">❌ WRONG <span class="badge">${state.wrongList.length}</span></div>
+                    <div class="tab" onclick="switchReview('book', this)">★ MARKED <span class="badge badge-warn">${state.bookmarks.size}</span></div>
+                </div>
+                <div id="review-content" class="review-list"></div>
+            </div>
+        `;
+        switchReview('wrong');
+    }
+
+    window.switchReview = function(type, el) {
+        if (el) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+        }
+        const list = document.getElementById('review-content');
+        const items = type === 'wrong' ? state.wrongList : state.pool.filter(p => state.bookmarks.has(p.id));
+        list.innerHTML = items.map(it => `
+            <div class="review-item" style="border-left-color: ${type==='wrong' ? 'var(--danger)' : 'var(--warning)'}">
+                <span class="q-id-badge">ID: ${it.id}</span>
+                <strong>${it.q}</strong><br>
+                <span style="color:var(--success); font-weight:700;">Answer: ${it.answer.join(', ')}</span>
+                <div style="font-size:0.85rem; margin-top:5px; color:#777;">${it.exp}</div>
+            </div>
+        `).join('') || '<p style="text-align:center; padding:20px;">Category is empty.</p>';
+    };
+
+    function renderFinal() {
+        const view = document.getElementById('quiz-view');
+        const acc = Math.round((state.score / state.pool.length) * 100);
+        view.innerHTML = `
+            <div class="card result-panel">
+                <div class="big-title">FINAL RESULTS</div>
+                <div class="score-circle">${state.score} <span class="score-total">/ ${state.pool.length}</span></div>
+                <p style="font-size:1.5rem; font-weight:800; margin-bottom: 30px; color: #1cc88a; text-align: center;">ACCURACY: ${acc}%</p>
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <button class="btn-primary" onclick="initQuiz()">RESTART QUIZ</button>
+                </div>
+                <div class="switch-tabs">
+                    <div class="tab active" onclick="switchFinal('wrong', this)">❌ WRONG <span class="badge">${state.wrongList.length}</span></div>
+                    <div class="tab" onclick="switchFinal('book', this)">★ MARKED <span class="badge badge-warn">${state.bookmarks.size}</span></div>
+                </div>
+                <div id="final-review-list" class="review-list"></div>
+            </div>
+        `;
+        switchFinal('wrong');
+    }
+
+    window.switchFinal = function(type, el) {
+        if (el) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+        }
+        const list = document.getElementById('final-review-list');
+        const items = type === 'wrong' ? state.wrongList : state.pool.filter(p => state.bookmarks.has(p.id));
+        list.innerHTML = items.map(it => `
+            <div class="review-item" style="border-left-color: ${type==='wrong' ? 'var(--danger)' : 'var(--warning)'}">
+                <span class="q-id-badge">ID: ${it.id}</span>
+                <strong>${it.q}</strong><br>
+                <span style="color:var(--success); font-weight:700;">Correct Answer: ${it.answer.join(', ')}</span>
+                <p style="font-size:0.9rem; background:#f8f9fc; padding:15px; border-radius:8px; margin-top:10px;">${it.exp}</p>
+            </div>
+        `).join('') || '<p style="text-align:center; padding:20px;">List is empty.</p>';
+    };
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initQuiz);
+    } else {
+        initQuiz();
+    }
+</script>
+
+</body>
+</html>
